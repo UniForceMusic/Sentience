@@ -1,0 +1,15 @@
+{
+    "name": "uniforcemusic/sentience",
+    "description": "A lightweight api framework for developing back-end applications",
+    "authors": [
+        {
+            "name": "Koen de Wolf",
+            "email": "koendewolfmail@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "src\\": "src/"
+        }
+    }
+}
