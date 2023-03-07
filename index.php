@@ -5,7 +5,6 @@ require_once 'vendor/autoload.php';
 require_once 'routes.php';
 require_once 'service.php';
 
-use src\util\Url;
 use src\app\App;
 
 $app = new App($routes, $service);
