@@ -7,13 +7,14 @@ class Route
     protected string $path;
     protected array $callable;
     protected array $methods;
-    protected array $templateValues = [];
+    protected array $templateValues;
 
     public function __construct(string $path, array $callable, array $methods)
     {
         $this->path = $path;
         $this->callable = $callable;
         $this->methods = $this->methodsToLowercase($methods);
+        $this->templateValues = [];
     }
 
     public static function create(string $path, array $function, array $methods): static
@@ -82,6 +83,11 @@ class Route
         );
     }
 
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
     public function getCallable(): callable
     {
         $className = $this->callable[0];
@@ -92,14 +98,14 @@ class Route
         return [$class, $methodName];
     }
 
+    public function getMethods(): array
+    {
+        return $this->methods;
+    }
+
     public function getTemplateValues(): array
     {
         return $this->templateValues;
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
     }
 }
 
