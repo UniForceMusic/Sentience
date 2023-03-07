@@ -16,14 +16,17 @@ class App
 
     public function execute()
     {
-        $callable = $this->router->getMatch();
+        $route = $this->router->getMatch();
 
-        if (!$callable) {
-            http_response_code(400);
+        if (!$route) {
+            http_response_code(404);
             exit();
         }
 
-        $callable();
+        $callable = $route->getCallable();
+        $request = new Request($route->getTemplateValues());
+
+        $callable($request);
     }
 }
 

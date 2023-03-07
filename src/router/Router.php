@@ -15,11 +15,11 @@ class Router
         $this->routes = $routes;
     }
 
-    public function getMatch(): ?callable
+    public function getMatch(): ?Route
     {
         foreach ($this->routes as $route) {
             if ($route->isMatch($this->requestUri, $this->requestMethod)) {
-                return $route->getCallable();
+                return $route;
             }
         }
 

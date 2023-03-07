@@ -2,11 +2,13 @@
 
 namespace src\controllers;
 
+use src\app\Request;
+
 class TestController
 {
-    public function test()
+    public function test(Request $request)
     {
-        echo "test";
+        echo json_encode($request->getTemplateValue("int"));
     }
 }
 

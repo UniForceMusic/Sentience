@@ -7,6 +7,7 @@ class Route
     protected string $path;
     protected array $callable;
     protected array $methods;
+    protected array $templateValues = [];
 
     public function __construct(string $path, array $callable, array $methods)
     {
@@ -42,10 +43,15 @@ class Route
     protected function isPathMatch(string $requestUri): bool
     {
         $templateParts = explode('/', trim($this->path, '/'));
+        $requestUriParts = explode('/', trim($requestUri, '/'));
         $modifiedParts = [];
 
         foreach ($templateParts as $index => $part) {
             if (preg_match('/{(.*)}/', $part, $matches)) {
+                if (count($matches) >= 1 && key_exists($index, $requestUriParts)) {
+                    $this->templateValues[$matches[1]] = $requestUriParts[$index];
+                }
+
                 $modifiedParts[] = '(.[^/]*)';
             } else {
                 $modifiedParts[] = $part;
@@ -78,12 +84,17 @@ class Route
 
     public function getCallable(): callable
     {
-        $className = sprintf('src\controllers\%s', $this->callable[0]);
+        $className = $this->callable[0];
         $methodName = $this->callable[1];
 
         $class = new $className();
 
         return [$class, $methodName];
+    }
+
+    public function getTemplateValues(): array
+    {
+        return $this->templateValues;
     }
 }
 
