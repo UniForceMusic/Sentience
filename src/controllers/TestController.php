@@ -3,12 +3,13 @@
 namespace src\controllers;
 
 use src\app\Request;
+use src\app\Response;
 
 class TestController
 {
     public function test(Request $request)
     {
-        echo json_encode($request->getTemplateValue("int"));
+        Response::ok($request->getTemplateValues());
     }
 }
 

@@ -28,7 +28,7 @@ class Route
     protected function methodsToLowercase(array $methods): array
     {
         return array_map(
-            function ($method) {
+            function (string $method): string {
                 return strtolower($method);
             },
             $methods
@@ -95,6 +95,11 @@ class Route
     public function getTemplateValues(): array
     {
         return $this->templateValues;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
     }
 }
 

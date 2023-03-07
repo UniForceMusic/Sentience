@@ -19,8 +19,8 @@ class App
         $route = $this->router->getMatch();
 
         if (!$route) {
-            http_response_code(404);
-            exit();
+            Response::routeNotFound($this->router->getRoutesAsStrings());
+            return;
         }
 
         $callable = $route->getCallable();

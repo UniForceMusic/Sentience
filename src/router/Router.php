@@ -25,6 +25,16 @@ class Router
 
         return null;
     }
+
+    public function getRoutesAsStrings(): array
+    {
+        return array_map(
+            function (Route $route): string {
+                return $route->getPath();
+            },
+            $this->routes
+        );
+    }
 }
 
 ?>
