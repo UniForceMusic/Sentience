@@ -52,7 +52,7 @@ class Url
         );
     }
 
-    public static function urlencodeParameters($parameters): string
+    public static function urlencodeParameters(array $parameters): string
     {
         $parametersArray = [];
 
@@ -66,7 +66,7 @@ class Url
         return $queryString;
     }
 
-    public static function urldecodeParameters($string): array
+    public static function urldecodeParameters(string $string): array
     {
         $parts = explode("&", $string);
         $partsArray = [];

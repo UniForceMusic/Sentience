@@ -1,10 +1,13 @@
 <?php
 
 require_once 'settings.php';
-require_once BASEDIR . "vendor/autoload.php";
+require_once 'vendor/autoload.php';
+require_once 'routes.php';
 
 use src\util\Url;
+use src\app\App;
 
-echo Url::getRequestUri();
+$app = new App($routes);
+$app->execute();
 
 ?>
