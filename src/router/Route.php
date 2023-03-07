@@ -88,14 +88,9 @@ class Route
         return $this->path;
     }
 
-    public function getCallable(): callable
+    public function getCallable(): array
     {
-        $className = $this->callable[0];
-        $methodName = $this->callable[1];
-
-        $class = new $className();
-
-        return [$class, $methodName];
+        return $this->callable;
     }
 
     public function getMethods(): array

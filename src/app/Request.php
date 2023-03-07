@@ -52,14 +52,41 @@ class Request
         return $this->headers;
     }
 
+    public function getHeader(string $key): string
+    {
+        if (!key_exists($key, $this->headers)) {
+            return null;
+        }
+
+        return $this->headers[$key];
+    }
+
     public function getParameters(): array
     {
         return $this->parameters;
     }
 
+    public function getParameter(string $key): string
+    {
+        if (!key_exists($key, $this->parameters)) {
+            return null;
+        }
+
+        return $this->parameters[$key];
+    }
+
     public function getCookies(): array
     {
         return $this->cookies;
+    }
+
+    public function getCookie(string $key): string
+    {
+        if (!key_exists($key, $this->cookies)) {
+            return null;
+        }
+
+        return $this->cookies[$key];
     }
 
     public function getJson(): array
