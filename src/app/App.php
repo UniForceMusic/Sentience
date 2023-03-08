@@ -21,7 +21,7 @@ class App
         $route = $this->router->getMatch();
 
         if (!$route) {
-            Response::routeNotFound($this->router->getRoutesAsStrings());
+            Response::routeNotFound($this->router->getRoutes());
             return;
         }
 

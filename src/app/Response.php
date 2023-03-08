@@ -27,7 +27,7 @@ class Response
         echo "Invalid route. Did you mean any of these routes?\n";
 
         foreach ($routes as $route) {
-            echo sprintf("\n- %s", $route);
+            echo sprintf("\n- %s", $route->getPath());
         }
     }
 

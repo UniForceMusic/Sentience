@@ -26,14 +26,9 @@ class Router
         return null;
     }
 
-    public function getRoutesAsStrings(): array
+    public function getRoutes(): array
     {
-        return array_map(
-            function (Route $route): string {
-                return $route->getPath();
-            },
-            $this->routes
-        );
+        return $this->routes;
     }
 }
 
