@@ -52,7 +52,7 @@ class Request
         return $this->headers;
     }
 
-    public function getHeader(string $key): string
+    public function getHeader(string $key): ?string
     {
         if (!key_exists($key, $this->headers)) {
             return null;
@@ -66,7 +66,7 @@ class Request
         return $this->parameters;
     }
 
-    public function getParameter(string $key): string
+    public function getParameter(string $key): ?string
     {
         if (!key_exists($key, $this->parameters)) {
             return null;
@@ -80,7 +80,7 @@ class Request
         return $this->cookies;
     }
 
-    public function getCookie(string $key): string
+    public function getCookie(string $key): ?string
     {
         if (!key_exists($key, $this->cookies)) {
             return null;
