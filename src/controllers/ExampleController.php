@@ -5,9 +5,9 @@ namespace src\controllers;
 use src\app\Request;
 use src\app\Response;
 
-class TestController extends Controller
+class ExampleController extends Controller
 {
-    public function test(Request $request)
+    public function example(Request $request)
     {
         Response::ok($this);
         Response::ok($request->getTemplateValues());

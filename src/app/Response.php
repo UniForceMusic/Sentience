@@ -2,6 +2,8 @@
 
 namespace src\app;
 
+use src\router\Route;
+
 class Response
 {
     public static function renderContent($content)
@@ -21,14 +23,21 @@ class Response
 
     public static function routeNotFound(array $routes)
     {
-        header('Content-Type: text/plain; charset=utf-8');
+        $routeStrings = array_map(
+            function (Route $route) {
+                return $route->getPath();
+            },
+            $routes
+        );
+
+        static::renderContent([
+            'error' => [
+                'text' => 'the route was invalid',
+                'available_routes' => $routeStrings
+            ]
+        ]);
+
         http_response_code(404);
-
-        echo "Invalid route. Did you mean any of these routes?\n";
-
-        foreach ($routes as $route) {
-            echo sprintf("\n- %s", $route->getPath());
-        }
     }
 
     public static function ok($content = null)

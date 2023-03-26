@@ -2,14 +2,16 @@
 
 namespace src\router;
 
+use Closure;
+
 class Route
 {
     protected string $path;
-    protected array $callable;
+    protected array|Closure $callable;
     protected array $methods;
     protected array $templateValues;
 
-    public function __construct(string $path, array $callable, array $methods)
+    public function __construct(string $path, array|callable $callable, array $methods)
     {
         $this->path = $path;
         $this->callable = $callable;
@@ -17,7 +19,7 @@ class Route
         $this->templateValues = [];
     }
 
-    public static function create(string $path, array $function, array $methods): static
+    public static function create(string $path, array|callable $function, array $methods): static
     {
         return new static(
             $path,
@@ -48,15 +50,22 @@ class Route
         $modifiedParts = [];
 
         foreach ($templateParts as $index => $part) {
-            if (preg_match('/{(.*)}/', $part, $matches)) {
-                if (count($matches) >= 1 && key_exists($index, $requestUriParts)) {
-                    $this->templateValues[$matches[1]] = $requestUriParts[$index];
-                }
-
-                $modifiedParts[] = '(.[^/]*)';
-            } else {
+            $matchesTemplateSyntax = preg_match('/{(.*)}/', $part, $matches);
+            if (!$matchesTemplateSyntax) {
                 $modifiedParts[] = $part;
+                continue;
             }
+
+            $meetsKeyConditions = (count($matches) >= 1 && key_exists($index, $requestUriParts));
+            if (!$meetsKeyConditions) {
+                continue;
+            }
+
+            $templateKey = $matches[1];
+            $templateValue = $requestUriParts[$index];
+
+            $this->templateValues[$templateKey] = $templateValue;
+            $modifiedParts[] = '(.[^/]*)';
         }
 
         $joinedParts = trim(
@@ -88,7 +97,7 @@ class Route
         return $this->path;
     }
 
-    public function getCallable(): array
+    public function getCallable(): array|callable
     {
         return $this->callable;
     }

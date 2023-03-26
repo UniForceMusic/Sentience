@@ -1,12 +1,20 @@
 <?php
 
+use src\app\Request;
+use src\app\Response;
 use src\router\Route;
-use src\controllers\TestController;
+use src\controllers\ExampleController;
 
 $routes = [
-    Route::create("/", [TestController::class, "test"], ["GET"]),
-    Route::create("/test/{testId}", [TestController::class, "test"], ["GET", "POST", "PUT", "DELETE"]),
-    Route::create("/user/{userId}", [TestController::class, "test"], ["GET", "POST"])
+    Route::create('/', [ExampleController::class, 'example'], ['GET', 'POST', 'PUT', 'DELETE']),
+
+    Route::create(
+        '/example',
+        function (Request $request) {
+            Response::ok(['success' => true]);
+        },
+        ['GET', 'POST']
+    )
 ];
 
 ?>

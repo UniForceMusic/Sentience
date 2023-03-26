@@ -31,7 +31,9 @@ class Url
 
         foreach ($urlSplit as $urlPart) {
             foreach ($pathSplit as $pathPart) {
-                if (($urlPart == $pathPart) && !empty($urlPart)) {
+                $partsMatch = (($urlPart == $pathPart) && !empty($urlPart));
+
+                if ($partsMatch) {
                     $indexUrlParts[] = $urlPart;
                 }
             }
