@@ -12,7 +12,6 @@ function exampleFunction(Request $request)
 
 $routes = [
     Route::create('/', [ExampleController::class, 'example'], ['GET', 'POST', 'PUT', 'DELETE']),
-    Route::create('/{route}', [ExampleController::class, 'example'], ['GET', 'POST', 'PUT', 'DELETE']),
     Route::create('/stringfunction-example', 'exampleFunction', ['GET', 'POST']),
     Route::create(
         '/lambda-example',
@@ -20,7 +19,8 @@ $routes = [
             Response::ok(['success' => true]);
         },
         ['GET', 'POST']
-    )
+    ),
+    Route::create('/{route}', [ExampleController::class, 'example'], ['GET', 'POST', 'PUT', 'DELETE'])
 ];
 
 ?>
