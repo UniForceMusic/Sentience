@@ -8,7 +8,7 @@ if (!SYNTAXREPORTING && ERRORREPORTING) {
     error_reporting(E_ERROR | E_WARNING);
 }
 
-if (!(SYNTAXREPORTING && ERRORREPORTING)) {
+if (!SYNTAXREPORTING && !ERRORREPORTING) {
     error_reporting(0);
 }
 

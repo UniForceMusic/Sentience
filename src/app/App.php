@@ -2,6 +2,7 @@
 
 namespace src\app;
 
+use Throwable;
 use src\router\Router;
 use src\util\Url;
 
@@ -42,7 +43,12 @@ class App
 
         $request = new Request($route->getTemplateValues());
 
-        $callable($request);
+        try {
+            $callable($request);
+        } catch (Throwable $error) {
+            $this->handleException($error);
+        }
+
     }
 
     protected function arrayToCallable(array $callable): ?callable
@@ -56,6 +62,18 @@ class App
         }
 
         return [$controller, $methodName];
+    }
+
+    protected function handleException(Throwable $error)
+    {
+        Response::internalServerError([
+            'error' => [
+                'text' => $error->getMessage(),
+                'file' => $error->getFile(),
+                'line' => $error->getLine(),
+                // 'trace' => $error->getTrace()
+            ]
+        ]);
     }
 }
 

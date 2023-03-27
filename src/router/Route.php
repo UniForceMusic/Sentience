@@ -19,7 +19,7 @@ class Route
         $this->templateValues = [];
     }
 
-    public static function create(string $path, array|callable $function, array $methods): static
+    public static function create(string $path, array|string|callable $function, array $methods): static
     {
         return new static(
             $path,
