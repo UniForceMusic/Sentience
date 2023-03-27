@@ -2,6 +2,7 @@
 
 namespace src\app;
 
+use SimpleXMLElement;
 use src\util\Url;
 
 class Request
@@ -97,6 +98,11 @@ class Request
     public function getFormData(): array
     {
         return $_POST;
+    }
+
+    public function getXml(): ?SimpleXMLElement
+    {
+        return simplexml_load_string($this->body);
     }
 
     public function getTemplateValues(): array
