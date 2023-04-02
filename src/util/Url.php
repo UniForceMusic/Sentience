@@ -11,10 +11,12 @@ class Url
 
     public static function getPath(): string
     {
-        if (str_contains($_SERVER["REQUEST_URI"], '?')) {
+        $requestUri = $_SERVER["REQUEST_URI"];
+
+        if (str_contains($requestUri, '?')) {
             return trim(
                 strstr(
-                    $_SERVER["REQUEST_URI"],
+                    $requestUri,
                     '?',
                     true
                 ),
@@ -22,7 +24,7 @@ class Url
             );
         }
 
-        return trim($_SERVER["REQUEST_URI"], '/');
+        return trim($requestUri, '/');
     }
 
     public static function getRequestUrl(): string

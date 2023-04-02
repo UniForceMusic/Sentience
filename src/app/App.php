@@ -69,6 +69,7 @@ class App
         Response::internalServerError([
             'error' => [
                 'text' => $error->getMessage(),
+                'type' => $error::class,
                 'file' => $error->getFile(),
                 'line' => $error->getLine(),
                 // 'trace' => $error->getTrace()
