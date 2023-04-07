@@ -1,7 +1,10 @@
 <?php
 
-require_once 'settings.php';
+if (!file_exists('vendor/autoload.php')) {
+    exec('composer install');
+}
 require_once 'vendor/autoload.php';
+require_once 'settings.php';
 require_once 'routes.php';
 require_once 'service.php';
 

@@ -2,6 +2,9 @@
 
 namespace src\app;
 
+use Closure;
+use ReflectionFunction;
+use ReflectionMethod;
 use Throwable;
 use src\router\Router;
 use src\util\Url;
@@ -30,21 +33,28 @@ class App
 
         if (is_array($callable)) {
             $callable = $this->arrayToCallable($callable);
-        }
 
-        if (!$callable) {
-            Response::internalServerError([
-                'error' => [
-                    'text' => 'there was an error executing the method or function'
-                ]
-            ]);
-            return;
+            if (!$callable) {
+                Response::internalServerError([
+                    'error' => [
+                        'text' => 'there was an error executing the method or function'
+                    ]
+                ]);
+                return;
+            }
         }
 
         $request = new Request($route->getTemplateValues());
+        $args = $this->getArgs($callable, $request, $this->serviceArgs);
+
+        $modifiedArgs = $this->executeMiddleware($args, $route->getMiddleware());
+
+        if (!$modifiedArgs) {
+            return;
+        }
 
         try {
-            $callable($request);
+            $callable(...$modifiedArgs);
         } catch (Throwable $error) {
             $this->handleException($error);
         }
@@ -55,7 +65,7 @@ class App
     {
         $className = $callable[0];
         $methodName = $callable[1];
-        $controller = new $className(...$this->serviceArgs);
+        $controller = new $className();
 
         if (!method_exists($controller, $methodName)) {
             return null;
@@ -75,6 +85,57 @@ class App
                 // 'trace' => $error->getTrace()
             ]
         ]);
+    }
+
+    protected function getArgs(array|string|Closure $callable, Request $request, array $serviceArgs): ?array
+    {
+        $possibleArgs = [
+            'request' => $request,
+            ...$serviceArgs
+        ];
+
+        if (is_array($callable)) {
+            $arguments = $this->getMethodArgs($callable[0], $callable[1]);
+        } else {
+            $arguments = $this->getFunctionArgs($callable);
+        }
+
+        $args = [];
+        foreach ($arguments as $argument) {
+            $name = $argument->getName();
+
+            $args[$name] = $possibleArgs[$name];
+        }
+
+        return $args;
+    }
+
+    protected function getFunctionArgs(string|Closure $callable): array
+    {
+        $reflectionFunction = new ReflectionFunction($callable);
+        return $reflectionFunction->getParameters();
+    }
+
+    protected function getMethodArgs(object $class, string $method): array
+    {
+        $reflectionMethod = new ReflectionMethod($class, $method);
+        return $reflectionMethod->getParameters();
+    }
+
+    protected function executeMiddleware(array $args, array $middleware): ?array
+    {
+        $modifiedArgs = $args;
+
+        foreach ($middleware as $middlewareClass) {
+            $callable = [$middlewareClass, 'execute'];
+            $modifiedArgs = $callable($modifiedArgs);
+
+            if (!$modifiedArgs) {
+                return null;
+            }
+        }
+
+        return $modifiedArgs;
     }
 }
 

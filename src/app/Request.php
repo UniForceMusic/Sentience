@@ -20,8 +20,8 @@ class Request
     {
         $this->url = Url::getRequestUrl();
         $this->uri = Url::getRequestUri();
-        $this->method = strtolower($_SERVER["REQUEST_METHOD"]);
-        $this->body = file_get_contents("php://input");
+        $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+        $this->body = file_get_contents('php://input');
         $this->headers = getallheaders();
         $this->parameters = $_GET;
         $this->cookies = $_COOKIE;
@@ -119,3 +119,5 @@ class Request
         return $this->templateValues[$key];
     }
 }
+
+?>

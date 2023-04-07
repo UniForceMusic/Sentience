@@ -9,22 +9,25 @@ class Route
     protected string $path;
     protected array|string|Closure $callable;
     protected array $methods;
+    protected array $middleware;
     protected array $templateValues;
 
-    public function __construct(string $path, array|string|callable $callable, array $methods)
+    public function __construct(string $path, array|string|callable $callable, array $methods, array $middleware = [])
     {
         $this->path = $path;
         $this->callable = $callable;
         $this->methods = $this->methodsToLowercase($methods);
+        $this->middleware = $middleware;
         $this->templateValues = [];
     }
 
-    public static function create(string $path, array|string|callable $function, array $methods): static
+    public static function create(string $path, array|string|callable $function, array $methods, array $middleware = []): static
     {
         return new static(
             $path,
             $function,
-            $methods
+            $methods,
+            $middleware
         );
     }
 
@@ -105,6 +108,11 @@ class Route
     public function getMethods(): array
     {
         return $this->methods;
+    }
+
+    public function getMiddleware(): array
+    {
+        return $this->middleware;
     }
 
     public function getTemplateValues(): array

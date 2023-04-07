@@ -6,12 +6,12 @@ class Url
 {
     public static function getBaseUrl(): string
     {
-        return (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http") . sprintf("://%s", $_SERVER["HTTP_HOST"]);
+        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . sprintf('://%s', $_SERVER['HTTP_HOST']);
     }
 
     public static function getPath(): string
     {
-        $requestUri = $_SERVER["REQUEST_URI"];
+        $requestUri = $_SERVER['REQUEST_URI'];
 
         if (str_contains($requestUri, '?')) {
             return trim(
@@ -29,7 +29,7 @@ class Url
 
     public static function getRequestUrl(): string
     {
-        return sprintf("%s/%s", static::getBaseUrl(), static::getPath());
+        return sprintf('%s/%s', static::getBaseUrl(), static::getPath());
     }
 
     public static function getIndexUrl(): string
@@ -37,8 +37,8 @@ class Url
         $baseUrl = static::getRequestUrl();
         $basePath = BASEDIR;
 
-        $urlSplit = explode("/", trim($baseUrl, "/"));
-        $pathSplit = explode(DIRECTORY_SEPARATOR, trim($basePath, "/\\"));
+        $urlSplit = explode('/', trim($baseUrl, '/'));
+        $pathSplit = explode(DIRECTORY_SEPARATOR, trim($basePath, '/\\'));
 
         $indexUrlParts = [static::getBaseUrl()];
 
@@ -52,7 +52,7 @@ class Url
             }
         }
 
-        return implode("/", $indexUrlParts);
+        return implode('/', $indexUrlParts);
     }
 
     public static function getRequestUri(): string
@@ -63,7 +63,7 @@ class Url
                 '',
                 static::getRequestUrl()
             ),
-            "/"
+            '/'
         );
     }
 
@@ -72,22 +72,22 @@ class Url
         $parametersArray = [];
 
         foreach ($parameters as $parameterName => $parameterValue) {
-            $urlEncodedParameter = sprintf("%s=%s", urlencode($parameterName), urlencode($parameterValue));
+            $urlEncodedParameter = sprintf('%s=%s', urlencode($parameterName), urlencode($parameterValue));
             $parametersArray[] = $urlEncodedParameter;
         }
 
-        $queryString = implode("&", $parametersArray);
+        $queryString = implode('&', $parametersArray);
 
         return $queryString;
     }
 
     public static function urldecodeParameters(string $string): array
     {
-        $parts = explode("&", $string);
+        $parts = explode('&', $string);
         $partsArray = [];
 
         foreach ($parts as $part) {
-            $partSplit = explode("=", $part, 2);
+            $partSplit = explode('=', $part, 2);
             $key = urldecode($partSplit[0]);
             $value = urldecode($partSplit[1]);
 

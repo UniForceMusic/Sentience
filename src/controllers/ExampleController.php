@@ -7,10 +7,9 @@ use src\app\Response;
 
 class ExampleController extends Controller
 {
-    public function example(Request $request)
+    public function example(Request $request, string $appName)
     {
-        Response::ok($this);
-        Response::ok($request->getTemplateValues());
+        Response::ok($appName);
     }
 }
 
