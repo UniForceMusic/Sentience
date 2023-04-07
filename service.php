@@ -1,20 +1,39 @@
 <?php
 
 /**
- * A place to define your global variables
+ * A class to define your global variables
  * These variables will be injected as arguments in the method or function
+ * 
+ * When a method or function calls for $appName, the public function appName()
+ * Will be executed
+ * 
  * Only the variables that are listed as arguments will be injected
  * A good use case would be putting the db connection variable here
  */
 
-$appVersion = '1.0.0';
-$appName = 'Sentience';
-$appAuthor = 'UniForceMusic';
+class Service
+{
+    public function dbConn(): mysqli
+    {
+        return mysqli_connect();
+    }
 
-$service = [
-    'appVersion' => $appVersion,
-    'appName' => $appName,
-    'appAuthor' => $appAuthor
-];
+    public function appVersion(): string
+    {
+        return 'appVersion';
+    }
+
+    public function appName(): string
+    {
+        return 'Sentience dev';
+    }
+
+    public function appAuthor(): string
+    {
+        return 'UniForceMusic';
+    }
+}
+
+$service = new Service();
 
 ?>

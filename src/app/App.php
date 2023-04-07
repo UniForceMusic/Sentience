@@ -5,6 +5,7 @@ namespace src\app;
 use Closure;
 use ReflectionFunction;
 use ReflectionMethod;
+use Service;
 use Throwable;
 use src\router\Router;
 use src\util\Url;
@@ -12,12 +13,12 @@ use src\util\Url;
 class App
 {
     protected Router $router;
-    protected array $serviceArgs;
+    protected Service $service;
 
-    public function __construct(array $routes, array $serviceArgs)
+    public function __construct(array $routes, Service $service)
     {
         $this->router = new Router(Url::getRequestUri(), $routes);
-        $this->serviceArgs = $serviceArgs;
+        $this->service = $service;
     }
 
     public function execute()
@@ -45,7 +46,7 @@ class App
         }
 
         $request = new Request($route->getTemplateValues());
-        $args = $this->getArgs($callable, $request, $this->serviceArgs);
+        $args = $this->getArgs($callable, $request, $this->service);
 
         $modifiedArgs = $this->executeMiddleware($args, $route->getMiddleware());
 
@@ -87,12 +88,9 @@ class App
         ]);
     }
 
-    protected function getArgs(array|string|Closure $callable, Request $request, array $serviceArgs): ?array
+    protected function getArgs(array|string|Closure $callable, Request $request, Service $service): ?array
     {
-        $possibleArgs = [
-            'request' => $request,
-            ...$serviceArgs
-        ];
+        $serviceMethods = get_class_methods($service);
 
         if (is_array($callable)) {
             $arguments = $this->getMethodArgs($callable[0], $callable[1]);
@@ -104,7 +102,13 @@ class App
         foreach ($arguments as $argument) {
             $name = $argument->getName();
 
-            $args[$name] = $possibleArgs[$name];
+            if ($name == 'request') {
+                $args['request'] = $request;
+                continue;
+            }
+
+            $callable = [$service, $name];
+            $args[$name] = $callable();
         }
 
         return $args;
