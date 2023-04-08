@@ -36,17 +36,16 @@ class App
             $callable = $this->arrayToCallable($callable);
 
             if (!$callable) {
-                Response::internalServerError([
-                    'error' => [
-                        'text' => 'there was an error executing the method or function'
-                    ]
-                ]);
                 return;
             }
         }
 
         $request = new Request($route->getTemplateValues());
         $args = $this->getArgs($callable, $request, $this->service);
+
+        if (!$args) {
+            return;
+        }
 
         $modifiedArgs = $this->executeMiddleware($args, $route->getMiddleware());
 
@@ -69,6 +68,11 @@ class App
         $controller = new $className();
 
         if (!method_exists($controller, $methodName)) {
+            Response::internalServerError([
+                'error' => [
+                    'text' => sprintf('class does not have a public method named: "%s"', $methodName)
+                ]
+            ]);
             return null;
         }
 
@@ -105,6 +109,15 @@ class App
             if ($name == 'request') {
                 $args['request'] = $request;
                 continue;
+            }
+
+            if (!in_array($name, ['request', ...$serviceMethods])) {
+                Response::internalServerError([
+                    'error' => [
+                        'text' => sprintf('parameter: "%s" is not defined in the service class', $name)
+                    ]
+                ]);
+                return null;
             }
 
             $callable = [$service, $name];
