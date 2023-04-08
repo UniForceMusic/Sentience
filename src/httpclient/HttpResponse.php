@@ -63,12 +63,12 @@ class HttpResponse
         return $this->body;
     }
 
-    public function json(): array
+    public function getJson(): array
     {
         return json_decode($this->body, true);
     }
 
-    public function xml(): SimpleXMLElement
+    public function getXml(): SimpleXMLElement
     {
         return simplexml_load_string($this->body);
     }
