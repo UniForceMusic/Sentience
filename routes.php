@@ -12,15 +12,25 @@ function exampleFunction(Request $request)
 }
 
 $routes = [
-    Route::create('/', [ExampleController::class, 'example'], ['GET', 'POST', 'PUT', 'DELETE'], [ExampleMiddleware::class]),
-    Route::create('/stringfunction-example', 'exampleFunction', ['GET', 'POST']),
-    Route::create(
-        '/lambda-example',
-        function (Request $request) {
-            Response::ok(['success' => true]);
-        },
-        ['GET', 'POST']
-    ),
+    Route::create()
+        ->setPath('/')
+        ->setCallable([ExampleController::class, 'example'])
+        ->setMethods(['GET', 'POST', 'PUT', 'DELETE'])
+        ->setMiddleware([ExampleMiddleware::class]),
+
+    Route::create()
+        ->setPath('/stringfunction-example')
+        ->setCallable('exampleFunction')
+        ->setMethods(['GET', 'POST']),
+
+    Route::create()
+        ->setPath('/lambda-example')
+        ->setCallable(
+            function (Request $request) {
+                Response::ok(['success' => true]);
+            }
+        )
+        ->setMethods(['GET', 'POST'])
 ];
 
 ?>

@@ -12,33 +12,16 @@ class Route
     protected array $middleware;
     protected array $templateValues;
 
-    public function __construct(string $path, array|string|callable $callable, array $methods, array $middleware = [])
+    public function __construct()
     {
-        $this->path = $path;
-        $this->callable = $callable;
-        $this->methods = $this->methodsToLowercase($methods);
-        $this->middleware = $middleware;
+        $this->methods = [];
+        $this->middleware = [];
         $this->templateValues = [];
     }
 
-    public static function create(string $path, array|string|callable $function, array $methods, array $middleware = []): static
+    public static function create(): static
     {
-        return new static(
-            $path,
-            $function,
-            $methods,
-            $middleware
-        );
-    }
-
-    protected function methodsToLowercase(array $methods): array
-    {
-        return array_map(
-            function (string $method): string {
-                return strtolower($method);
-            },
-            $methods
-        );
+        return new static();
     }
 
     public function isMatch(string $requestUri, string $method): bool
@@ -118,6 +101,40 @@ class Route
     public function getTemplateValues(): array
     {
         return $this->templateValues;
+    }
+
+    public function setPath(string $path): static
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    public function setCallable(array|string|callable $callable): static
+    {
+        $this->callable = $callable;
+        return $this;
+    }
+
+    public function setMethods(array $methods): static
+    {
+        $this->methods = $this->methodsToLowercase($methods);
+        return $this;
+    }
+
+    public function setMiddleware(array $middleware): static
+    {
+        $this->middleware = $middleware;
+        return $this;
+    }
+
+    protected function methodsToLowercase(array $methods): array
+    {
+        return array_map(
+            function (string $method): string {
+                return strtolower($method);
+            },
+            $methods
+        );
     }
 }
 
