@@ -18,6 +18,8 @@ class ExampleMiddleware implements Middleware
             $args['appName'] = 'Modified by middleware';
         }
 
+        $args['sessionId'] = 'abcdefghijklmnopqrstuvwxyz1234567890';
+
         return $args;
     }
 }

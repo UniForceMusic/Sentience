@@ -11,12 +11,15 @@ class Route
     protected array $methods;
     protected array $middleware;
     protected array $templateValues;
+    protected bool $isFile;
 
     public function __construct()
     {
+        $this->path = '';
         $this->methods = [];
         $this->middleware = [];
         $this->templateValues = [];
+        $this->isFile = false;
     }
 
     public static function create(): static
@@ -26,7 +29,10 @@ class Route
 
     public function isMatch(string $requestUri, string $method): bool
     {
-        return ($this->isPathMatch($requestUri) && $this->isMethodMatch($method));
+        $pathMatch = ($this->isFile) ? $this->isFileMatch($requestUri) : $this->isPathMatch($requestUri);
+        $methodMatch = $this->isMethodMatch($method);
+
+        return ($pathMatch && $methodMatch);
     }
 
     protected function isPathMatch(string $requestUri): bool
@@ -68,6 +74,21 @@ class Route
         );
 
         return preg_match($regex, $requestUri);
+    }
+
+    protected function isFileMatch(string $requestUri): bool
+    {
+        $pattern = sprintf('/%s\/(.*)/', FILEDIR);
+        $matchesTemplateSyntax = preg_match($pattern, $requestUri, $matches);
+        if (!$matchesTemplateSyntax) {
+            return false;
+        }
+
+        if (count($matches) > 1) {
+            $this->templateValues['filePath'] = $matches[1];
+        }
+
+        return true;
     }
 
     protected function isMethodMatch(string $method): bool
@@ -124,6 +145,12 @@ class Route
     public function setMiddleware(array $middleware): static
     {
         $this->middleware = $middleware;
+        return $this;
+    }
+
+    public function setFile(bool $state): static
+    {
+        $this->isFile = $state;
         return $this;
     }
 

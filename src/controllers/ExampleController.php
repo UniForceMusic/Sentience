@@ -7,9 +7,9 @@ use src\app\Response;
 
 class ExampleController extends Controller
 {
-    public function example(Request $request, string $appName, string $appVersion)
+    public function example(Request $request, string $appName, string $appVersion, ?string $sessionId)
     {
-        Response::ok([$appName, $appVersion]);
+        Response::ok([$appName, $appVersion, $sessionId]);
     }
 }
 

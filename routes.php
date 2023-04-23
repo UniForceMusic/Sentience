@@ -4,6 +4,7 @@ use src\app\Request;
 use src\app\Response;
 use src\router\Route;
 use src\controllers\ExampleController;
+use src\controllers\FileController;
 use src\middleware\ExampleMiddleware;
 
 function exampleFunction(Request $request)
@@ -12,6 +13,12 @@ function exampleFunction(Request $request)
 }
 
 $routes = [
+    Route::create()
+        ->setFile(true)
+        ->setPath('<placeholder shown on route not found page>')
+        ->setCallable([FileController::class, 'serveFile'])
+        ->setMethods(['GET']),
+
     Route::create()
         ->setPath('/')
         ->setCallable([ExampleController::class, 'example'])
@@ -30,7 +37,16 @@ $routes = [
                 Response::ok(['success' => true]);
             }
         )
-        ->setMethods(['GET', 'POST'])
+        ->setMethods(['GET', 'POST']),
+
+    Route::create()
+        ->setPath('/example/{id}')
+        ->setCallable(
+            function (Request $request) {
+                Response::ok($request->getTemplateValues());
+            }
+        )
+        ->setMethods(['GET', 'POST', 'PUT', 'DELETE'])
 ];
 
 ?>

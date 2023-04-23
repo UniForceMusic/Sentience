@@ -112,12 +112,8 @@ class App
             }
 
             if (!in_array($name, ['request', ...$serviceMethods])) {
-                Response::internalServerError([
-                    'error' => [
-                        'text' => sprintf('parameter: "%s" is not defined in the service class', $name)
-                    ]
-                ]);
-                return null;
+                $args[$name] = null;
+                continue;
             }
 
             $callable = [$service, $name];
