@@ -80,7 +80,7 @@ class HttpResponse
 
         foreach ($headers as $header) {
             $headerSplitColon = explode(':', $header, 2);
-            $key = trim($headerSplitColon[0]);
+            $key = strtolower(trim($headerSplitColon[0]));
             $value = trim($headerSplitColon[1]);
 
             $headersArray[$key] = $value;

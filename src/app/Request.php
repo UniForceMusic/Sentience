@@ -22,7 +22,17 @@ class Request
         $this->uri = Url::getRequestUri();
         $this->method = strtolower($_SERVER['REQUEST_METHOD']);
         $this->body = file_get_contents('php://input');
-        $this->headers = getallheaders();
+
+        $rawHeaders = getallheaders();
+        array_walk(
+            $rawHeaders,
+            function (string $val, string $key) use (&$headers) {
+                $lowerCaseKey = strtolower($key);
+                $headers[$lowerCaseKey] = $val;
+            }
+        );
+        $this->headers = $headers;
+
         $this->parameters = $_GET;
         $this->cookies = $_COOKIE;
         $this->templateValues = $templateValues;
