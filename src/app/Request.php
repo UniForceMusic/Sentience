@@ -90,13 +90,17 @@ class Request
         return $this->cookies[$key];
     }
 
-    public function getJson(): array
+    public function getJson(): ?array
     {
         return json_decode($this->body, true);
     }
 
-    public function getFormData(): array
+    public function getFormData(): ?array
     {
+        if (empty($_POST)) {
+            return null;
+        }
+
         return $_POST;
     }
 

@@ -25,7 +25,7 @@ class Service
 
     public function appName(): string
     {
-        return 'Sentience dev';
+        return 'Sentience';
     }
 
     public function appAuthor(): string
