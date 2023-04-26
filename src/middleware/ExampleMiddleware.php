@@ -6,7 +6,7 @@ use src\app\Response;
 
 class ExampleMiddleware implements Middleware
 {
-    public static function execute($args): ?array
+    public function execute($args): ?array
     {
         $request = $args['request'];
         if ($request->getParameter('killswitch') == 'true') {

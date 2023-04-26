@@ -140,7 +140,7 @@ class App
         $modifiedArgs = $args;
 
         foreach ($middleware as $middlewareClass) {
-            $callable = [$middlewareClass, 'execute'];
+            $callable = [(new $middlewareClass()), 'execute'];
             $modifiedArgs = $callable($modifiedArgs);
 
             if (!$modifiedArgs) {

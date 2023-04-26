@@ -7,7 +7,7 @@ interface Middleware
     /**
      * Return null if the middleware rejects the request
      */
-    public static function execute($args): ?array;
+    public function execute($args): ?array;
 }
 
 ?>

@@ -12,6 +12,9 @@ class Response
             return;
         }
 
+        $currentErrorReporting = error_reporting();
+        error_reporting(0);
+
         if (in_array(gettype($content), ['array', 'object'])) {
             header('content-Type: application/json; charset=utf-8');
             echo json_encode($content);
@@ -23,6 +26,8 @@ class Response
         if ($customContentType) {
             header(sprintf('Content-type: %s', $customContentType));
         }
+
+        error_reporting($currentErrorReporting);
     }
 
     public static function routeNotFound(array $routes)
