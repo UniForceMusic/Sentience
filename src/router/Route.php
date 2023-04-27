@@ -93,6 +93,10 @@ class Route
 
     protected function isMethodMatch(string $method): bool
     {
+        if (in_array('*', $this->methods)) {
+            return true;
+        }
+
         return in_array(
             strtolower($method),
             $this->methods

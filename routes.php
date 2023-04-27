@@ -22,7 +22,7 @@ $routes = [
     Route::create()
         ->setPath('/')
         ->setCallable([ExampleController::class, 'example'])
-        ->setMethods(['GET', 'POST', 'PUT', 'DELETE'])
+        ->setMethods(['*'])
         ->setMiddleware([ExampleMiddleware::class]),
 
     Route::create()
