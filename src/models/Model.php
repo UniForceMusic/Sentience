@@ -2,6 +2,7 @@
 
 namespace src\models;
 
+use ReflectionProperty;
 use src\database\Database;
 
 class Model
@@ -88,6 +89,10 @@ class Model
 
         foreach ($this->fields as $propertyName => $columnName) {
             if ($propertyName == $this->primaryKeyPropertyName) {
+                continue;
+            }
+
+            if (!(new ReflectionProperty($this, $propertyName))->isInitialized($this)) {
                 continue;
             }
 
