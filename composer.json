@@ -3,8 +3,7 @@
     "description": "A lightweight api framework for developing back-end applications",
     "authors": [
         {
-            "name": "Koen de Wolf",
-            "email": "koendewolfmail@gmail.com"
+            "name": "uniforcemusic"
         }
     ],
     "autoload": {
