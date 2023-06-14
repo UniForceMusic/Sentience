@@ -5,12 +5,20 @@ if (!file_exists('vendor/autoload.php')) {
 }
 require_once 'vendor/autoload.php';
 require_once 'settings.php';
+require_once 'commands.php';
 require_once 'routes.php';
 require_once 'service.php';
+require_once 'src/util/Functions.php';
 
-use src\app\App;
+use src\app\CliApp;
+use src\app\HttpApp;
 
-$app = new App($routes, $service);
+if (isCli()) {
+    $app = new CliApp($commands, $service, $argv);
+} else {
+    $app = new HttpApp($routes, $service);
+}
+
 $app->execute();
 
 ?>

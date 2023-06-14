@@ -21,7 +21,7 @@ $routes = [
 
     Route::create()
         ->setPath('/')
-        ->setCallable([ExampleController::class, 'example'])
+        ->setCallable([ExampleController::class, 'exampleHttp'])
         ->setMethods(['*'])
         ->setMiddleware([ExampleMiddleware::class]),
 

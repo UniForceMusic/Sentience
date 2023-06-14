@@ -2,15 +2,17 @@
 
 namespace src\router;
 
-class Router
+use src\util\Url;
+
+class HttpRouter
 {
     protected string $requestUri;
     protected string $requestMethod;
     protected array $routes;
 
-    public function __construct(string $requestUri, array $routes)
+    public function __construct(array $routes)
     {
-        $this->requestUri = $requestUri;
+        $this->requestUri = Url::getRequestUri();
         $this->requestMethod = strtolower($_SERVER['REQUEST_METHOD']);
         $this->routes = $routes;
     }

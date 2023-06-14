@@ -6,32 +6,41 @@ use Closure;
 use ReflectionFunction;
 use ReflectionMethod;
 use Service;
+use src\router\CliRouter;
+use src\router\Command;
 use Throwable;
-use src\router\Router;
-use src\util\Url;
 
-class App
+class CliApp
 {
-    protected Router $router;
+    protected CliRouter $router;
     protected Service $service;
 
-    public function __construct(array $routes, Service $service)
+    public function __construct(array $commands, Service $service, array $args)
     {
-        $this->router = new Router(Url::getRequestUri(), $routes);
+        $this->router = new CliRouter($args, $commands);
         $this->service = $service;
     }
 
-    public function execute()
+    public function execute(): void
     {
-        $route = $this->router->getMatch();
+        $command = $this->router->getMatch();
 
-        if (!$route) {
-            Response::routeNotFound($this->router->getRoutes());
+        if (!$command) {
+            Stdio::commandNotFound($this->router->getCommands());
             return;
         }
 
-        $callable = $route->getCallable();
+        $args = $this->getArgs($command, $this->service);
+        if (!$args) {
+            return;
+        }
 
+        $modifiedArgs = $this->executeMiddleware($args, $command->getMiddleware());
+        if (!$modifiedArgs) {
+            return;
+        }
+
+        $callable = $command->getCallable();
         if (is_array($callable)) {
             $callable = $this->arrayToCallable($callable);
 
@@ -40,25 +49,11 @@ class App
             }
         }
 
-        $request = new Request($route->getTemplateValues());
-        $args = $this->getArgs($callable, $request, $this->service);
-
-        if (!$args) {
-            return;
-        }
-
-        $modifiedArgs = $this->executeMiddleware($args, $route->getMiddleware());
-
-        if (!$modifiedArgs) {
-            return;
-        }
-
         try {
-            $callable(...$modifiedArgs);
+            $callable(...$args);
         } catch (Throwable $error) {
             $this->handleException($error);
         }
-
     }
 
     protected function arrayToCallable(array $callable): ?callable
@@ -68,33 +63,40 @@ class App
         $controller = new $className();
 
         if (!method_exists($controller, $methodName)) {
-            Response::internalServerError([
-                'error' => [
-                    'text' => sprintf('class does not have a public method named: "%s"', $methodName)
-                ]
-            ]);
+            Stdio::errorFLn('class does not have a public method named: "%s"', $methodName);
             return null;
         }
 
         return [$controller, $methodName];
     }
 
-    protected function handleException(Throwable $error)
+    protected function handleException(Throwable $error): void
     {
-        Response::internalServerError([
-            'error' => [
-                'text' => $error->getMessage(),
-                'type' => $error::class,
-                'file' => $error->getFile(),
-                'line' => $error->getLine(),
-                'trace' => $error->getTrace()
-            ]
-        ]);
+        Stdio::errorLn('Error:');
+        Stdio::errorFLn('Text: %s', $error->getMessage());
+        Stdio::errorFLn('Type: %s', $error::class);
+        Stdio::errorFLn('File: %s', $error->getFile());
+        Stdio::errorFLn('Line: %s', $error->getLine());
+        Stdio::errorLn('Trace:');
+
+        $traces = $error->getTrace();
+        foreach ($traces as $trace) {
+            Stdio::errorFLn(
+                "- %s:%s\t%s%s%s",
+                $trace['file'] ?? '',
+                $trace['line'] ?? '',
+                $trace['class'] ?? '',
+                $trace['type'] ?? '',
+                $trace['function'] ?? '',
+            );
+        }
     }
 
-    protected function getArgs(array|string|Closure $callable, Request $request, Service $service): ?array
+    protected function getArgs(Command $command, Service $service): ?array
     {
         $serviceMethods = get_class_methods($service);
+
+        $callable = $command->getCallable();
 
         if (is_array($callable)) {
             $arguments = $this->getMethodArgs($callable[0], $callable[1]);
@@ -106,12 +108,17 @@ class App
         foreach ($arguments as $argument) {
             $name = $argument->getName();
 
-            if ($name == 'request') {
-                $args['request'] = $request;
+            if ($name == 'flags') {
+                $args['flags'] = $command->getFlags();
                 continue;
             }
 
-            if (!in_array($name, ['request', ...$serviceMethods])) {
+            if ($name == 'words') {
+                $args['words'] = $command->getWords();
+                continue;
+            }
+
+            if (!in_array($name, ['flags', 'words', ...$serviceMethods])) {
                 $args[$name] = null;
                 continue;
             }
@@ -129,7 +136,7 @@ class App
         return $reflectionFunction->getParameters();
     }
 
-    protected function getMethodArgs(object $class, string $method): array
+    protected function getMethodArgs(string|object $class, string $method): array
     {
         $reflectionMethod = new ReflectionMethod($class, $method);
         return $reflectionMethod->getParameters();

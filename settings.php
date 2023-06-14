@@ -3,6 +3,7 @@
 define('SYNTAXREPORTING', true);
 define('ERRORREPORTING', true);
 define('BASEDIR', __DIR__);
+define('MIGRATIONSDIR', 'migrations');
 define('FILEDIR', 'static');
 
 if (!SYNTAXREPORTING && ERRORREPORTING) {
