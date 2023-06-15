@@ -6,7 +6,7 @@ use CurlHandle;
 
 class HttpRequest
 {
-    public static function get(string $url, array $parameters = [], array $headers = [], bool $secure = true)
+    public static function get(string $url, array $parameters = [], array $headers = [], bool $secure = true, array $customOptions = [])
     {
         return static::custom(
             $url,
@@ -14,11 +14,12 @@ class HttpRequest
             $parameters,
             $headers,
             '',
-            $secure
+            $secure,
+            $customOptions
         );
     }
 
-    public static function post(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true)
+    public static function post(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true, array $customOptions = [])
     {
         return static::custom(
             $url,
@@ -26,11 +27,12 @@ class HttpRequest
             $parameters,
             $headers,
             $body,
-            $secure
+            $secure,
+            $customOptions
         );
     }
 
-    public static function put(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true)
+    public static function put(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true, array $customOptions = [])
     {
         return static::custom(
             $url,
@@ -38,11 +40,12 @@ class HttpRequest
             $parameters,
             $headers,
             $body,
-            $secure
+            $secure,
+            $customOptions
         );
     }
 
-    public static function patch(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true)
+    public static function patch(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true, array $customOptions = [])
     {
         return static::custom(
             $url,
@@ -50,11 +53,12 @@ class HttpRequest
             $parameters,
             $headers,
             $body,
-            $secure
+            $secure,
+            $customOptions
         );
     }
 
-    public static function delete(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true)
+    public static function delete(string $url, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true, array $customOptions = [])
     {
         return static::custom(
             $url,
@@ -62,11 +66,12 @@ class HttpRequest
             $parameters,
             $headers,
             $body,
-            $secure
+            $secure,
+            $customOptions
         );
     }
 
-    public static function custom(string $url, string $method, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true)
+    public static function custom(string $url, string $method, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true, array $customOptions = [])
     {
         $curl = curl_init();
         $url = static::serializeParameters($url, $parameters);
@@ -81,7 +86,13 @@ class HttpRequest
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
-        $curl = static::setCurlInsecure($curl, $secure);
+        foreach($customOptions as $curlOpt => $value) {
+            curl_setopt($curl, $curlOpt, $value);
+        }
+
+        if (!$secure) {
+            $curl = static::setCurlInsecure($curl, $secure);
+        }
 
         return new HttpResponse($curl);
     }
@@ -92,7 +103,11 @@ class HttpRequest
             $parametersArray = [];
 
             foreach ($parameters as $parameterName => $parameterValue) {
-                $urlEncodedParameter = sprintf('%s=%s', urlencode($parameterName), urlencode($parameterValue));
+                $urlEncodedParameter = sprintf(
+                    '%s=%s',
+                    urlencode($parameterName),
+                    urlencode($parameterValue)
+                );
                 $parametersArray[] = $urlEncodedParameter;
             }
 
@@ -109,7 +124,11 @@ class HttpRequest
             $headersArray = [];
 
             foreach ($headers as $headerName => $headerValue) {
-                $urlEncodedHeader = sprintf('%s: %s', $headerName, $headerValue);
+                $urlEncodedHeader = sprintf(
+                    '%s: %s',
+                    $headerName,
+                    $headerValue
+                );
                 $headersArray[] = $urlEncodedHeader;
             }
 
@@ -119,12 +138,10 @@ class HttpRequest
         return $headers;
     }
 
-    private static function setCurlInsecure(CurlHandle $curl, bool $secure)
+    private static function setCurlInsecure(CurlHandle $curl)
     {
-        if (!$secure) {
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        }
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         return $curl;
     }
