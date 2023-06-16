@@ -15,7 +15,7 @@ class CliRouter
          * [1] command name
          * [2...] flags and commands
          */
-        $requestedCommand = $args[1];
+        $requestedCommand = $args[1] ?? '';
         $this->requestedCommand = $requestedCommand;
 
         foreach ($commands as $index => $command) {
