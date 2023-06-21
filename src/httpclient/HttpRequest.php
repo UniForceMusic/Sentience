@@ -86,12 +86,12 @@ class HttpRequest
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
-        foreach($customOptions as $curlOpt => $value) {
+        foreach ($customOptions as $curlOpt => $value) {
             curl_setopt($curl, $curlOpt, $value);
         }
 
         if (!$secure) {
-            $curl = static::setCurlInsecure($curl, $secure);
+            $curl = static::setCurlInsecure($curl);
         }
 
         return new HttpResponse($curl);
