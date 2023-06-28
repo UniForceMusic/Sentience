@@ -20,15 +20,28 @@ class Model
         $this->database = $database;
     }
 
-    public function hydrate(): static
+    public function hydrate(int|string|null $primaryKeyValue = null): static
     {
+        $pkValue = $primaryKeyValue ?? $this->getPrimaryKeyValue();
+
         $data = $this->database->query()
             ->table($this->table)
             ->columns(array_values($this->fields))
+            ->where(
+                $this->getPrimaryKeyColumnName(),
+                '=',
+                $pkValue
+            )
             ->selectAssocSingle();
 
         foreach ($data as $key => $value) {
-            $this->{$key} = $value;
+            $modelPropertyName = array_search($key, $this->fields);
+
+            if (!$modelPropertyName) {
+                continue;
+            }
+
+            $this->{$modelPropertyName} = $value;
         }
 
         return $this;
