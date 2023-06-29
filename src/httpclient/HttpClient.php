@@ -43,10 +43,11 @@ class HttpClient
 
             $url = $split[0];
 
-            array_push(
-                $this->parameters,
-                ...Url::urldecodeParameters($split[1])
-            );
+            $decodedParameters = Url::urldecodeParameters($split[1]);
+
+            foreach ($decodedParameters as $key => $value) {
+                $this->parameters[$key] = $value;
+            }
         }
 
         $this->url = trim($url);
@@ -65,7 +66,9 @@ class HttpClient
 
     public function parameters(array $parameters): static
     {
-        $this->parameters = $parameters;
+        foreach ($parameters as $key => $value) {
+            $this->parameters[$key] = $value;
+        }
 
         return $this;
     }
