@@ -22,13 +22,14 @@ class Model
 
     public function hydrate(int|string|null $primaryKeyValue = null): static
     {
+        $pkColumnName = $this->getPrimaryKeyColumnName();
         $pkValue = $primaryKeyValue ?? $this->getPrimaryKeyValue();
 
         $data = $this->database->query()
             ->table($this->table)
             ->columns(array_values($this->fields))
             ->where(
-                $this->getPrimaryKeyColumnName(),
+                $pkColumnName,
                 '=',
                 $pkValue
             )
@@ -71,15 +72,16 @@ class Model
     {
         $updatableValues = $this->getNonPrimaryKeyFields();
 
-        $primaryKeyColumnName = $this->getPrimaryKeyColumnName();
+        $pkColumnName = $this->getPrimaryKeyColumnName();
+        $pkValue = $this->getPrimaryKeyValue();
 
         $this->database->query()
             ->table($this->table)
             ->values($updatableValues)
             ->where(
-                $primaryKeyColumnName,
+                $pkColumnName,
                 '=',
-                $this->getPrimaryKeyValue()
+                $pkValue
             )
             ->update();
 
