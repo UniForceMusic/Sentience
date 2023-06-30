@@ -124,6 +124,11 @@ class Query
         return DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
     }
 
+    public static function dateTimeToString(DateTime $dateTime): ?string
+    {
+        return $dateTime->format('Y-m-d H:i:s');
+    }
+
     protected function getQueryBuilder(): object
     {
         $type = $this->database->getType();
