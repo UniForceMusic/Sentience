@@ -147,6 +147,10 @@ class Model
             $key = $columnName;
             $value = $this->{$propertyName};
 
+            if (is_null($value)) {
+                continue;
+            }
+
             $nonPkValues[$key] = $value;
         }
 
