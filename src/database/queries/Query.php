@@ -2,6 +2,7 @@
 
 namespace src\database\queries;
 
+use DateTime;
 use Exception;
 use PDO;
 use PDOStatement;
@@ -12,7 +13,6 @@ use src\database\queries\Values as ValuesTrait;
 use src\database\queries\Where as WhereTrait;
 use src\database\queries\Limit as LimitTrait;
 use src\database\querybuilders\MySQL as MySQLQueryBuilder;
-
 
 class Query
 {
@@ -116,16 +116,23 @@ class Query
 
     public static function now(): string
     {
-        return date("Y-m-d H:i:s");
+        return date('Y-m-d H:i:s');
+    }
+
+    public static function parseDateTime(string $dateTime): DateTime
+    {
+        return DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
     }
 
     protected function getQueryBuilder(): object
     {
-        if ($this->database->getType() == $this->database::MYSQL) {
+        $type = $this->database->getType();
+
+        if ($type == $this->database::MYSQL) {
             return new MySQLQueryBuilder();
         }
 
-        throw new Exception(sprintf('Database engine: "%s" is not a valid engine', $this->database->getType()));
+        throw new Exception(sprintf('Database engine: "%s" is not a valid engine', $type));
     }
 }
 
