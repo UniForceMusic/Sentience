@@ -1,11 +1,11 @@
 <?php
 
-namespace src\database\exceptions;
+namespace src\exceptions;
 
 use Exception;
 use PDOStatement;
 
-class SQLException extends Exception
+class InvalidSQLException extends Exception
 {
     public function __construct(PDOStatement $statement)
     {

@@ -3,8 +3,8 @@
 namespace src\httpclient;
 
 use CurlHandle;
-use Exception;
 use SimpleXMLElement;
+use src\exceptions\InvalidCURLException;
 
 class HttpResponse
 {
@@ -14,14 +14,17 @@ class HttpResponse
     protected array $headers;
     protected string $body;
     protected string $error;
+    protected bool $success;
 
     public function __construct(CurlHandle $curl)
     {
         $response = curl_exec($curl);
         $error = curl_error($curl);
 
-        if (!empty($error)) {
-            throw new Exception($error);
+        $this->success = empty($error);
+        $this->error = trim($error);
+        if ($error) {
+            return;
         }
 
         $splitDoubleEol = explode("\r\n\r\n", $response, 2);
@@ -33,43 +36,84 @@ class HttpResponse
         $this->code = intval($splitHttpSpace[1]);
         $this->headers = $this->unserializeHeaders($splitHeadersEol);
         $this->body = trim($splitDoubleEol[1]);
-        $this->error = trim($error);
 
         curl_close($curl);
     }
 
-    public function getUrl(): string
+    public function hasError(): bool
     {
+        return !$this->success;
+    }
+
+    public function getError(bool $asException = false): string|InvalidCURLException
+    {
+        if ($asException) {
+            return new InvalidCURLException($this->error);
+        }
+
+        return $this->error;
+    }
+
+    public function getUrl(): bool|string
+    {
+        if (!$this->success) {
+            return false;
+        }
+
         return $this->url;
     }
 
-    public function getHttp(): string
+    public function getHttp(): bool|string
     {
+        if (!$this->success) {
+            return false;
+        }
+
         return $this->http;
     }
 
-    public function getCode(): int
+    public function getCode(): bool|int
     {
+        if (!$this->success) {
+            return false;
+        }
+
         return $this->code;
     }
 
-    public function getHeaders(): array
+    public function getHeaders(): bool|array
     {
+        if (!$this->success) {
+            return false;
+        }
+
         return $this->headers;
     }
 
-    public function getBody(): string
+    public function getBody(): bool|string
     {
+        if (!$this->success) {
+            return false;
+        }
+
         return $this->body;
     }
 
-    public function getJson(): array
+    public function getJson(): bool|array
     {
+        if (!$this->success) {
+            return false;
+        }
+
         return json_decode($this->body, true);
     }
 
-    public function getXml(): SimpleXMLElement
+    public function getXml(): bool|SimpleXMLElement
     {
+        if (!$this->success) {
+            return false;
+        }
+
         return simplexml_load_string($this->body);
     }
 

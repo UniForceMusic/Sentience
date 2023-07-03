@@ -4,8 +4,8 @@ namespace src\database;
 
 use PDO;
 use PDOStatement;
-use src\database\exceptions\SQLException;
 use src\database\queries\Query;
+use src\exceptions\InvalidSQLException;
 
 class Database
 {
@@ -27,7 +27,7 @@ class Database
     {
         $statement = $this->pdo->prepare($query);
         if (!$statement->execute($params)) {
-            throw new SQLException($statement);
+            throw new InvalidSQLException($statement);
         }
 
         return $statement;

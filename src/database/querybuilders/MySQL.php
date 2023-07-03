@@ -2,7 +2,7 @@
 
 namespace src\database\querybuilders;
 
-class MySQL
+class MySQL implements QueryBuilderInterface
 {
     public function select(string $table, array $columns, array $whereConditions, array $whereValues, int $limit): array
     {

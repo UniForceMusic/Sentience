@@ -3,7 +3,6 @@
 namespace src\database\queries;
 
 use DateTime;
-use Exception;
 use PDO;
 use PDOStatement;
 use src\database\Database;
@@ -13,6 +12,7 @@ use src\database\queries\Values as ValuesTrait;
 use src\database\queries\Where as WhereTrait;
 use src\database\queries\Limit as LimitTrait;
 use src\database\querybuilders\MySQL as MySQLQueryBuilder;
+use src\exceptions\InvalidDatabaseException;
 
 class Query
 {
@@ -137,7 +137,7 @@ class Query
             return new MySQLQueryBuilder();
         }
 
-        throw new Exception(sprintf('Database engine: "%s" is not a valid engine', $type));
+        throw new InvalidDatabaseException(sprintf('Database engine: "%s" is not a valid engine', $type));
     }
 }
 
