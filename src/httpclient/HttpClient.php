@@ -189,7 +189,7 @@ class HttpClient
         );
     }
 
-    protected function createRequest(string $url, string $method, array $parameters = [], array $headers = [], string|array $body = '', bool $secure = true, array $customOptions = [])
+    protected function createRequest(string $url, string $method, array $parameters, array $headers, string|array $body, bool $secure, array $customOptions)
     {
         $curl = curl_init();
         $url = $this->serializeParameters($url, $parameters);
