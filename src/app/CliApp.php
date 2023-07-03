@@ -128,7 +128,7 @@ class CliApp
         return $reflectionFunction->getParameters();
     }
 
-    protected function getMethodArgs(object $class, string $method): array
+    protected function getMethodArgs(string|object $class, string $method): array
     {
         $reflectionMethod = new ReflectionMethod($class, $method);
         return $reflectionMethod->getParameters();
