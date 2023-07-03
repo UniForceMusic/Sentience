@@ -24,7 +24,6 @@ class HttpApp
     public function execute(): void
     {
         $route = $this->router->getMatch();
-
         if (!$route) {
             Response::routeNotFound($this->router->getRoutes());
             return;

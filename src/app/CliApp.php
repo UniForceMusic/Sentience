@@ -32,6 +32,7 @@ class CliApp
 
         $args = $this->getArgs($command, $this->service);
         if (!$args) {
+            Stdio::errorLn('error getting arguments for callable');
             return;
         }
 
@@ -77,32 +78,23 @@ class CliApp
         Stdio::errorFLn('Type: %s', $error::class);
         Stdio::errorFLn('File: %s', $error->getFile());
         Stdio::errorFLn('Line: %s', $error->getLine());
-        Stdio::errorLn('Trace:');
-
-        $traces = $error->getTrace();
-        foreach ($traces as $trace) {
-            Stdio::errorFLn(
-                "- %s:%s\t%s%s%s",
-                $trace['file'] ?? '',
-                $trace['line'] ?? '',
-                $trace['class'] ?? '',
-                $trace['type'] ?? '',
-                $trace['function'] ?? '',
-            );
-        }
+        // Stdio::errorFLn('Trace: %s', json_encode($error->getTrace(), JSON_PRETTY_PRINT));
     }
 
     protected function getArgs(Command $command, Service $service): ?array
     {
-        $serviceMethods = get_class_methods($service);
-
         $callable = $command->getCallable();
+        if (!$callable) {
+            return null;
+        }
 
         if (is_array($callable)) {
             $arguments = $this->getMethodArgs($callable[0], $callable[1]);
         } else {
             $arguments = $this->getFunctionArgs($callable);
         }
+
+        $serviceMethods = get_class_methods($service);
 
         $args = [];
         foreach ($arguments as $argument) {
@@ -136,7 +128,7 @@ class CliApp
         return $reflectionFunction->getParameters();
     }
 
-    protected function getMethodArgs(string|object $class, string $method): array
+    protected function getMethodArgs(object $class, string $method): array
     {
         $reflectionMethod = new ReflectionMethod($class, $method);
         return $reflectionMethod->getParameters();
