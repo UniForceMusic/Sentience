@@ -84,6 +84,7 @@ class HttpClient
 
                 if ($index) {
                     $this->parameters[$index] = $queryParameter;
+                    continue;
                 }
             }
 
@@ -126,6 +127,7 @@ class HttpClient
 
                 if ($index) {
                     $this->headers[$index] = $header;
+                    continue;
                 }
             }
 
