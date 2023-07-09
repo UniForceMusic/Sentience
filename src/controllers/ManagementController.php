@@ -48,7 +48,7 @@ class ManagementController extends Controller
                 continue;
             }
 
-            if ($query[strlen($query) - 1] != ';') {
+            if (substr($query, -1) != ';') {
                 $query .= ';';
             }
 
