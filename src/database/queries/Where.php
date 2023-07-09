@@ -9,9 +9,9 @@ trait Where
     protected array $whereConditions = [];
     protected array $whereValues = [];
 
-    public function where(string $key, string $comparator, bool|int|float|string $value): static
+    public function where(string $key, string $comparator, bool|int|float|string $value, bool $escapeKey = true): static
     {
-        $this->whereConditions[] = new WhereDTO($key, $comparator);
+        $this->whereConditions[] = new WhereDTO($key, $comparator, $escapeKey);
         $this->whereValues[] = $value;
 
         return $this;

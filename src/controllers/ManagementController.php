@@ -7,6 +7,7 @@ use src\app\Response;
 use src\app\Stdio;
 use src\database\Database;
 use src\database\queries\Query;
+use src\models\Migration;
 
 class ManagementController extends Controller
 {
@@ -35,7 +36,7 @@ class ManagementController extends Controller
         );
 
         foreach ($migrations as $migration) {
-            $query = file_get_contents(sprintf('%s/%s', $migrationsDir, $migration));
+            $query = trim(file_get_contents(sprintf('%s/%s', $migrationsDir, $migration)));
 
             $migrationAlreadyApplied = $database->query()
                 ->table('migrations')
@@ -47,16 +48,17 @@ class ManagementController extends Controller
                 continue;
             }
 
-            $database->exec($query);
+            if ($query[strlen($query) - 1] != ';') {
+                $query .= ';';
+            }
+
+            $database->exec(sprintf('BEGIN; %s COMMIT;', $query));
             Stdio::printFLn('migration: "%s" applied', $migration);
 
-            $database->query()
-                ->table('migrations')
-                ->values([
-                    'filename' => $migration,
-                    'applied_at' => Query::now()
-                ])
-                ->insert();
+            $migrationModel = new Migration($database);
+            $migrationModel->filename = $migration;
+            $migrationModel->appliedAt = Query::now();
+            $migrationModel->insert();
         }
     }
 }

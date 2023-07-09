@@ -24,7 +24,6 @@ class CliApp
     public function execute(): void
     {
         $command = $this->router->getMatch();
-
         if (!$command) {
             Stdio::commandNotFound($this->router->getCommands());
             return;

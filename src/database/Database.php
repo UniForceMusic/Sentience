@@ -10,7 +10,6 @@ use src\exceptions\InvalidSQLException;
 class Database
 {
     public const MYSQL = 'mysql';
-    public const POSTGRES = 'postgres';
 
     protected PDO $pdo;
     protected string $type;
