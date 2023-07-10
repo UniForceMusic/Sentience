@@ -33,7 +33,8 @@ class DotEnv
         $variables = [];
 
         foreach ($lines as $line) {
-            $match = preg_match('/(.*)=(.[^#]*)/', $line, $matches);
+            $dotEnvRegex = "/(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*\"(?:\\\"|[^\"])*\"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/";
+            $match = preg_match($dotEnvRegex, $line, $matches);
             if (!$match) {
                 continue;
             }
