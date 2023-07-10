@@ -61,7 +61,7 @@ class Query
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function selectAndCount(): int
+    public function count(): int
     {
         $statement = $this->select();
 
@@ -70,7 +70,7 @@ class Query
 
     public function exists(): bool
     {
-        $count = $this->selectAndCount();
+        $count = $this->count();
 
         return ($count > 0);
     }

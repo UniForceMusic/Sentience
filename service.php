@@ -15,24 +15,14 @@ use src\database\Database;
 
 class Service
 {
-    public function dbConn(): mysqli
-    {
-        return mysqli_connect();
-    }
-
     public function appVersion(): string
     {
-        return 'appVersion';
+        return $_ENV['APP_VERSION'] ?? 'App version not set';
     }
 
     public function appName(): string
     {
-        return 'Sentience';
-    }
-
-    public function appAuthor(): string
-    {
-        return 'UniForceMusic';
+        return $_ENV['APP_NAME'] ?? 'App name not set';
     }
 
     public function database(): Database
@@ -42,7 +32,7 @@ class Service
         $engine = 'mysql';
         $host = '127.0.0.1';
         $port = '3306';
-        $name = 'sentience';
+        $name = 'sentience-dev';
 
         $dsn = sprintf(
             "%s:host=%s;port=%s;dbname=%s",
