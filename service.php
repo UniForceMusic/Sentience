@@ -27,12 +27,13 @@ class Service
 
     public function database(): Database
     {
-        $username = 'root';
-        $password = '';
-        $engine = 'mysql';
-        $host = '127.0.0.1';
-        $port = '3306';
-        $name = 'sentience-dev';
+        $username = $_ENV['DB_USERNAME'];
+        $password = $_ENV['DB_PASSWORD'];
+        $engine = $_ENV['DB_ENGINE'];
+        $host = $_ENV['DB_HOST'];
+        $port = $_ENV['DB_PORT'];
+        $name = $_ENV['DB_NAME'];
+        $debug = $_ENV['DB_DEBUG'];
 
         $dsn = sprintf(
             "%s:host=%s;port=%s;dbname=%s",
@@ -45,7 +46,8 @@ class Service
         return new Database(
             $dsn,
             $username,
-            $password
+            $password,
+            $debug
         );
     }
 }
