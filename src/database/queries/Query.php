@@ -14,6 +14,7 @@ use src\database\queries\Limit as LimitTrait;
 use src\database\queries\Properties as PropertiesTrait;
 use src\database\queries\PrimaryKey as PrimaryKeyTrait;
 use src\database\querybuilders\MySQL as MySQLQueryBuilder;
+use src\database\querybuilders\QueryBuilderInterface;
 use src\exceptions\InvalidDatabaseException;
 
 class Query
@@ -147,7 +148,7 @@ class Query
         return null;
     }
 
-    protected function getQueryBuilder(): object
+    protected function getQueryBuilder(): QueryBuilderInterface
     {
         $type = $this->database->getType();
 
