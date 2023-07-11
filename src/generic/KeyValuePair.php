@@ -5,9 +5,9 @@ namespace src\generic;
 class KeyValuePair
 {
     protected string $key;
-    protected string $value;
+    protected mixed $value;
 
-    public function __construct(string $key, string $value)
+    public function __construct(string $key, mixed $value)
     {
         $this->key = $key;
         $this->value = $value;
@@ -18,7 +18,7 @@ class KeyValuePair
         return $this->key;
     }
 
-    public function getValue(): ?string
+    public function getValue(): mixed
     {
         return $this->value;
     }

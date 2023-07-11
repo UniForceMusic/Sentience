@@ -6,6 +6,11 @@ use src\generic\KeyValuePair;
 
 class QueryParameter extends KeyValuePair
 {
+    public function __construct(string $key, int|float|string $value)
+    {
+        parent::__construct($key, $value);
+    }
+
     public function getQueryString(): string
     {
         return sprintf(
