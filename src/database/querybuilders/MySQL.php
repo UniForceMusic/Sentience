@@ -2,17 +2,22 @@
 
 namespace src\database\querybuilders;
 
+use DateTime;
+use src\database\objects\Where;
+
 class MySQL implements QueryBuilderInterface
 {
-    public function select(string $table, array $columns, array $whereConditions, array $whereValues, int $limit): array
+    public function select(string $table, array $columns, array $where, int $limit): array
     {
         $query = '';
         $params = [];
 
         $query .= 'SELECT ' . $this->generateColumnsString($columns) . ' FROM `' . $table . '` ';
 
-        if (!empty($whereConditions)) {
-            $query .= 'WHERE ' . $this->generateWhereString($whereConditions) . ' ';
+        if (!empty($where)) {
+            $query .= 'WHERE ' . $this->generateWhereString($where) . ' ';
+
+            $whereValues = $this->extractWhereValues($where);
             array_push($params, ...$whereValues);
         }
 
@@ -37,7 +42,7 @@ class MySQL implements QueryBuilderInterface
         return [$query, $params];
     }
 
-    public function update(string $table, array $values, array $whereConditions, array $whereValues): array
+    public function update(string $table, array $values, array $where): array
     {
         $query = '';
         $params = [];
@@ -45,8 +50,10 @@ class MySQL implements QueryBuilderInterface
         $query .= 'UPDATE `' . $table . '` SET ' . $this->generateUpdateString($values) . ' ';
         array_push($params, ...array_values($values));
 
-        if (!empty($whereConditions)) {
-            $query .= 'WHERE ' . $this->generateWhereString($whereConditions) . ' ';
+        if (!empty($where)) {
+            $query .= 'WHERE ' . $this->generateWhereString($where) . ' ';
+
+            $whereValues = $this->extractWhereValues($where);
             array_push($params, ...$whereValues);
         }
 
@@ -55,15 +62,17 @@ class MySQL implements QueryBuilderInterface
         return [$query, $params];
     }
 
-    public function delete(string $table, array $whereConditions, array $whereValues): array
+    public function delete(string $table, array $where): array
     {
         $query = '';
         $params = [];
 
         $query .= 'DELETE FROM `' . $table . '` ';
 
-        if (!empty($whereConditions)) {
-            $query .= 'WHERE ' . $this->generateWhereString($whereConditions) . ' ';
+        if (!empty($where)) {
+            $query .= 'WHERE ' . $this->generateWhereString($where) . ' ';
+
+            $whereValues = $this->extractWhereValues($where);
             array_push($params, ...$whereValues);
         }
 
@@ -150,11 +159,11 @@ class MySQL implements QueryBuilderInterface
                 continue;
             }
 
-            $templateString = '%s %s ?';
-
-            if ($where->escapeKey) {
+            if (!$where->escapeKey) {
                 $templateString = '`%s` %s ?';
             }
+
+            $templateString = '%s %s ?';
 
             $conditions[] = sprintf(
                 $templateString,
@@ -189,6 +198,21 @@ class MySQL implements QueryBuilderInterface
         }
 
         return implode(', ', $updates);
+    }
+
+    protected function extractWhereValues(array $whereDTOs): array
+    {
+        $values = [];
+
+        foreach ($whereDTOs as $whereDTO) {
+            if (!($whereDTO instanceof Where)) {
+                continue;
+            }
+
+            $values[] = $whereDTO->value;
+        }
+
+        return $values;
     }
 }
 

@@ -40,8 +40,7 @@ class Query
         [$query, $params] = $queryBuilder->select(
             $this->table,
             $this->columns,
-            $this->whereConditions,
-            $this->whereValues,
+            $this->where,
             $this->limit
         );
 
@@ -100,8 +99,7 @@ class Query
         [$query, $params] = $queryBuilder->update(
             $this->table,
             $this->values,
-            $this->whereConditions,
-            $this->whereValues
+            $this->where
         );
 
         return $this->database->exec($query, $params);
@@ -112,8 +110,7 @@ class Query
         $queryBuilder = $this->getQueryBuilder();
         [$query, $params] = $queryBuilder->delete(
             $this->table,
-            $this->whereConditions,
-            $this->whereValues
+            $this->where
         );
 
         return $this->database->exec($query, $params);

@@ -6,27 +6,25 @@ use src\database\objects\Where as WhereDTO;
 
 trait Where
 {
-    protected array $whereConditions = [];
-    protected array $whereValues = [];
+    protected array $where = [];
 
     public function where(string $key, string $comparator, bool|int|float|string $value, bool $escapeKey = true): static
     {
-        $this->whereConditions[] = new WhereDTO($key, $comparator, $escapeKey);
-        $this->whereValues[] = $value;
+        $this->where[] = new WhereDTO($key, $comparator, $value, $escapeKey);
 
         return $this;
     }
 
     public function and (): static
     {
-        $this->whereConditions[] = 'AND';
+        $this->where[] = 'AND';
 
         return $this;
     }
 
     public function or (): static
     {
-        $this->whereConditions[] = 'OR';
+        $this->where[] = 'OR';
 
         return $this;
     }
