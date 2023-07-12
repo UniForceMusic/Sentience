@@ -157,9 +157,23 @@ class HttpClient
         return $this;
     }
 
-    public function body(string|array $body): static
+    public function body(string $body): static
     {
         $this->body = $body;
+
+        return $this;
+    }
+
+    public function json(array|object $serializable): static
+    {
+        $this->body = json_encode($serializable);
+
+        return $this;
+    }
+
+    public function formData(array $keyValuePairs): static
+    {
+        $this->body = $keyValuePairs;
 
         return $this;
     }
@@ -191,7 +205,7 @@ class HttpClient
         );
     }
 
-    protected function createRequest(string $url, string $method, array $parameters, array $headers, string|array $body, bool $secure, array $customOptions)
+    protected function createRequest(string $url, string $method, array $parameters, array $headers, string|array $body, bool $secure, array $customOptions): HttpResponse
     {
         $curl = curl_init();
         $url = $this->serializeParameters($url, $parameters);
@@ -221,7 +235,7 @@ class HttpClient
         return new HttpResponse($curl);
     }
 
-    protected function setCurlInsecure(CurlHandle $curl)
+    protected function setCurlInsecure(CurlHandle $curl): CurlHandle
     {
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
