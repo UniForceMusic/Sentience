@@ -13,7 +13,7 @@ class ExampleController extends Controller
         Response::ok([$appName, $appVersion, $sessionId]);
     }
 
-    public function exampleCli($words, $flags)
+    public function exampleCli(array $words, array $flags)
     {
         Stdio::printLn(json_encode([
             'words' => $words,
