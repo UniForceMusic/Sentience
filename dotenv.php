@@ -80,7 +80,26 @@ class DotEnv
         $quoteTrim = trim($value, '"');
         $replaceEscapedQuotes = str_replace('\"', '"', $quoteTrim);
 
-        return $replaceEscapedQuotes;
+        $envTemplateRegex = '/\${(.[^\}]*)}/';
+        $match = preg_match_all($envTemplateRegex, $replaceEscapedQuotes, $matches);
+        if (!$match) {
+            return $replaceEscapedQuotes;
+        }
+
+        return preg_replace_callback(
+            $envTemplateRegex,
+            function (array $matches) {
+                $original = $matches[0];
+                $envVarName = $matches[1];
+
+                if (isset($_ENV[$envVarName])) {
+                    return $_ENV[$envVarName];
+                }
+
+                return $original;
+            },
+            $replaceEscapedQuotes
+        );
     }
 
     protected static function parseBoolValue(string $value): ?bool
