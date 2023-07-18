@@ -8,129 +8,104 @@ use src\exceptions\InvalidCURLException;
 
 class HttpResponse
 {
-    protected string $url;
-    protected int $code;
-    protected string $http;
-    protected array $headers;
-    protected string $body;
-    protected string $error;
-    protected bool $success;
+    public const HTTP_EOL = "\r\n\r\n";
 
-    public function __construct(CurlHandle $curl)
+    protected CurlHandle $curlHandle;
+    protected ?string $url;
+    protected ?int $code;
+    protected ?string $http;
+    protected ?array $headers;
+    protected ?string $body;
+
+    public function __construct(CurlHandle $curlHandle)
     {
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
+        $response = curl_exec($curlHandle);
+        $error = curl_error($curlHandle);
 
-        $this->success = empty($error);
-        $this->error = trim($error);
-        if ($error) {
+        if (empty($error)) {
+            $this->curlHandle = $curlHandle;
+            $this->parseCurlHandle($curlHandle);
+            $this->parseResponse($response);
+
+            curl_close($curlHandle);
             return;
         }
 
-        $splitDoubleEol = explode("\r\n\r\n", $response, 2);
-        $splitHeadersEol = explode("\r\n", $splitDoubleEol[0]);
-        $splitHttpSpace = explode(' ', $splitHeadersEol[0]);
-
-        $this->url = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
-        $this->http = trim($splitHttpSpace[0]);
-        $this->code = intval($splitHttpSpace[1]);
-        $this->headers = $this->unserializeHeaders($splitHeadersEol);
-        $this->body = trim($splitDoubleEol[1]);
-
-        curl_close($curl);
+        throw new InvalidCURLException($error);
     }
 
-    public function hasError(): bool
+    public function getUrl(): ?string
     {
-        return !$this->success;
-    }
-
-    public function getError(bool $asException = false): string|InvalidCURLException
-    {
-        if ($asException) {
-            return new InvalidCURLException($this->error);
-        }
-
-        return $this->error;
-    }
-
-    public function getUrl(): bool|string
-    {
-        if (!$this->success) {
-            return false;
-        }
-
         return $this->url;
     }
 
-    public function getHttp(): bool|string
+    public function getHttp(): ?string
     {
-        if (!$this->success) {
-            return false;
-        }
-
         return $this->http;
     }
 
-    public function getCode(): bool|int
+    public function getCode(): ?int
     {
-        if (!$this->success) {
-            return false;
-        }
-
         return $this->code;
     }
 
-    public function getHeaders(): bool|array
+    public function getHeaders(): ?array
     {
-        if (!$this->success) {
-            return false;
-        }
-
         return $this->headers;
     }
 
-    public function getBody(): bool|string
+    public function getBody(): ?string
     {
-        if (!$this->success) {
-            return false;
-        }
-
         return $this->body;
     }
 
-    public function getJson(): bool|array
+    public function getJson(): ?array
     {
-        if (!$this->success) {
-            return false;
-        }
-
         return json_decode($this->body, true);
     }
 
-    public function getXml(): bool|SimpleXMLElement
+    public function getXml(): ?SimpleXMLElement
     {
-        if (!$this->success) {
-            return false;
-        }
-
         return simplexml_load_string($this->body);
     }
 
-    protected function unserializeHeaders(array $headers): array
+    public function getCurlInfo(int $curlOption): mixed
     {
-        $headers = array_slice($headers, 1);
-        $headersArray = [];
+        return curl_getinfo($this->curlHandle, $curlOption);
+    }
 
-        foreach ($headers as $header) {
-            $headerSplitColon = explode(':', $header, 2);
+    protected function parseCurlHandle(CurlHandle $curlHandle)
+    {
+        $this->url = curl_getinfo($curlHandle, CURLINFO_EFFECTIVE_URL);
+        $this->code = curl_getinfo($curlHandle, CURLINFO_RESPONSE_CODE);
+        $this->http = curl_getinfo($curlHandle, CURLINFO_HTTP_VERSION);
+    }
+
+    protected function parseResponse(string $response)
+    {
+        $splitDoubleEol = explode($this::HTTP_EOL, $response, 2);
+
+        $this->body = trim($splitDoubleEol[1]);
+        $this->parseHeaders($splitDoubleEol[0]);
+    }
+
+    protected function parseHeaders(string $headerLines)
+    {
+        $headerLines = explode($this::HTTP_EOL, $headerLines);
+        $headerLines = array_slice($headerLines, 1);
+
+        $headers = [];
+
+        foreach ($headerLines as $headerLine) {
+            $headerSplitColon = explode(':', $headerLine, 2);
+
             $key = strtolower(trim($headerSplitColon[0]));
             $value = trim($headerSplitColon[1]);
 
-            $headersArray[$key] = $value;
+            $headers[$key] = $value;
         }
 
-        return $headersArray;
+        $this->headers = $headers;
     }
 }
 

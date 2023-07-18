@@ -65,7 +65,7 @@ class HttpClient
     public function method(string $method)
     {
         $this->method = trim(
-            strtolower($method)
+            strtoupper($method)
         );
 
         return $this;

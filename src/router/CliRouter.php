@@ -6,7 +6,6 @@ class CliRouter
 {
     protected string $requestedCommand;
     protected array $commands;
-    protected bool $helpCommandCalled;
 
     public function __construct(array $args, array $commands)
     {
