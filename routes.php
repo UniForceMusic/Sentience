@@ -46,7 +46,7 @@ $routes = [
                 Response::ok($request->getTemplateValues());
             }
         )
-        ->setMethods(['GET', 'POST', 'PUT', 'DELETE'])
+        ->setMethods(['GET', 'POST', 'PUT', 'DELETE']),
 ];
 
 ?>
