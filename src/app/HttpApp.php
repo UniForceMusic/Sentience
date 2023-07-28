@@ -2,12 +2,12 @@
 
 namespace src\app;
 
+use Throwable;
 use Closure;
 use ReflectionFunction;
 use ReflectionMethod;
 use Service;
 use src\router\Route;
-use Throwable;
 use src\router\HttpRouter;
 
 class HttpApp
@@ -83,7 +83,7 @@ class HttpApp
                 'type' => $error::class,
                 'file' => $error->getFile(),
                 'line' => $error->getLine(),
-                // 'trace' => $error->getTrace()
+                'trace' => (($_ENV['STACK_TRACE'] ?? false)) ? $error->getTrace() : 'disabled'
             ]
         ]);
     }

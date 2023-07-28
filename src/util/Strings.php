@@ -12,6 +12,11 @@ class Strings
             return "\n";
         }
     }
+
+    public static function strip(string $pattern, string $subject): string
+    {
+        return str_replace($pattern, '', $subject);
+    }
 }
 
 ?>

@@ -130,16 +130,6 @@ class Model
         return $this;
     }
 
-    public function getPrimaryKeyColumnName(): int|string
-    {
-        return $this->fields[$this->primaryKeyPropertyName];
-    }
-
-    public function getPrimaryKeyValue(): int|string
-    {
-        return $this->{$this->primaryKeyPropertyName};
-    }
-
     public function createTable(): PDOStatement
     {
         $properties = [];
@@ -176,6 +166,21 @@ class Model
             ->create();
 
         return $statement;
+    }
+
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    public function getPrimaryKeyColumnName(): int|string
+    {
+        return $this->fields[$this->primaryKeyPropertyName];
+    }
+
+    public function getPrimaryKeyValue(): int|string
+    {
+        return $this->{$this->primaryKeyPropertyName};
     }
 
     protected function getFields($includePk = false): array

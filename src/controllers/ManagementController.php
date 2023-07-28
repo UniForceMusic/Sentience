@@ -61,4 +61,38 @@ class ManagementController extends Controller
             $migrationModel->insert();
         }
     }
+
+    public function initModel(Database $database, array $flags)
+    {
+        if (!isset($flags['class'])) {
+            Stdio::errorLn('No flag --class={className} set');
+            return;
+        }
+
+        $className = sprintf('\\src\\models\\%s', $flags['class']);
+
+        if (!class_exists($className)) {
+            Stdio::errorFLn('Model %s does not exist', $className);
+            return;
+        }
+
+        $class = new $className($database);
+        $statement = $class->createTable();
+        $query = $statement->queryString;
+
+        $migrationName = sprintf(
+            '%s_create_%s_table.sql',
+            date('YmdHis'),
+            $class->getTable()
+        );
+
+        $migrationModel = new Migration($database);
+        $migrationModel->filename = $migrationName;
+        $migrationModel->appliedAt = Query::now();
+        $migrationModel->insert();
+
+        file_put_contents(sprintf('%s/%s/%s', BASEDIR, MIGRATIONSDIR, $migrationName), $query);
+
+        Stdio::printFLn('Migration for model %s created successfully', $flags['class']);
+    }
 }

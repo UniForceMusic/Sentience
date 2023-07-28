@@ -20,7 +20,7 @@ class Request
     {
         $this->url = Url::getRequestUrl();
         $this->uri = Url::getRequestUri();
-        $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+        $this->method = strtoupper($_SERVER['REQUEST_METHOD']);
         $this->body = file_get_contents('php://input');
 
         $rawHeaders = getallheaders();

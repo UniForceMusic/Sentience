@@ -157,6 +157,28 @@ class HttpClient
         return $this;
     }
 
+    public function cookies(string $cookieString, bool $replace = true): static
+    {
+        $key = 'Cookie';
+
+        $header = new Header(
+            $key,
+            $cookieString
+        );
+
+        if ($replace) {
+            $index = $this->parameterExists($key);
+
+            if ($index) {
+                $this->headers[$index] = $header;
+            }
+        }
+
+        $this->headers[] = $header;
+
+        return $this;
+    }
+
     public function body(string $body): static
     {
         $this->body = $body;

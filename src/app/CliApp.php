@@ -2,13 +2,14 @@
 
 namespace src\app;
 
+use Throwable;
 use Closure;
 use ReflectionFunction;
 use ReflectionMethod;
 use Service;
 use src\router\CliRouter;
 use src\router\Command;
-use Throwable;
+use src\util\Strings;
 
 class CliApp
 {
@@ -72,12 +73,41 @@ class CliApp
 
     protected function handleException(Throwable $error): void
     {
-        Stdio::errorLn('Error:');
-        Stdio::errorFLn('Text: %s', $error->getMessage());
-        Stdio::errorFLn('Type: %s', $error::class);
-        Stdio::errorFLn('File: %s', $error->getFile());
-        Stdio::errorFLn('Line: %s', $error->getLine());
-        // Stdio::errorFLn('Trace: %s', json_encode($error->getTrace(), JSON_PRETTY_PRINT));
+        Stdio::errorLn('--------- Exception -------------------------------------------------------');
+        Stdio::errorFLn('- Text  : %s', $error->getMessage());
+        Stdio::errorFLn('- Type  : %s', $error::class);
+        Stdio::errorFLn('- File  : %s', Strings::strip(BASEDIR . DIRECTORY_SEPARATOR, $error->getFile()));
+        Stdio::errorFLn('- Line  : %s', $error->getLine());
+
+        if (($_ENV['STACK_TRACE'] ?? false)) {
+            Stdio::errorLn('- Trace :');
+            foreach ($error->getTrace() as $index => $trace) {
+                Stdio::error('      ');
+
+                if (isset($trace['class'])) {
+                    Stdio::errorFLn(
+                        '%s : %s:%s %s%s%s()',
+                        ($index + 1),
+                        Strings::strip(BASEDIR . DIRECTORY_SEPARATOR, $trace['file']),
+                        $trace['line'],
+                        $trace['class'],
+                        $trace['type'],
+                        $trace['function']
+                    );
+                    continue;
+                }
+
+                Stdio::errorFLn(
+                    '%s : %s:%s %s()',
+                    ($index + 1),
+                    Strings::strip(BASEDIR . DIRECTORY_SEPARATOR, $trace['file']),
+                    $trace['line'],
+                    $trace['function']
+                );
+            }
+        }
+
+        Stdio::errorLn('---------------------------------------------------------------------------');
     }
 
     protected function getArgs(Command $command, Service $service): ?array
