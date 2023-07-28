@@ -16,6 +16,10 @@ $commands = [
     Command::create()
         ->setCommand('database/migrate')
         ->setCallable([ManagementController::class, 'runMigrations']),
+
+    Command::create()
+        ->setCommand('models/init')
+        ->setCallable([ManagementController::class, 'initModel']),
 ];
 
 ?>

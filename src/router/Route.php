@@ -48,15 +48,18 @@ class Route
                 continue;
             }
 
-            $meetsKeyConditions = (count($matches) >= 1 && key_exists($index, $requestUriParts));
+            $meetsKeyConditions = (count($matches) > 1);
             if (!$meetsKeyConditions) {
                 continue;
             }
 
             $templateKey = $matches[1];
-            $templateValue = $requestUriParts[$index];
 
-            $this->templateValues[$templateKey] = $templateValue;
+            if (key_exists($index, $requestUriParts)) {
+                $templateValue = $requestUriParts[$index];
+                $this->templateValues[$templateKey] = $templateValue;
+            }
+
             $modifiedParts[] = '(.[^/]*)';
         }
 
