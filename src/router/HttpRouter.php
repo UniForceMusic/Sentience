@@ -13,7 +13,7 @@ class HttpRouter
     public function __construct(array $routes)
     {
         $this->requestUri = Url::getRequestUri();
-        $this->requestMethod = strtolower($_SERVER['REQUEST_METHOD']);
+        $this->requestMethod = strtoupper($_SERVER['REQUEST_METHOD']);
         $this->routes = $routes;
     }
 

@@ -100,7 +100,7 @@ class Route
         }
 
         return in_array(
-            strtolower($method),
+            strtoupper($method),
             $this->methods
         );
     }
@@ -144,7 +144,7 @@ class Route
 
     public function setMethods(array $methods): static
     {
-        $this->methods = $this->methodsToLowercase($methods);
+        $this->methods = $this->methodsToUppercase($methods);
         return $this;
     }
 
@@ -160,11 +160,11 @@ class Route
         return $this;
     }
 
-    protected function methodsToLowercase(array $methods): array
+    protected function methodsToUppercase(array $methods): array
     {
         return array_map(
             function (string $method): string {
-                return strtolower($method);
+                return strtoupper($method);
             },
             $methods
         );
