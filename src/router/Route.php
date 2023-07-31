@@ -53,9 +53,8 @@ class Route
                 continue;
             }
 
-            $templateKey = $matches[1];
-
             if (key_exists($index, $requestUriParts)) {
+                $templateKey = $matches[1];
                 $templateValue = $requestUriParts[$index];
                 $this->templateValues[$templateKey] = $templateValue;
             }
