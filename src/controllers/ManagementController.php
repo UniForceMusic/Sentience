@@ -28,8 +28,23 @@ class ManagementController extends Controller
             MIGRATIONSDIR
         );
 
+        $scannedFiles = scandir($migrationsDir);
+        $sortedScannedFiles = [];
+
+        foreach ($scannedFiles as $scannedFile) {
+            $match = preg_match('/(.[^\D+$]*)/', $scannedFile, $matches);
+            if (!$match) {
+                continue;
+            }
+
+            $key = $matches[1];
+            $sortedScannedFiles[$key] = $scannedFile;
+        }
+
+        ksort($sortedScannedFiles);
+
         $migrations = array_filter(
-            scandir($migrationsDir),
+            $sortedScannedFiles,
             function (string $item) {
                 return str_ends_with($item, '.sql');
             }
@@ -52,7 +67,10 @@ class ManagementController extends Controller
                 $query .= ';';
             }
 
-            $database->exec(sprintf('BEGIN; %s COMMIT;', $query));
+            $database->exec('begin;');
+            $database->exec(sprintf('%s', $query));
+            $database->exec('commit;');
+
             Stdio::printFLn('migration: "%s" applied', $migration);
 
             $migrationModel = new Migration($database);
