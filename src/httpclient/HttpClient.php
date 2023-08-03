@@ -17,6 +17,7 @@ class HttpClient
     protected string $method;
     protected array $parameters;
     protected array $headers;
+    protected array $cookies;
     protected string|array $body;
     protected bool $secure;
     protected array $customOptions;
@@ -32,6 +33,7 @@ class HttpClient
         $this->method = $this::GET;
         $this->parameters = [];
         $this->headers = [];
+        $this->cookies = [];
         $this->body = '';
         $this->secure = true;
         $this->customOptions = [];
@@ -157,7 +159,50 @@ class HttpClient
         return $this;
     }
 
-    public function cookies(string $cookieString, bool $replace = true): static
+    public function cookies(array $cookies, bool $replace = true): static
+    {
+        foreach ($cookies as $key => $value) {
+            $cookie = new Cookie(
+                $key,
+                $value
+            );
+
+            if ($replace) {
+                $index = $this->parameterExists($key);
+
+                if ($index) {
+                    $this->cookies[$index] = $cookie;
+                    continue;
+                }
+            }
+
+            $this->cookies[] = $cookie;
+        }
+
+        return $this;
+    }
+
+    public function cookie(string $key, string $value, bool $replace = true): static
+    {
+        $cookie = new Cookie(
+            $key,
+            $value
+        );
+
+        if ($replace) {
+            $index = $this->parameterExists($key);
+
+            if ($index) {
+                $this->cookies[$index] = $cookie;
+            }
+        }
+
+        $this->cookies[] = $cookie;
+
+        return $this;
+    }
+
+    public function setCookieStrings(string $cookieString, bool $replace = true): static
     {
         $key = 'Cookie';
 
@@ -172,6 +217,8 @@ class HttpClient
             if ($index) {
                 $this->headers[$index] = $header;
             }
+
+            $this->cookies = [];
         }
 
         $this->headers[] = $header;
@@ -231,7 +278,7 @@ class HttpClient
     {
         $curl = curl_init();
         $url = $this->serializeParameters($url, $parameters);
-        $headers = static::serializeHeaders($headers);
+        $headers = $this->serializeHeaders($headers);
 
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -247,7 +294,7 @@ class HttpClient
         }
 
         if (!$secure) {
-            $curl = static::setCurlInsecure($curl);
+            $curl = $this->setCurlInsecure($curl);
         }
 
         foreach ($customOptions as $curlOpt => $value) {
@@ -307,17 +354,6 @@ class HttpClient
         return sprintf('%s?%s', $url, $queryString);
     }
 
-    protected function parameterExists(string $key): bool|int
-    {
-        foreach ($this->parameters as $index => $parameter) {
-            if ($parameter->getKey() == $key) {
-                return $index;
-            }
-        }
-
-        return false;
-    }
-
     protected function serializeHeaders(array $headers): array
     {
         if (empty($this->headers)) {
@@ -330,13 +366,53 @@ class HttpClient
             $serializedHeaders[] = $header->getHeaderString();
         }
 
+        if (!empty($this->cookies) && !$this->headerExists('Cookie')) {
+            $serializedHeaders[] = sprintf(
+                'Cookie: %s',
+                $this->serializeCookies($this->cookies)
+            );
+        }
+
         return $serializedHeaders;
+    }
+
+    protected function serializeCookies(array $cookies): string
+    {
+        $cookieStrings = [];
+
+        foreach ($cookies as $cookie) {
+            $cookieStrings[] = $cookie->getCookieString();
+        }
+
+        return implode(';', $cookieStrings);
+    }
+
+    protected function parameterExists(string $key): bool|int
+    {
+        foreach ($this->parameters as $index => $parameter) {
+            if ($parameter->getKey() == $key) {
+                return $index;
+            }
+        }
+
+        return false;
     }
 
     protected function headerExists(string $key): bool|int
     {
         foreach ($this->headers as $index => $header) {
             if ($header->getKey() == $key) {
+                return $index;
+            }
+        }
+
+        return false;
+    }
+
+    protected function cookieExists(string $key): bool|int
+    {
+        foreach ($this->cookies as $index => $cookie) {
+            if ($cookie->getKey() == $key) {
                 return $index;
             }
         }

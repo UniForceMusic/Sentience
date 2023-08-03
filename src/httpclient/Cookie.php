@@ -4,14 +4,14 @@ namespace src\httpclient;
 
 use src\generic\KeyValuePair;
 
-class QueryParameter extends KeyValuePair
+class Cookie extends KeyValuePair
 {
     public function __construct(string $key, string $value)
     {
         parent::__construct($key, $value);
     }
 
-    public function getQueryString(): string
+    public function getCookieString(): string
     {
         return sprintf(
             '%s=%s',
