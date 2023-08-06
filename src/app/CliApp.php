@@ -36,7 +36,7 @@ class CliApp
             return;
         }
 
-        $modifiedArgs = $this->executeMiddleware($args, $command->getMiddleware());
+        $modifiedArgs = $this->executeMiddleware($command, $args);
         if (!$modifiedArgs) {
             return;
         }
@@ -163,8 +163,10 @@ class CliApp
         return $reflectionMethod->getParameters();
     }
 
-    protected function executeMiddleware(array $args, array $middleware): ?array
+    protected function executeMiddleware(Command $command, array $args): ?array
     {
+        $middleware = $command->getMiddleware();
+
         $modifiedArgs = $args;
 
         foreach ($middleware as $middlewareClass) {
