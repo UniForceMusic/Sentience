@@ -125,7 +125,7 @@ class HttpClient
             );
 
             if ($replace) {
-                $index = $this->parameterExists($key);
+                $index = $this->headerExists($key);
 
                 if ($index) {
                     $this->headers[$index] = $header;
@@ -147,7 +147,7 @@ class HttpClient
         );
 
         if ($replace) {
-            $index = $this->parameterExists($key);
+            $index = $this->headerExists($key);
 
             if ($index) {
                 $this->headers[$index] = $header;
@@ -168,7 +168,7 @@ class HttpClient
             );
 
             if ($replace) {
-                $index = $this->parameterExists($key);
+                $index = $this->cookieExists($key);
 
                 if ($index) {
                     $this->cookies[$index] = $cookie;
@@ -190,7 +190,7 @@ class HttpClient
         );
 
         if ($replace) {
-            $index = $this->parameterExists($key);
+            $index = $this->cookieExists($key);
 
             if ($index) {
                 $this->cookies[$index] = $cookie;
@@ -212,7 +212,7 @@ class HttpClient
         );
 
         if ($replace) {
-            $index = $this->parameterExists($key);
+            $index = $this->headerExists($key);
 
             if ($index) {
                 $this->headers[$index] = $header;
