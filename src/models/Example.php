@@ -17,9 +17,22 @@ class Example extends Model
         'dateCreated' => 'date_created',
     ];
 
+    protected array $onSave = [
+        'name' => 'formatName'
+    ];
+
     public int $id;
-    public string $name;
+    public ?string $name;
     public ?DateTime $dateCreated;
+
+    protected function formatName(?string $name): ?string
+    {
+        if (!$name) {
+            return null;
+        }
+
+        return ucfirst($name);
+    }
 }
 
 ?>

@@ -10,7 +10,7 @@ use src\database\Database;
 use src\database\queries\Query;
 use src\exceptions\InvalidIDException;
 
-class Model
+abstract class Model
 {
     protected Database $database;
     protected string $table = '';
@@ -19,6 +19,8 @@ class Model
     protected array $fields = [
         'id' => 'id'
     ];
+
+    protected array $onSave = [];
 
     public function __construct(Database $database)
     {
@@ -130,6 +132,16 @@ class Model
         return $this;
     }
 
+    public function getPrimaryKeyColumnName(): int|string
+    {
+        return $this->fields[$this->primaryKeyPropertyName];
+    }
+
+    public function getPrimaryKeyValue(): int|string
+    {
+        return $this->{$this->primaryKeyPropertyName};
+    }
+
     public function createTable(): PDOStatement
     {
         $properties = [];
@@ -168,21 +180,6 @@ class Model
         return $statement;
     }
 
-    public function getTable(): string
-    {
-        return $this->table;
-    }
-
-    public function getPrimaryKeyColumnName(): int|string
-    {
-        return $this->fields[$this->primaryKeyPropertyName];
-    }
-
-    public function getPrimaryKeyValue(): int|string
-    {
-        return $this->{$this->primaryKeyPropertyName};
-    }
-
     protected function getFields($includePk = false): array
     {
         $values = [];
@@ -205,6 +202,11 @@ class Model
 
             if (is_null($value)) {
                 continue;
+            }
+
+            $onSaveMethod = $this->onSave[$propertyName] ?? null;
+            if ($onSaveMethod) {
+                $value = $this->{$onSaveMethod}($value);
             }
 
             $values[$key] = $this->castFromModelToDatabase($value);
