@@ -45,6 +45,10 @@ class HttpClient
             throw new InvalidURLException(sprintf('Url: "%s" is invalid', $url));
         }
 
+        if (preg_match('/(.*)(#.*)$/', $url, $matches)) {
+            $url = $matches[1];
+        }
+
         if (str_contains($url, '?')) {
             $split = explode('?', $url);
 
