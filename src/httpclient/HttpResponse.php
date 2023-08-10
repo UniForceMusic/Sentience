@@ -63,10 +63,9 @@ class HttpResponse
     public function getJson(): ?array
     {
         $array = json_decode($this->body, true);
-        $jsonLastError = json_last_error_msg();
 
-        if (!empty($jsonLastError)) {
-            throw new JsonException($jsonLastError);
+        if (!$array) {
+            throw new JsonException(json_last_error_msg());
         }
 
         return $array;
