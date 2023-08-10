@@ -3,6 +3,7 @@
 namespace src\httpclient;
 
 use CurlHandle;
+use JsonException;
 use SimpleXMLElement;
 use src\exceptions\InvalidCURLException;
 
@@ -61,7 +62,14 @@ class HttpResponse
 
     public function getJson(): ?array
     {
-        return json_decode($this->body, true);
+        $array = json_decode($this->body, true);
+        $jsonLastError = json_last_error_msg();
+
+        if (!empty($jsonLastError)) {
+            throw new JsonException($jsonLastError);
+        }
+
+        return $array;
     }
 
     public function getXml(): ?SimpleXMLElement
