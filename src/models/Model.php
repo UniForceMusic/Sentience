@@ -180,6 +180,11 @@ abstract class Model
         return $statement;
     }
 
+    public function getTable(): ?string
+    {
+        return $this->table;
+    }
+
     protected function getFields($includePk = false): array
     {
         $values = [];
