@@ -230,8 +230,12 @@ class HttpClient
         return $this;
     }
 
-    public function body(string $body): static
+    public function body(string $body, string $contentType = null): static
     {
+        if ($contentType) {
+            $this->header('content-type', $contentType);
+        }
+
         $this->body = $body;
 
         return $this;
@@ -239,6 +243,8 @@ class HttpClient
 
     public function json(array|object $serializable): static
     {
+        $this->header('content-type', 'application/json; charset=utf-8');
+
         $this->body = json_encode($serializable);
 
         return $this;

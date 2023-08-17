@@ -15,8 +15,8 @@ class Header extends KeyValuePair
     {
         return sprintf(
             '%s: %s',
-            urlencode($this->key),
-            urlencode($this->value)
+            stripNonAscii($this->key),
+            stripNonAscii($this->value)
         );
     }
 }
