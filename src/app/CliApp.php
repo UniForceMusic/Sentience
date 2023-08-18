@@ -31,13 +31,13 @@ class CliApp
         }
 
         $args = $this->getArgs($command, $this->service);
-        if (!$args) {
+        if (!is_array($args)) {
             Stdio::errorLn('error getting arguments for callable');
             return;
         }
 
         $modifiedArgs = $this->executeMiddleware($command, $args);
-        if (!$modifiedArgs) {
+        if (!is_array($modifiedArgs)) {
             return;
         }
 

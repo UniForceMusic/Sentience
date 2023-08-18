@@ -30,13 +30,13 @@ class HttpApp
         }
 
         $args = $this->getArgs($route, $this->service);
-        if (!$args) {
+        if (!is_array($args)) {
             Response::internalServerError('error getting arguments for callable');
             return;
         }
 
-        $argsAfterMiddleware = $this->executeMiddleware($route, $args);
-        if (!$argsAfterMiddleware) {
+        $modifiedArgs = $this->executeMiddleware($route, $args);
+        if (!is_array($modifiedArgs)) {
             return;
         }
 
@@ -50,7 +50,7 @@ class HttpApp
         }
 
         try {
-            $callable(...$argsAfterMiddleware);
+            $callable(...$modifiedArgs);
         } catch (Throwable $error) {
             $this->handleException($error);
         }
