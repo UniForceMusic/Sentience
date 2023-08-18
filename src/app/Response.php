@@ -3,13 +3,10 @@
 namespace src\app;
 
 use src\router\Route;
+use src\util\MimeTypes;
 
 class Response
 {
-    public const CONTENT_TYPE_HTML = 'text/html; charset=utf-8';
-    public const CONTENT_TYPE_TEXT = 'text/plain; charset=utf-8';
-    public const CONTENT_TYPE_JSON = 'application/json; charset=utf-8';
-
     public static function renderContent(mixed $content, ?string $customContentType = null)
     {
         if (!$content) {
@@ -23,7 +20,7 @@ class Response
 
         header(sprintf('content-type: %s', $contentType));
 
-        if ($contentType == static::CONTENT_TYPE_JSON) {
+        if ($contentType == MimeTypes::JSON) {
             echo json_encode($content);
         } else {
             echo strval($content);
@@ -39,10 +36,10 @@ class Response
         }
 
         if (in_array(gettype($content), ['array', 'object'])) {
-            return static::CONTENT_TYPE_JSON;
+            return MimeTypes::JSON;
         }
 
-        return static::CONTENT_TYPE_TEXT;
+        return MimeTypes::JSON;
     }
 
     public static function routeNotFound(array $routes)
@@ -66,7 +63,7 @@ class Response
 
     public static function html(string $content)
     {
-        static::renderContent($content, static::CONTENT_TYPE_HTML);
+        static::renderContent($content, MimeTypes::HTML);
         http_response_code(200);
     }
 

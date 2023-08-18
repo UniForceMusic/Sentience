@@ -4,6 +4,7 @@ namespace src\httpclient;
 
 use CurlHandle;
 use src\exceptions\InvalidURLException;
+use src\util\MimeTypes;
 
 class HttpClient
 {
@@ -243,7 +244,7 @@ class HttpClient
 
     public function json(array|object $serializable): static
     {
-        $this->header('content-type', 'application/json; charset=utf-8');
+        $this->header('content-type', MimeTypes::JSON);
 
         $this->body = json_encode($serializable);
 
