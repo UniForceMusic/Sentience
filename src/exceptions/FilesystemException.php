@@ -4,7 +4,7 @@ namespace src\exceptions;
 
 use Exception;
 
-class InvalidDirectoryException extends Exception
+class FilesystemException extends Exception
 {
 }
 

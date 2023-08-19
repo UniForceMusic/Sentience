@@ -4,7 +4,7 @@ namespace src\exceptions;
 
 use Exception;
 
-class InvalidURLException extends Exception
+class UrlException extends Exception
 {
 }
 

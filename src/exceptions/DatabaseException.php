@@ -4,7 +4,7 @@ namespace src\exceptions;
 
 use Exception;
 
-class InvalidCURLException extends Exception
+class DatabaseException extends Exception
 {
 }
 

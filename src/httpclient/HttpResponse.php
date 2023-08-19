@@ -5,7 +5,7 @@ namespace src\httpclient;
 use CurlHandle;
 use JsonException;
 use SimpleXMLElement;
-use src\exceptions\InvalidCURLException;
+use src\exceptions\CurlException;
 
 class HttpResponse
 {
@@ -32,7 +32,7 @@ class HttpResponse
             return;
         }
 
-        throw new InvalidCURLException($error);
+        throw new CurlException($error);
     }
 
     public function getUrl(): ?string

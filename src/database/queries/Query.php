@@ -15,7 +15,7 @@ use src\database\queries\Properties as PropertiesTrait;
 use src\database\queries\PrimaryKey as PrimaryKeyTrait;
 use src\database\querybuilders\MySQL as MySQLQueryBuilder;
 use src\database\querybuilders\QueryBuilderInterface;
-use src\exceptions\InvalidDatabaseException;
+use src\exceptions\DatabaseException;
 
 class Query
 {
@@ -153,7 +153,7 @@ class Query
             return new MySQLQueryBuilder();
         }
 
-        throw new InvalidDatabaseException(sprintf('Database engine: "%s" is not a valid engine', $type));
+        throw new DatabaseException(sprintf('Database engine: "%s" is not a valid engine', $type));
     }
 }
 

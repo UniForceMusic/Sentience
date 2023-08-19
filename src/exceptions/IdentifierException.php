@@ -4,7 +4,7 @@ namespace src\exceptions;
 
 use Exception;
 
-class InvalidIDException extends Exception
+class IdentifierException extends Exception
 {
 }
 

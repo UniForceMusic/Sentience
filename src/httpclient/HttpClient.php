@@ -3,7 +3,7 @@
 namespace src\httpclient;
 
 use CurlHandle;
-use src\exceptions\InvalidURLException;
+use src\exceptions\UrlException;
 use src\util\MimeTypes;
 
 class HttpClient
@@ -43,7 +43,7 @@ class HttpClient
     public function url(string $url): static
     {
         if (!parse_url($url)) {
-            throw new InvalidURLException(sprintf('Url: "%s" is invalid', $url));
+            throw new UrlException(sprintf('Url: "%s" is invalid', $url));
         }
 
         if (preg_match('/(.*)(#.*)$/', $url, $matches)) {

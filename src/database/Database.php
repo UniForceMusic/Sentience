@@ -6,7 +6,7 @@ use PDO;
 use PDOStatement;
 use src\app\Stdio;
 use src\database\queries\Query;
-use src\exceptions\InvalidSQLException;
+use src\exceptions\SqlException;
 
 class Database
 {
@@ -29,7 +29,7 @@ class Database
     {
         $statement = $this->pdo->prepare($query);
         if (!$statement->execute($params)) {
-            throw new InvalidSQLException($statement);
+            throw new SqlException($statement);
         }
 
         if ($this->debug) {

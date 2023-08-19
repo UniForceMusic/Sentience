@@ -5,7 +5,7 @@ namespace src\exceptions;
 use Exception;
 use PDOStatement;
 
-class InvalidSQLException extends Exception
+class SqlException extends Exception
 {
     public function __construct(PDOStatement $statement)
     {

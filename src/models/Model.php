@@ -9,7 +9,7 @@ use ReflectionClass;
 use ReflectionProperty;
 use src\database\Database;
 use src\database\queries\Query;
-use src\exceptions\InvalidIDException;
+use src\exceptions\IdentifierException;
 
 abstract class Model
 {
@@ -46,7 +46,7 @@ abstract class Model
         $data = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (!$data) {
-            throw new InvalidIDException(sprintf('id: %s does not exist', $pkValue));
+            throw new IdentifierException(sprintf('id: %s does not exist', $pkValue));
         }
 
         foreach ($data as $key => $value) {
