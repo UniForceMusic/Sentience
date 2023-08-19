@@ -5,6 +5,7 @@ namespace src\models;
 use DateTime;
 use PDO;
 use PDOStatement;
+use ReflectionClass;
 use ReflectionProperty;
 use src\database\Database;
 use src\database\queries\Query;
@@ -180,9 +181,11 @@ abstract class Model
         return $statement;
     }
 
-    public function getTable(): ?string
+    public static function getTable(): ?string
     {
-        return $this->table;
+        return (new ReflectionClass(static::class))
+            ->getProperty('table')
+            ->getDefaultValue();
     }
 
     protected function getFields($includePk = false): array

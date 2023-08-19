@@ -54,7 +54,7 @@ class ManagementController extends Controller
             $query = trim(file_get_contents(sprintf('%s/%s', $migrationsDir, $migration)));
 
             $migrationAlreadyApplied = $database->query()
-                ->table('migrations')
+                ->table(Migration::getTable())
                 ->where('filename', '=', $migration)
                 ->exists();
 
