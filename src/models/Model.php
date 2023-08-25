@@ -3,6 +3,8 @@
 namespace src\models;
 
 use DateTime;
+use Exception;
+use Throwable;
 use PDO;
 use PDOStatement;
 use ReflectionClass;
@@ -196,6 +198,29 @@ abstract class Model
         return (new ReflectionClass(static::class))
             ->getProperty('table')
             ->getDefaultValue();
+    }
+
+    public function checkDataIsValid(): ?string
+    {
+        /**
+         * Returns null if no error is detected
+         * 
+         * Returns the error message as a string if the validate data function failed
+         * 
+         * If a generic false is returned the method return 'data invalid'
+         */
+
+        try {
+            $valid = $this->validateData();
+
+            if (!$valid) {
+                throw new Exception('data invalid');
+            }
+
+            return null;
+        } catch (Throwable $err) {
+            return $err->getMessage();
+        }
     }
 
     protected function validateData(): bool
