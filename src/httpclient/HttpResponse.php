@@ -68,7 +68,7 @@ class HttpResponse
 
     public function getHtml(): ?string
     {
-        return stripNonAscii($this->body);
+        return replaceNonAsciiChars($this->body);
     }
 
     public function getJson(): ?array

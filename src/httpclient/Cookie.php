@@ -15,8 +15,8 @@ class Cookie extends KeyValuePair
     {
         return sprintf(
             '%s=%s',
-            stripNonAscii($this->key),
-            stripNonAscii($this->value)
+            replaceNonAsciiChars($this->key),
+            replaceNonAsciiChars($this->value)
         );
     }
 }
