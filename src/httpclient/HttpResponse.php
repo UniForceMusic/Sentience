@@ -18,9 +18,15 @@ class HttpResponse
     protected ?array $headers;
     protected ?string $body;
 
-    public function __construct(CurlHandle $curlHandle)
+    public function __construct(CurlHandle $curlHandle, int $retryCount)
     {
-        $response = curl_exec($curlHandle);
+        for ($i = 0; $i < $retryCount + 1; $i++) {
+            $response = curl_exec($curlHandle);
+            if ($response) {
+                break;
+            }
+        }
+
         $error = curl_error($curlHandle);
 
         if (empty($error)) {
@@ -58,6 +64,11 @@ class HttpResponse
     public function getBody(): ?string
     {
         return $this->body;
+    }
+
+    public function getHtml(): ?string
+    {
+        return stripNonAscii($this->body);
     }
 
     public function getJson(): ?array
