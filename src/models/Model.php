@@ -66,6 +66,56 @@ abstract class Model
         return $this;
     }
 
+    public function hydrateByField(string $field, int|string $value): static
+    {
+        $statement = $this->database->query()
+            ->table($this->table)
+            ->columns(array_values($this->fields))
+            ->where(
+                $field,
+                '=',
+                $value
+            )
+            ->select();
+
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) {
+            throw new IdentifierException(sprintf('%s: %s does not exist', $field, $value));
+        }
+
+        foreach ($data as $key => $value) {
+            $type = $this->getColumnType($statement, $data, $key);
+
+            $modelPropertyName = array_search($key, $this->fields);
+
+            if (!$modelPropertyName) {
+                continue;
+            }
+
+            $this->{$modelPropertyName} = $this->castFromDatabaseToModel($type, $value);
+        }
+
+        return $this;
+    }
+
+    public function hydrateByArray(PDOStatement $statement, array $data): static
+    {
+        foreach ($data as $key => $value) {
+            $type = $this->getColumnType($statement, $data, $key);
+
+            $modelPropertyName = array_search($key, $this->fields);
+
+            if (!$modelPropertyName) {
+                continue;
+            }
+
+            $this->{$modelPropertyName} = $this->castFromDatabaseToModel($type, $value);
+        }
+
+        return $this;
+    }
+
     public function insert(): ?static
     {
         $valid = $this->validateData();
