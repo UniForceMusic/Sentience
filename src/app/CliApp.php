@@ -24,33 +24,33 @@ class CliApp
 
     public function execute(): void
     {
-        $command = $this->router->getMatch();
-        if (!$command) {
-            Stdio::commandNotFound($this->router->getCommands());
-            return;
-        }
-
-        $args = $this->getArgs($command, $this->service);
-        if (!is_array($args)) {
-            Stdio::errorLn('error getting arguments for callable');
-            return;
-        }
-
-        $modifiedArgs = $this->executeMiddleware($command, $args);
-        if (!is_array($modifiedArgs)) {
-            return;
-        }
-
-        $callable = $command->getCallable();
-        if (is_array($callable)) {
-            $callable = $this->arrayToCallable($callable);
-
-            if (!$callable) {
+        try {
+            $command = $this->router->getMatch();
+            if (!$command) {
+                Stdio::commandNotFound($this->router->getCommands());
                 return;
             }
-        }
 
-        try {
+            $args = $this->getArgs($command, $this->service);
+            if (!is_array($args)) {
+                Stdio::errorLn('error getting arguments for callable');
+                return;
+            }
+
+            $modifiedArgs = $this->executeMiddleware($command, $args);
+            if (!is_array($modifiedArgs)) {
+                return;
+            }
+
+            $callable = $command->getCallable();
+            if (is_array($callable)) {
+                $callable = $this->arrayToCallable($callable);
+
+                if (!$callable) {
+                    return;
+                }
+            }
+
             $callable(...$args);
         } catch (Throwable $error) {
             $this->handleException($error);

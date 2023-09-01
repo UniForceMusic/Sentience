@@ -23,33 +23,33 @@ class HttpApp
 
     public function execute(): void
     {
-        $route = $this->router->getMatch();
-        if (!$route) {
-            Response::routeNotFound($this->router->getRoutes());
-            return;
-        }
-
-        $args = $this->getArgs($route, $this->service);
-        if (!is_array($args)) {
-            Response::internalServerError('error getting arguments for callable');
-            return;
-        }
-
-        $modifiedArgs = $this->executeMiddleware($route, $args);
-        if (!is_array($modifiedArgs)) {
-            return;
-        }
-
-        $callable = $route->getCallable();
-        if (is_array($callable)) {
-            $callable = $this->arrayToCallable($callable);
-
-            if (!$callable) {
+        try {
+            $route = $this->router->getMatch();
+            if (!$route) {
+                Response::routeNotFound($this->router->getRoutes());
                 return;
             }
-        }
 
-        try {
+            $args = $this->getArgs($route, $this->service);
+            if (!is_array($args)) {
+                Response::internalServerError('error getting arguments for callable');
+                return;
+            }
+
+            $modifiedArgs = $this->executeMiddleware($route, $args);
+            if (!is_array($modifiedArgs)) {
+                return;
+            }
+
+            $callable = $route->getCallable();
+            if (is_array($callable)) {
+                $callable = $this->arrayToCallable($callable);
+
+                if (!$callable) {
+                    return;
+                }
+            }
+
             $callable(...$modifiedArgs);
         } catch (Throwable $error) {
             $this->handleException($error);
