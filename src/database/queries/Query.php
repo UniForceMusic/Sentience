@@ -36,7 +36,7 @@ class Query
 
     public function select(): PDOStatement
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->database->getQueryBuilder();
         [$query, $params] = $queryBuilder->select(
             $this->table,
             $this->columns,
@@ -77,7 +77,7 @@ class Query
 
     public function insert(): PDOStatement
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->database->getQueryBuilder();
         [$query, $params] = $queryBuilder->insert(
             $this->table,
             $this->values
@@ -95,7 +95,7 @@ class Query
 
     public function update(): PDOStatement
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->database->getQueryBuilder();
         [$query, $params] = $queryBuilder->update(
             $this->table,
             $this->values,
@@ -107,7 +107,7 @@ class Query
 
     public function delete(): PDOStatement
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->database->getQueryBuilder();
         [$query, $params] = $queryBuilder->delete(
             $this->table,
             $this->where
@@ -118,7 +118,7 @@ class Query
 
     public function create(): PDOStatement
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->database->getQueryBuilder();
         [$query, $params] = $queryBuilder->create(
             $this->table,
             $this->properties,
@@ -132,28 +132,6 @@ class Query
     public static function now(): DateTime
     {
         return new DateTime();
-    }
-
-    public static function getDatabaseColumnType(Database $database, string $varType, bool $isPrimaryKey): ?string
-    {
-        $type = $database->getType();
-
-        if ($type == $database::MYSQL) {
-            return MySQLQueryBuilder::getDatabaseColumnType($varType, $isPrimaryKey);
-        }
-
-        return null;
-    }
-
-    protected function getQueryBuilder(): QueryBuilderInterface
-    {
-        $type = $this->database->getType();
-
-        if ($type == $this->database::MYSQL) {
-            return new MySQLQueryBuilder();
-        }
-
-        throw new DatabaseException(sprintf('Database engine: "%s" is not a valid engine', $type));
     }
 }
 

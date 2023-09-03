@@ -6,6 +6,9 @@ use PDO;
 use PDOStatement;
 use src\app\Stdio;
 use src\database\queries\Query;
+use src\database\querybuilders\MySQL;
+use src\database\querybuilders\QueryBuilderInterface;
+use src\exceptions\DatabaseException;
 use src\exceptions\SqlException;
 
 class Database
@@ -42,6 +45,15 @@ class Database
     public function query(): Query
     {
         return new Query($this);
+    }
+
+    public function getQueryBuilder(): ?QueryBuilderInterface
+    {
+        if ($this->type == $this::MYSQL) {
+            return new MySQL();
+        }
+
+        throw new DatabaseException(sprintf('Database engine: "%s" is not a valid engine', $this->type));
     }
 
     public function getType(): string
