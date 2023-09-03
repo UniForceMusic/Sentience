@@ -36,7 +36,7 @@ class Database
         }
 
         if ($this->debug) {
-            Stdio::printFLn('Query: %s', $this->formatQueryString($statement, $params));
+            Stdio::errorFLn('Query: %s', $this->formatQueryString($statement, $params));
         }
 
         return $statement;
@@ -90,12 +90,24 @@ class Database
                     return sprintf('"%s"', addslashes($param));
                 }
 
+                if (is_null($param)) {
+                    return 'NULL';
+                }
+
+                if (is_bool($param)) {
+                    return ($param) ? '1' : '0';
+                }
+
                 return (string) $param;
             },
             $params
         );
 
-        return str_replace($questionMarks, $params, $queryString);
+        foreach ($questionMarks as $index => $questionMark) {
+            $queryString = preg_replace('/\?/', $params[$index], $queryString, 1);
+        }
+
+        return $queryString;
     }
 }
 

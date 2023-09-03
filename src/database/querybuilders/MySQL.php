@@ -190,6 +190,15 @@ class MySQL implements QueryBuilderInterface
                 continue;
             }
 
+            if (is_null($where->value)) {
+                $conditions[] = sprintf(
+                    '`%s` IS %s',
+                    $where->key,
+                    (($where->comparator == '=') ? 'NULL' : 'NOT NULL')
+                );
+                continue;
+            }
+
             if (!$where->escapeKey) {
                 $templateString = '`%s` %s ?';
             }
@@ -237,6 +246,10 @@ class MySQL implements QueryBuilderInterface
 
         foreach ($whereDTOs as $whereDTO) {
             if (!($whereDTO instanceof Where)) {
+                continue;
+            }
+
+            if (is_null($whereDTO->value)) {
                 continue;
             }
 
