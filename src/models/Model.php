@@ -76,6 +76,7 @@ abstract class Model
                 '=',
                 $value
             )
+            ->limit(1)
             ->select();
 
         $data = $statement->fetch(PDO::FETCH_ASSOC);
@@ -216,7 +217,7 @@ abstract class Model
             $reflectionProperty = new ReflectionProperty($this, $propertyName);
 
             $type = $reflectionProperty->getType()->getName();
-            $defaultValue = $reflectionProperty->getDefaultValue();
+            $allowsNull = $reflectionProperty->getType()->allowsNull();
 
             $columnType = Query::getDatabaseColumnType(
                 $this->database,
@@ -228,7 +229,7 @@ abstract class Model
             }
 
             $value .= $columnType;
-            $value .= (is_null($defaultValue)) ? ' NULL' : ' NOT NULL';
+            $value .= ($allowsNull) ? ' NULL' : ' NOT NULL';
 
             $properties[$key] = $value;
         }
