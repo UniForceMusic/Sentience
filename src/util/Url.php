@@ -34,6 +34,7 @@ class Url
 
     public static function getIndexUrl(): string
     {
+        $host = $_SERVER['HTTP_HOST'];
         $baseUrl = static::getRequestUrl();
         $basePath = BASEDIR;
 
@@ -44,6 +45,13 @@ class Url
 
         foreach ($urlSplit as $urlPart) {
             foreach ($pathSplit as $pathPart) {
+                /**
+                 * Prevent the index url matching the www directory in hosts like Plesk
+                 */
+                if ($pathPart == $host) {
+                    continue;
+                }
+
                 $partsMatch = (($urlPart == $pathPart) && !empty($urlPart));
 
                 if ($partsMatch) {
