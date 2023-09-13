@@ -13,9 +13,8 @@ class ManagementController extends Controller
 {
     public function initDatabase(Database $database)
     {
-        if ($database->getType() == Database::MYSQL) {
-            $database->exec('CREATE TABLE IF NOT EXISTS `migrations` (`id` INT NOT NULL AUTO_INCREMENT , `filename` VARCHAR(255) NOT NULL , `applied_at` DATETIME NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
-        }
+        $migration = new Migration($database);
+        $migration->createTable();
 
         Stdio::printLn('Migrations table created');
     }
