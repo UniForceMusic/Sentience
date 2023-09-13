@@ -36,7 +36,7 @@ class Service
         $debug = $_ENV['DB_DEBUG'];
 
         $dsn = sprintf(
-            "%s:host=%s;port=%s;dbname=%s",
+            '%s:host=%s;port=%s;dbname=%s',
             $engine,
             $host,
             $port,
