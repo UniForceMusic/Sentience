@@ -39,7 +39,7 @@ class Response
             return MimeTypes::JSON;
         }
 
-        return MimeTypes::JSON;
+        return MimeTypes::TXT;
     }
 
     public static function routeNotFound(array $routes)
