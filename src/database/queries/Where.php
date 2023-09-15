@@ -2,7 +2,7 @@
 
 namespace src\database\queries;
 
-use src\database\objects\Where as WhereDTO;
+use src\database\objects\Where as WhereObject;
 
 trait Where
 {
@@ -10,7 +10,7 @@ trait Where
 
     public function where(string $key, string $comparator, null|bool|int|float|string $value, bool $escapeKey = false): static
     {
-        $this->where[] = new WhereDTO($key, $comparator, $value, $escapeKey);
+        $this->where[] = new WhereObject($key, $comparator, $value, $escapeKey);
 
         return $this;
     }
