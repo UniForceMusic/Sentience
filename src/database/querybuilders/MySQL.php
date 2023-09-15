@@ -199,11 +199,11 @@ class MySQL implements QueryBuilderInterface
                 continue;
             }
 
-            if (!$where->escapeKey) {
+            if ($where->escapeKey) {
+                $templateString = '%s %s ?';
+            } else {
                 $templateString = '`%s` %s ?';
             }
-
-            $templateString = '%s %s ?';
 
             $conditions[] = sprintf(
                 $templateString,
@@ -261,3 +261,4 @@ class MySQL implements QueryBuilderInterface
 }
 
 ?>
+
