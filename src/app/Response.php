@@ -9,10 +9,6 @@ class Response
 {
     public static function renderContent(mixed $content, ?string $customContentType = null)
     {
-        if (!$content) {
-            return;
-        }
-
         $currentErrorReporting = error_reporting();
         error_reporting(0);
 
