@@ -8,7 +8,7 @@ trait Where
 {
     protected array $where = [];
 
-    public function where(string $key, string $comparator, null|bool|int|float|string $value, bool $escapeKey = false): static
+    public function where(string $key, string $comparator, null|bool|int|float|string|array $value, bool $escapeKey = false): static
     {
         $this->where[] = new WhereObject($key, $comparator, $value, $escapeKey);
 

@@ -199,6 +199,16 @@ class MySQL implements QueryBuilderInterface
                 continue;
             }
 
+            if (is_array($where->value)) {
+                $conditions[] = sprintf(
+                    '`%s` %s (%s)',
+                    $where->key,
+                    (($where->comparator == '=') ? 'IN' : 'NOT IN'),
+                    $this->generatePlaceholdersString(count($where->value))
+                );
+                continue;
+            }
+
             if ($where->escapeKey) {
                 $templateString = '%s %s ?';
             } else {
@@ -240,20 +250,25 @@ class MySQL implements QueryBuilderInterface
         return implode(', ', $updates);
     }
 
-    protected function extractWhereValues(array $whereDTOs): array
+    protected function extractWhereValues(array $whereObjects): array
     {
         $values = [];
 
-        foreach ($whereDTOs as $whereDTO) {
-            if (!($whereDTO instanceof Where)) {
+        foreach ($whereObjects as $whereObject) {
+            if (!($whereObject instanceof Where)) {
                 continue;
             }
 
-            if (is_null($whereDTO->value)) {
+            if (is_null($whereObject->value)) {
                 continue;
             }
 
-            $values[] = $whereDTO->value;
+            if (is_array($whereObject->value)) {
+                array_push($values, ...$whereObject->value);
+                continue;
+            }
+
+            $values[] = $whereObject->value;
         }
 
         return $values;
