@@ -13,5 +13,3 @@ trait Table
         return $this;
     }
 }
-
-?>

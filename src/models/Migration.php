@@ -21,5 +21,3 @@ class Migration extends Model
     public string $filename;
     public ?DateTime $appliedAt;
 }
-
-?>

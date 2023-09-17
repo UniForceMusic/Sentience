@@ -20,5 +20,3 @@ class QueryParameter extends KeyValuePair
         );
     }
 }
-
-?>

@@ -181,5 +181,3 @@ class CliApp
         return $modifiedArgs;
     }
 }
-
-?>

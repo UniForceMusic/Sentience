@@ -9,5 +9,3 @@ interface Middleware
      */
     public function execute($args): ?array;
 }
-
-?>

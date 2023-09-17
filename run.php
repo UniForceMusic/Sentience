@@ -5,5 +5,3 @@ if (!file_exists('vendor/autoload.php')) {
 }
 
 exec('php -S localhost:8000 index.php');
-
-?>

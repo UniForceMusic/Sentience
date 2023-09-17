@@ -23,5 +23,3 @@ class ExampleMiddleware implements Middleware
         return $args;
     }
 }
-
-?>

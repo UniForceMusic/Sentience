@@ -21,5 +21,3 @@ $commands = [
         ->setCommand('models/init')
         ->setCallable([ManagementController::class, 'initModel']),
 ];
-
-?>

@@ -41,5 +41,3 @@ class CliRouter
         return $this->commands;
     }
 }
-
-?>

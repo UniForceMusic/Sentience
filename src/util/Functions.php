@@ -9,5 +9,3 @@ function replaceNonAsciiChars(string $string): string
 {
     return preg_replace('/[[:^print:]]/', '', $string);
 }
-
-?>

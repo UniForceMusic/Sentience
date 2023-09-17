@@ -109,5 +109,3 @@ class HttpClient
         return false;
     }
 }
-
-?>

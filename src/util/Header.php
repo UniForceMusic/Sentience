@@ -14,5 +14,3 @@ class Header
         header(sprintf('Content-Length: %s', strlen($content)));
     }
 }
-
-?>

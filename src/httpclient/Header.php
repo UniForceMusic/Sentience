@@ -20,5 +20,3 @@ class Header extends KeyValuePair
         );
     }
 }
-
-?>

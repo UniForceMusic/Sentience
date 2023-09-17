@@ -352,5 +352,3 @@ abstract class Model
         return $this->queryBuilder->castToDatabase($value);
     }
 }
-
-?>

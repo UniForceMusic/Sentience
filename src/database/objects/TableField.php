@@ -13,5 +13,3 @@ class TableField
         $this->allowsNull = $allowsNull;
     }
 }
-
-?>

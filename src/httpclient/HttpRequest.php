@@ -349,5 +349,3 @@ class HttpRequest
         return false;
     }
 }
-
-?>

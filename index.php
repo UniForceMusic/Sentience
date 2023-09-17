@@ -21,5 +21,3 @@ if (isCli()) {
 }
 
 $app->execute();
-
-?>

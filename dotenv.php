@@ -119,5 +119,3 @@ class DotEnv
 }
 
 DotEnv::parseFile(BASEDIR . '/.env');
-
-?>

@@ -53,5 +53,3 @@ class Service
 }
 
 $service = new Service();
-
-?>

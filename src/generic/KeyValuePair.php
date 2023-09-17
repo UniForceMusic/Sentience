@@ -23,5 +23,3 @@ class KeyValuePair
         return $this->value;
     }
 }
-
-?>

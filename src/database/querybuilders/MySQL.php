@@ -259,6 +259,3 @@ class MySQL implements QueryBuilderInterface
         return $values;
     }
 }
-
-?>
-

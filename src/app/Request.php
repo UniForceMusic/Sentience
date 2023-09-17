@@ -133,5 +133,3 @@ class Request
         return $this->templateValues[$key];
     }
 }
-
-?>

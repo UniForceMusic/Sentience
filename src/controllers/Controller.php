@@ -5,5 +5,3 @@ namespace src\controllers;
 class Controller
 {
 }
-
-?>

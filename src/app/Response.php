@@ -367,5 +367,3 @@ class Response
         http_response_code(511);
     }
 }
-
-?>

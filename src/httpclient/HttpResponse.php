@@ -126,5 +126,3 @@ class HttpResponse
         $this->headers = $headers;
     }
 }
-
-?>

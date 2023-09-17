@@ -13,5 +13,3 @@ if (!SYNTAXREPORTING && ERRORREPORTING) {
 if (!SYNTAXREPORTING && !ERRORREPORTING) {
     error_reporting(0);
 }
-
-?>

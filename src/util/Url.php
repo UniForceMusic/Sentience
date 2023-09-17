@@ -105,5 +105,3 @@ class Url
         return $partsArray;
     }
 }
-
-?>

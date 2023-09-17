@@ -34,5 +34,3 @@ class Example extends Model
         return ucfirst($name);
     }
 }
-
-?>

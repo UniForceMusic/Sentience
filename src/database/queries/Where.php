@@ -29,6 +29,3 @@ trait Where
         return $this;
     }
 }
-
-?>
-

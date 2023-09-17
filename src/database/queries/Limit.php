@@ -13,5 +13,3 @@ trait Limit
         return $this;
     }
 }
-
-?>

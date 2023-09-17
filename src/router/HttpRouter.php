@@ -33,5 +33,3 @@ class HttpRouter
         return $this->routes;
     }
 }
-
-?>

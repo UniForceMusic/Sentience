@@ -48,5 +48,3 @@ $routes = [
         )
         ->setMethods(['GET', 'POST', 'PUT', 'DELETE']),
 ];
-
-?>

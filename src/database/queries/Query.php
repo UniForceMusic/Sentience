@@ -134,5 +134,3 @@ class Query
         return new DateTime();
     }
 }
-
-?>

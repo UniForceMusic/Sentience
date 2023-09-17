@@ -13,5 +13,3 @@ trait Columns
         return $this;
     }
 }
-
-?>

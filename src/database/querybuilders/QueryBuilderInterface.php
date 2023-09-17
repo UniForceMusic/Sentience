@@ -22,5 +22,3 @@ interface QueryBuilderInterface
 
     public function getColumnType(string $varType, bool $isPrimaryKey): ?string;
 }
-
-?>

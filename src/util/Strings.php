@@ -18,5 +18,3 @@ class Strings
         return str_replace($pattern, '', $subject);
     }
 }
-
-?>

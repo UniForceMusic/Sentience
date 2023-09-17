@@ -21,5 +21,3 @@ trait PrimaryKey
         return $this;
     }
 }
-
-?>
