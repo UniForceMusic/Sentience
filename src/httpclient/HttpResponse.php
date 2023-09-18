@@ -75,7 +75,7 @@ class HttpResponse
     {
         $array = json_decode($this->body, true);
 
-        if (!$array) {
+        if (is_null($array) && json_last_error_msg() != 'No error') {
             throw new JsonException(json_last_error_msg());
         }
 
