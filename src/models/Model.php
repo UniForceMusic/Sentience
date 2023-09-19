@@ -206,6 +206,21 @@ abstract class Model
         return $this->{$this->primaryKeyPropertyName};
     }
 
+    public function exportAsRecord(): array
+    {
+        $data = [];
+
+        foreach ($this->fields as $propertyName => $columnName) {
+            if (!(new ReflectionProperty($this, $propertyName))->isInitialized($this)) {
+                $data[$columnName] = null;
+            }
+
+            $data[$columnName] = $this->castFromModelToDatabase($this->{$propertyName});
+        }
+
+        return $data;
+    }
+
     public function createTable(): PDOStatement
     {
         if (!$this->queryBuilder) {

@@ -268,6 +268,13 @@ class HttpRequest
         return $this;
     }
 
+    public function timeoutMs(int $milliseconds): static
+    {
+        $this->customOptions[CURLOPT_TIMEOUT_MS] = $milliseconds;
+
+        return $this;
+    }
+
     public function retryCount(int $times): static
     {
         $this->retryCount = abs($times);
