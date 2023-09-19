@@ -32,7 +32,7 @@ class HttpResponse
         if (empty($error)) {
             $this->curlHandle = $curlHandle;
             $this->parseCurlHandle($curlHandle);
-            $this->parseResponse($response);
+            $this->parseResponse($curlHandle, $response);
 
             curl_close($curlHandle);
             return;
@@ -99,22 +99,24 @@ class HttpResponse
         $this->http = curl_getinfo($curlHandle, CURLINFO_HTTP_VERSION);
     }
 
-    protected function parseResponse(string $response)
+    protected function parseResponse(CurlHandle $curlHandle, string $response)
     {
-        $splitDoubleEol = explode($this::HTTP_EOL, $response, 2);
+        $headerSize = curl_getinfo($curlHandle, CURLINFO_HEADER_SIZE);
 
-        $this->body = trim($splitDoubleEol[1]);
-        $this->parseHeaders($splitDoubleEol[0]);
+        $this->body = trim(substr($response, $headerSize));
+        $this->parseHeaders(substr($response, 0, $headerSize));
     }
 
     protected function parseHeaders(string $headerLines)
     {
         $headerLines = explode($this::HTTP_EOL, $headerLines);
-        $headerLines = array_slice($headerLines, 1);
 
         $headers = [];
 
         foreach ($headerLines as $headerLine) {
+            if (!str_contains($headerLine, ':')) {
+                continue;
+            }
             $headerSplitColon = explode(':', $headerLine, 2);
 
             $key = strtolower(trim($headerSplitColon[0]));
