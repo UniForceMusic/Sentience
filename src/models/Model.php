@@ -399,8 +399,10 @@ abstract class Model
          */
     }
 
-    protected function registerRelation(Relation $relation): void
+    protected function registerRelation(Relation $relation, ?string $nameOverride = null): void
     {
-        $this->relations[$relation->relationModel] = $relation;
+        $relationName = $nameOverride ?? $relation->relationModel::getTable();
+
+        $this->relations[$relationName] = $relation;
     }
 }
