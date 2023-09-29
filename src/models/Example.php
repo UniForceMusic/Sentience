@@ -4,6 +4,7 @@ namespace src\models;
 
 use DateTime;
 use src\database\Database;
+use src\models\relations\HasOne;
 
 class Example extends Model
 {
@@ -32,5 +33,15 @@ class Example extends Model
         }
 
         return ucfirst($name);
+    }
+
+    protected function registerRelations(): void
+    {
+        $this->registerRelation(
+            new HasOne(
+                Example::class,
+                'example_id'
+            )
+        );
     }
 }

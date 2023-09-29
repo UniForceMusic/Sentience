@@ -10,8 +10,11 @@ use ReflectionClass;
 use ReflectionProperty;
 use src\database\Database;
 use src\database\objects\TableField;
+use src\database\queries\Query;
 use src\database\querybuilders\QueryBuilderInterface;
 use src\exceptions\IdentifierException;
+use src\exceptions\RelationException;
+use src\models\relations\Relation;
 
 abstract class Model
 {
@@ -25,10 +28,13 @@ abstract class Model
     ];
 
     protected array $onSave = [];
+    protected array $relations = [];
 
     public function __construct(Database $database)
     {
         $this->database = $database;
+
+        $this->registerRelations();
     }
 
     public function hydrate(int|string|null $primaryKeyValue = null): static
@@ -41,7 +47,7 @@ abstract class Model
             ->columns(array_values($this->fields))
             ->where(
                 $pkColumnName,
-                '=',
+                Query::EQUALS,
                 $pkValue
             )
             ->select();
@@ -74,7 +80,7 @@ abstract class Model
             ->columns(array_values($this->fields))
             ->where(
                 $field,
-                '=',
+                Query::EQUALS,
                 $value
             )
             ->select();
@@ -159,7 +165,7 @@ abstract class Model
             ->values($updatableValues)
             ->where(
                 $pkColumnName,
-                '=',
+                Query::EQUALS,
                 $pkValue
             )
             ->update();
@@ -176,7 +182,7 @@ abstract class Model
             ->table($this->table)
             ->where(
                 $pkColumnName,
-                '=',
+                Query::EQUALS,
                 $pkValue
             )
             ->delete();
@@ -286,6 +292,16 @@ abstract class Model
         }
     }
 
+    public function getRelation(string $name, callable $modifyQuery = null): null|Model|array
+    {
+        if (!key_exists($name, $this->relations)) {
+            throw new RelationException(sprintf('relation with model %s does not exist', $name));
+        }
+
+        return $this->relations[$name]
+            ->retrieve($this->database, $this, $modifyQuery);
+    }
+
     protected function validateData(): bool
     {
         /**
@@ -365,5 +381,17 @@ abstract class Model
         }
 
         return $this->queryBuilder->castToDatabase($value);
+    }
+
+    protected function registerRelations(): void
+    {
+        /**
+         * Override in model
+         */
+    }
+
+    protected function registerRelation(Relation $relation): void
+    {
+        $this->relations[$relation->relationModel] = $relation;
     }
 }

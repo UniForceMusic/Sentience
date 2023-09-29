@@ -13,12 +13,20 @@ use src\database\queries\Where as WhereTrait;
 use src\database\queries\Limit as LimitTrait;
 use src\database\queries\Properties as PropertiesTrait;
 use src\database\queries\PrimaryKey as PrimaryKeyTrait;
-use src\database\querybuilders\MySQL as MySQLQueryBuilder;
-use src\database\querybuilders\QueryBuilderInterface;
-use src\exceptions\DatabaseException;
 
 class Query
 {
+    public const EQUALS = '=';
+    public const NOT_EQUALS = '!=';
+    public const LIKE = 'LIKE';
+    public const NOT_LIKE = 'NOT LIKE';
+    public const IN_ARRAY = 'IN ARRAY';
+    public const NOT_IN_ARRAY = 'NOT IN ARRAY';
+    public const LESS_THAN = '<';
+    public const MORE_THAN = '>';
+    public const LESS_THAN_OR_EQUALS = '<=';
+    public const MORE_THAN_OR_EQUALS = '>=';
+
     use TableTrait;
     use ColumnsTrait;
     use ValuesTrait;

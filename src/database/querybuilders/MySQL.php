@@ -4,6 +4,7 @@ namespace src\database\querybuilders;
 
 use DateTime;
 use src\database\objects\Where;
+use src\database\queries\Query;
 
 class MySQL implements QueryBuilderInterface
 {
@@ -192,9 +193,9 @@ class MySQL implements QueryBuilderInterface
 
             if (is_null($where->value)) {
                 $conditions[] = sprintf(
-                    '`%s` IS %s',
+                    '`%s` %s',
                     $where->key,
-                    (($where->comparator == '=') ? 'NULL' : 'NOT NULL')
+                    (($where->comparator == Query::EQUALS) ? 'IS NULL' : 'IS NOT NULL')
                 );
                 continue;
             }
@@ -203,7 +204,7 @@ class MySQL implements QueryBuilderInterface
                 $conditions[] = sprintf(
                     '`%s` %s (%s)',
                     $where->key,
-                    (($where->comparator == '=') ? 'IN' : 'NOT IN'),
+                    (($where->comparator == Query::IN_ARRAY) ? 'IN' : 'NOT IN'),
                     $this->generatePlaceholdersString(count($where->value))
                 );
                 continue;

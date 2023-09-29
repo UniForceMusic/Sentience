@@ -54,7 +54,7 @@ class ManagementController extends Controller
 
             $migrationAlreadyApplied = $database->query()
                 ->table(Migration::getTable())
-                ->where('filename', '=', $migration)
+                ->where('filename', Query::EQUALS, $migration)
                 ->exists();
 
             if ($migrationAlreadyApplied) {
