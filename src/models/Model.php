@@ -37,6 +37,11 @@ abstract class Model
         $this->registerRelations();
     }
 
+    public function __toString(): string
+    {
+        return (string) $this->getPrimaryKeyValue();
+    }
+
     public function hydrate(int|string|null $primaryKeyValue = null): static
     {
         $pkColumnName = $this->getPrimaryKeyColumnName();
@@ -207,8 +212,12 @@ abstract class Model
         return $this->fields[$this->primaryKeyPropertyName];
     }
 
-    public function getPrimaryKeyValue(): int|string
+    public function getPrimaryKeyValue(): null|int|string
     {
+        if (!(new ReflectionProperty($this, $this->primaryKeyPropertyName))->isInitialized($this)) {
+            return null;
+        }
+
         return $this->{$this->primaryKeyPropertyName};
     }
 
