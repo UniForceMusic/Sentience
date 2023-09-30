@@ -11,14 +11,14 @@ class Join
 
     public string $joinType;
     public string $joinTable;
-    public string $parentTableColumnName;
+    public string $relationTableColumnName;
     public string $joinTableColumnName;
 
-    public function __construct(string $type, string $joinTable, string $parentTableColumnName, string $joinTableColumnName)
+    public function __construct(string $type, string $joinTable, string $relationTableColumnName, string $joinTableColumnName)
     {
         $this->joinType = $type;
         $this->joinTable = $joinTable;
-        $this->parentTableColumnName = $parentTableColumnName;
+        $this->relationTableColumnName = $relationTableColumnName;
         $this->joinTableColumnName = $joinTableColumnName;
     }
 }

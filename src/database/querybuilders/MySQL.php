@@ -297,7 +297,7 @@ class MySQL implements QueryBuilderInterface
                 $join->joinType,
                 $join->joinTable,
                 $parentTable,
-                $join->parentTableColumnName,
+                $join->relationTableColumnName,
                 $join->joinTable,
                 $join->joinTableColumnName
             );

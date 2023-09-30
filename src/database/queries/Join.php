@@ -8,12 +8,12 @@ trait Join
 {
     protected array $joins = [];
 
-    public function join(string $joinType, string $joinTable, string $parentTableColumnName, string $joinTableColumnName)
+    public function join(string $joinType, string $joinTable, string $relationTableColumnName, string $joinTableColumnName)
     {
         $this->joins[] = new JoinObject(
             $joinType,
             $joinTable,
-            $parentTableColumnName,
+            $relationTableColumnName,
             $joinTableColumnName
         );
 
