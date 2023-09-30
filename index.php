@@ -1,8 +1,5 @@
 <?php
 
-if (!file_exists('vendor/autoload.php')) {
-    exec('composer install');
-}
 require_once 'vendor/autoload.php';
 require_once 'settings.php';
 require_once 'commands.php';

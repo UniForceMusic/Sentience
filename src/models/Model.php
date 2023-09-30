@@ -221,6 +221,11 @@ abstract class Model
         return $this->{$this->primaryKeyPropertyName};
     }
 
+    public function getColumns(): array
+    {
+        return array_values($this->fields);
+    }
+
     public function exportAsRecord(): array
     {
         $data = [];

@@ -34,6 +34,7 @@ class Query
     use LimitTrait;
     use PropertiesTrait;
     use PrimaryKeyTrait;
+    use Join;
 
     protected Database $database;
 
@@ -48,6 +49,8 @@ class Query
         [$query, $params] = $queryBuilder->select(
             $this->table,
             $this->columns,
+            $this->escapeColumns,
+            $this->joins,
             $this->where,
             $this->limit
         );

@@ -4,60 +4,84 @@ namespace src\models\relations;
 
 use PDO;
 use src\database\Database;
+use src\database\objects\Join;
 use src\database\queries\Query;
+use src\database\querybuilders\QueryBuilderInterface;
 use src\models\Model;
 
 class ManyToMany extends Relation implements RelationInterface
 {
     protected string $junctionTableModel;
-    protected int|string $parentPKColumnName;
-    protected int|string $relationPKColumnName;
+    protected string $junctionTableParentColumnName;
+    protected string $junctionTableRelationColumnName;
 
-    public function __construct(string $relationModel, string $junctionTableModel, string $parentPKColumnName, string $relationPKColumnName)
+    public function __construct(string $relationModel, string $junctionTableModel, string $junctionTableParentColumnName, string $junctionTableRelationColumnName)
     {
         $this->relationModel = $relationModel;
         $this->junctionTableModel = $junctionTableModel;
-        $this->parentPKColumnName = $parentPKColumnName;
-        $this->relationPKColumnName = $relationPKColumnName;
+        $this->junctionTableParentColumnName = $junctionTableParentColumnName;
+        $this->junctionTableRelationColumnName = $junctionTableRelationColumnName;
     }
 
     public function retrieve(Database $database, Model $model, callable $modifyQuery = null): array
     {
+        $queryBuilder = $database->getQueryBuilder();
+
+        $relationModelName = $this->relationModel;
+        $relationModel = new $relationModelName($database);
+
+        $junctionModelName = $this->junctionTableModel;
+        $junctionModel = new $junctionModelName($database);
+
         $query = $database->query()
-            ->table($this->junctionTableModel::getTable())
-            ->where($this->parentPKColumnName, Query::EQUALS, $model->getPrimaryKeyValue());
+            ->table($junctionModel::getTable())
+            ->columns(
+                $this->getColumnsWithNamespace(
+                    $queryBuilder,
+                    $relationModel::getTable(),
+                    $relationModel->getColumns()
+                )
+            )
+            ->join(
+                Join::LEFT_JOIN,
+                $relationModel::getTable(),
+                $this->junctionTableRelationColumnName,
+                $relationModel->getPrimaryKeyColumnName()
+            )
+            ->where(
+                $queryBuilder->getColumnWithNamespace($junctionModel::getTable(), $this->junctionTableParentColumnName),
+                Query::EQUALS,
+                $model->getPrimaryKeyValue(),
+                true
+            );
 
         if ($modifyQuery) {
             $query = $modifyQuery($query);
         }
 
-        $relations = $query->selectAssoc();
+        $statement = $query->select();
 
-        if (!$relations) {
+        if ($statement->rowCount() < 1) {
             return [];
         }
 
-        $relationPKValues = array_map(
-            function (array $row) {
-                return $row[$this->relationPKColumnName];
-            },
-            $relations
-        );
-
-        $relationModelName = $this->relationModel;
-        $relationModel = new $relationModelName($database);
-
-        $statement = $database->query()
-            ->table($relationModel::getTable())
-            ->where($relationModel->getPrimaryKeyColumnName(), Query::IN_ARRAY, $relationPKValues)
-            ->select();
-
         $relationModels = [];
+
         foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $assoc) {
-            $model = new $relationModelName($database);
-            $relationModels[] = $model->hydrateByArray($statement, $assoc);
+            $relationModel = new $relationModelName($database);
+            $relationModels[] = $relationModel->hydrateByArray($statement, $assoc);
         }
 
         return $relationModels;
+    }
+
+    protected function getColumnsWithNamespace(QueryBuilderInterface $queryBuilder, string $table, array $columns): array
+    {
+        return array_map(
+            function (string $column) use ($table, $queryBuilder) {
+                return $queryBuilder->getColumnWithNamespace($table, $column);
+            },
+            $columns
+        );
     }
 }

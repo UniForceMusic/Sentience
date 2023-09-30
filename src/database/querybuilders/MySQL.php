@@ -3,17 +3,22 @@
 namespace src\database\querybuilders;
 
 use DateTime;
+use src\database\objects\Join;
 use src\database\objects\Where;
 use src\database\queries\Query;
 
 class MySQL implements QueryBuilderInterface
 {
-    public function select(string $table, array $columns, array $where, int $limit): array
+    public function select(string $table, array $columns, bool $escapeColumns, array $joins, array $where, int $limit): array
     {
         $query = '';
         $params = [];
 
-        $query .= 'SELECT ' . $this->generateColumnsString($columns) . ' FROM `' . $table . '` ';
+        $query .= 'SELECT ' . $this->generateColumnsString($columns, $escapeColumns) . ' FROM `' . $table . '` ';
+
+        if (!empty($joins)) {
+            $query .= $this->generateJoinsString($table, $joins) . ' ';
+        }
 
         if (!empty($where)) {
             $query .= 'WHERE ' . $this->generateWhereString($where) . ' ';
@@ -36,7 +41,7 @@ class MySQL implements QueryBuilderInterface
         $query = '';
         $params = array_values($values);
 
-        $query .= 'INSERT INTO `' . $table . '` (' . $this->generateColumnsString(array_keys($values)) . ') VALUES (' . $this->generatePlaceholdersString(count($values)) . ')';
+        $query .= 'INSERT INTO `' . $table . '` (' . $this->generateColumnsString(array_keys($values), true) . ') VALUES (' . $this->generatePlaceholdersString(count($values)) . ')';
 
         $query = trim($query) . ';';
 
@@ -165,15 +170,22 @@ class MySQL implements QueryBuilderInterface
         return $types[$varType] ?? null;
     }
 
-    protected function generateColumnsString(array $columns): string
+    public function getColumnWithNamespace(string $table, string $column): string
+    {
+        return sprintf('`%s`.`%s`', $table, $column);
+    }
+
+    protected function generateColumnsString(array $columns, bool $escapeColumns): string
     {
         if (empty($columns)) {
             return '*';
         }
 
         $escapedColumns = array_map(
-            function (string $column): string {
-                return sprintf('`%s`', $column);
+            function (string $column) use ($escapeColumns): string {
+                return ($escapeColumns)
+                    ? sprintf('`%s`', $column)
+                    : $column;
             },
             $columns
         );
@@ -273,5 +285,24 @@ class MySQL implements QueryBuilderInterface
         }
 
         return $values;
+    }
+
+    protected function generateJoinsString(string $parentTable, array $joins): string
+    {
+        $joinStrings = [];
+
+        foreach ($joins as $join) {
+            $joinStrings[] = sprintf(
+                '%s `%s` ON `%s`.`%s` = `%s`.`%s`',
+                $join->joinType,
+                $join->joinTable,
+                $parentTable,
+                $join->parentTableColumnName,
+                $join->joinTable,
+                $join->joinTableColumnName
+            );
+        }
+
+        return implode(' ', $joinStrings);
     }
 }

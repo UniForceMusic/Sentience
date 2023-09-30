@@ -6,7 +6,7 @@ interface QueryBuilderInterface
 {
     public const DATETIME_REGEX = '/^([1-2][0-9]{3})-([0-1][0-9])-([0-3][0-9])(?:( [0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/';
 
-    public function select(string $table, array $columns, array $where, int $limit): array;
+    public function select(string $table, array $columns, bool $escapeColumns, array $joins, array $where, int $limit): array;
 
     public function insert(string $table, array $values): array;
 
@@ -21,4 +21,5 @@ interface QueryBuilderInterface
     public function castFromDatabase(string $nativeType, mixed $value): mixed;
 
     public function getColumnType(string $varType, bool $isPrimaryKey): ?string;
+    public function getColumnWithNamespace(string $table, string $column): string;
 }
