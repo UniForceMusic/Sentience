@@ -6,13 +6,16 @@ use DateTime;
 use PDO;
 use PDOStatement;
 use src\database\Database;
-use src\database\queries\Table as TableTrait;
 use src\database\queries\Columns as ColumnsTrait;
+use src\database\queries\Join as JoinTrait;
+use src\database\queries\Limit as LimitTrait;
+use src\database\queries\Offset as OffsetTrait;
+use src\database\queries\OrderBy as OrderByTrait;
+use src\database\queries\PrimaryKey as PrimaryKeyTrait;
+use src\database\queries\Properties as PropertiesTrait;
+use src\database\queries\Table as TableTrait;
 use src\database\queries\Values as ValuesTrait;
 use src\database\queries\Where as WhereTrait;
-use src\database\queries\Limit as LimitTrait;
-use src\database\queries\Properties as PropertiesTrait;
-use src\database\queries\PrimaryKey as PrimaryKeyTrait;
 
 class Query
 {
@@ -27,14 +30,16 @@ class Query
     public const LESS_THAN_OR_EQUALS = '<=';
     public const MORE_THAN_OR_EQUALS = '>=';
 
-    use TableTrait;
     use ColumnsTrait;
+    use JoinTrait;
+    use LimitTrait;
+    use OffsetTrait;
+    use OrderByTrait;
+    use PrimaryKeyTrait;
+    use PropertiesTrait;
+    use TableTrait;
     use ValuesTrait;
     use WhereTrait;
-    use LimitTrait;
-    use PropertiesTrait;
-    use PrimaryKeyTrait;
-    use Join;
 
     protected Database $database;
 
@@ -52,7 +57,9 @@ class Query
             $this->escapeColumns,
             $this->joins,
             $this->where,
-            $this->limit
+            $this->orderBys,
+            $this->limit,
+            $this->offset
         );
 
         return $this->database->exec($query, $params);

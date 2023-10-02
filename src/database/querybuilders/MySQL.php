@@ -4,34 +4,48 @@ namespace src\database\querybuilders;
 
 use DateTime;
 use src\database\objects\Join;
+use src\database\objects\OrderBy;
 use src\database\objects\Where;
 use src\database\queries\Query;
 
 class MySQL implements QueryBuilderInterface
 {
-    public function select(string $table, array $columns, bool $escapeColumns, array $joins, array $where, int $limit): array
+    public function select(string $table, array $columns, bool $escapeColumns, array $joins, array $where, array $orderBys, ?int $limit, ?int $offset): array
     {
         $query = '';
         $params = [];
 
-        $query .= 'SELECT ' . $this->generateColumnsString($columns, $escapeColumns) . ' FROM `' . $table . '` ';
+        $query .= 'SELECT ' . $this->generateColumnsString($columns, $escapeColumns) . ' FROM `' . $table . '`';
 
         if (!empty($joins)) {
-            $query .= $this->generateJoinsString($table, $joins) . ' ';
+            $query .= ' ';
+            $query .= $this->generateJoinsString($table, $joins);
         }
 
         if (!empty($where)) {
-            $query .= 'WHERE ' . $this->generateWhereString($where) . ' ';
+            $query .= ' ';
+            $query .= 'WHERE ' . $this->generateWhereString($where);
 
             $whereValues = $this->extractWhereValues($where);
             array_push($params, ...$whereValues);
         }
 
-        if ($limit > 0) {
+        if (!empty($orderBys)) {
+            $query .= ' ';
+            $query .= $this->generateOrderByString($orderBys);
+        }
+
+        if ($limit) {
+            $query .= ' ';
             $query .= 'LIMIT ' . $limit;
         }
 
-        $query = trim($query) . ';';
+        if ($offset) {
+            $query .= ' ';
+            $query .= 'OFFSET ' . $limit;
+        }
+
+        $query .= ';';
 
         return [$query, $params];
     }
@@ -304,5 +318,25 @@ class MySQL implements QueryBuilderInterface
         }
 
         return implode(' ', $joinStrings);
+    }
+
+    protected function generateOrderByString(array $orderBys): string
+    {
+        return sprintf(
+            'ORDER BY %s',
+            implode(
+                ', ',
+                array_map(
+                    function (OrderBy $orderBy) {
+                        return sprintf(
+                            '`%s` %s',
+                            $orderBy->columnName,
+                            $orderBy->orderType
+                        );
+                    },
+                    $orderBys
+                )
+            )
+        );
     }
 }
