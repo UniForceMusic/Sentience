@@ -25,7 +25,7 @@ class HttpClient
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
-        if ($method != 'GET') {
+        if ($method != HttpRequest::GET) {
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
         }
