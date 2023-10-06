@@ -88,7 +88,7 @@ class Query
     public function selectModel(): Model
     {
         if (!$this->model) {
-            new ModelException('no model supplied');
+            throw new ModelException('no model supplied');
         }
 
         $statement = $this->select();
@@ -102,7 +102,7 @@ class Query
     public function selectModels(): array
     {
         if (!$this->model) {
-            new ModelException('no model supplied');
+            throw new ModelException('no model supplied');
         }
 
         $statement = $this->select();
