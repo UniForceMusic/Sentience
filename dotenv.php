@@ -72,6 +72,10 @@ class DotEnv
             return static::parseBoolValue($trimmedValue);
         }
 
+        if ($trimmedValue == 'null') {
+            return static::parseNullValue($trimmedValue);
+        }
+
         if (str_contains($trimmedValue, '.')) {
             return static::parseFloatValue($trimmedValue);
         }
@@ -142,6 +146,11 @@ class DotEnv
     protected static function parseBoolValue(string $value): bool
     {
         return (strtolower($value) == 'true') ? true : false;
+    }
+
+    protected static function parseNullValue(string $value): mixed
+    {
+        return null;
     }
 
     protected static function parseFloatValue(string $value): float
