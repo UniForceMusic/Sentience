@@ -56,8 +56,16 @@ class DotEnv
     {
         $trimmedValue = trim($value);
 
+        if (substr($trimmedValue, 0, 1) == '[') {
+            return static::parseArrayValue($trimmedValue);
+        }
+
+        if (substr($trimmedValue, 0, 1) == "'") {
+            return static::parseStringValue($trimmedValue, "'");
+        }
+
         if (substr($trimmedValue, 0, 1) == '"') {
-            return static::parseStringValue($trimmedValue);
+            return static::parseTemplateValue($trimmedValue);
         }
 
         if (in_array(strtolower($trimmedValue), ['true', 'false'])) {
@@ -75,15 +83,44 @@ class DotEnv
         return null;
     }
 
-    protected static function parseStringValue(string $value): string
+    protected static function parseArrayValue(string $value): array
     {
-        $quoteTrim = trim($value, '"');
-        $replaceEscapedQuotes = str_replace('\"', '"', $quoteTrim);
+        $jsonRegex = '/(\"(.*?)\")|(\'(.*?)\')|[-\w.]+/';
+
+        $values = [];
+
+        $match = preg_match_all($jsonRegex, $value, $matches, PREG_UNMATCHED_AS_NULL);
+        if (!$match) {
+            return $values;
+        }
+
+        return array_map(
+            function (string $value): null|bool|int|float|string {
+                return static::parseVariable($value);
+            },
+            $matches[0]
+        );
+    }
+
+    protected static function parseStringValue(string $value, string $quote): string
+    {
+        $quoteTrim = substr($value, 1, (strlen($value) - 2));
+
+        return str_replace(
+            sprintf('\%s', $quote),
+            $quote,
+            $quoteTrim
+        );
+    }
+
+    protected static function parseTemplateValue(string $value): string
+    {
+        $string = static::parseStringValue($value, '"');
 
         $envTemplateRegex = '/\${(.[^\}]*)}/';
-        $match = preg_match_all($envTemplateRegex, $replaceEscapedQuotes, $matches);
+        $match = preg_match_all($envTemplateRegex, $string, $matches);
         if (!$match) {
-            return $replaceEscapedQuotes;
+            return $string;
         }
 
         return preg_replace_callback(
@@ -98,23 +135,23 @@ class DotEnv
 
                 return $original;
             },
-            $replaceEscapedQuotes
+            $string
         );
     }
 
-    protected static function parseBoolValue(string $value): ?bool
+    protected static function parseBoolValue(string $value): bool
     {
         return (strtolower($value) == 'true') ? true : false;
     }
 
-    protected static function parseIntValue(string $value): int
-    {
-        return (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-    }
-
     protected static function parseFloatValue(string $value): float
     {
-        return (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT);
+        return (float) $value;
+    }
+
+    protected static function parseIntValue(string $value): int
+    {
+        return (int) $value;
     }
 }
 
