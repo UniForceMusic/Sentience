@@ -14,7 +14,7 @@ class ManagementController extends Controller
     public function initDatabase(Database $database)
     {
         $migration = new Migration($database);
-        $migration->createTable();
+        $migration->createTable(true);
 
         Stdio::printLn('Migrations table created');
     }
