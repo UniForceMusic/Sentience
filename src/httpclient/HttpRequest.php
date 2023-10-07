@@ -282,6 +282,20 @@ class HttpRequest
         return $this;
     }
 
+    public function enableAutoEncoding(): static
+    {
+        $this->customOptions[CURLOPT_ENCODING] = '';
+
+        return $this;
+    }
+
+    public function customOption(mixed $option, mixed $value): static
+    {
+        $this->customOptions[$option] = $value;
+
+        return $this;
+    }
+
     public function execute(): HttpResponse
     {
         return HttpClient::executeRequest(
