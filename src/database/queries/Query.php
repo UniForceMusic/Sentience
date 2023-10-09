@@ -168,7 +168,8 @@ class Query
         $queryBuilder = $this->database->getQueryBuilder();
         [$query, $params] = $queryBuilder->delete(
             $this->table,
-            $this->where
+            $this->where,
+            $this->limit
         );
 
         return $this->database->exec($query, $params);

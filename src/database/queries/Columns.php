@@ -5,7 +5,7 @@ namespace src\database\queries;
 trait Columns
 {
     protected array $columns = [];
-    protected bool $escapeColumns = true;
+    protected bool $escapeColumns = false;
 
     public function columns(array $columns = [], bool $escapeColumns = false): static
     {
