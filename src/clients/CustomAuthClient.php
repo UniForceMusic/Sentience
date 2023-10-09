@@ -5,7 +5,7 @@ namespace src\clients;
 use src\httpclient\HttpRequest;
 use src\httpclient\HttpResponse;
 
-class CustomAuthClient
+class CustomAuthClient extends Client
 {
     protected function execute(HttpRequest $request): HttpResponse
     {
