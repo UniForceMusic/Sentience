@@ -169,6 +169,7 @@ class Query
         [$query, $params] = $queryBuilder->delete(
             $this->table,
             $this->where,
+            $this->orderBys,
             $this->limit
         );
 

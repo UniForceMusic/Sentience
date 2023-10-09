@@ -76,7 +76,7 @@ class MySQL implements QueryBuilderInterface
         return [$query, $params];
     }
 
-    public function delete(string $table, array $where, ?int $limit): array
+    public function delete(string $table, array $where, array $orderBys, ?int $limit): array
     {
         $query = '';
         $params = [];
@@ -87,6 +87,10 @@ class MySQL implements QueryBuilderInterface
             $query .= sprintf(' WHERE %s', $this->generateWhereString($where));
 
             array_push($params, ...$this->extractWhereValues($where));
+        }
+
+        if ($orderBys) {
+            $query .= sprintf(' %s', $this->generateOrderByString($orderBys));
         }
 
         if ($limit) {
