@@ -19,8 +19,7 @@ class HasOne extends Relation implements RelationInterface
 
     public function retrieve(Database $database, Model $model, callable $modifyQuery = null): ?Model
     {
-        $relationModelName = $this->relationModel;
-        $relationModel = new $relationModelName($database);
+        $relationModel = new $this->relationModel($database);
 
         $query = $database->query()
             ->table($relationModel::getTable())

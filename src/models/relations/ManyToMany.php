@@ -27,11 +27,8 @@ class ManyToMany extends Relation implements RelationInterface
     {
         $queryBuilder = $database->getQueryBuilder();
 
-        $relationModelName = $this->relationModel;
-        $relationModel = new $relationModelName($database);
-
-        $junctionModelName = $this->junctionTableModel;
-        $junctionModel = new $junctionModelName($database);
+        $relationModel = new $this->relationModel($database);
+        $junctionModel = new $this->junctionTableModel($database);
 
         $query = $database->query()
             ->table($junctionModel::getTable())
@@ -73,7 +70,7 @@ class ManyToMany extends Relation implements RelationInterface
         $relationModels = [];
 
         foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $assoc) {
-            $relationModel = new $relationModelName($database);
+            $relationModel = new $this->relationModel($database);
             $relationModels[] = $relationModel->hydrateByAssoc($statement, $assoc);
         }
 
