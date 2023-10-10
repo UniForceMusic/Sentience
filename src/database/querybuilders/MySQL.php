@@ -226,10 +226,12 @@ class MySQL implements QueryBuilderInterface
                 continue;
             }
 
+            $key = ($where->escapeKey) ? sprintf('`%s`', $where->key) : $where->key;
+
             if (is_null($where->value)) {
                 $conditions[] = sprintf(
-                    '`%s` %s',
-                    $where->key,
+                    '%s %s',
+                    $key,
                     (($where->comparator == Query::EQUALS) ? 'IS NULL' : 'IS NOT NULL')
                 );
                 continue;
@@ -237,23 +239,17 @@ class MySQL implements QueryBuilderInterface
 
             if (is_array($where->value)) {
                 $conditions[] = sprintf(
-                    '`%s` %s (%s)',
-                    $where->key,
+                    '%s %s (%s)',
+                    $key,
                     (($where->comparator == Query::IN_ARRAY) ? 'IN' : 'NOT IN'),
                     $this->generatePlaceholdersString(count($where->value))
                 );
                 continue;
             }
 
-            if ($where->escapeKey) {
-                $templateString = '%s %s ?';
-            } else {
-                $templateString = '`%s` %s ?';
-            }
-
             $conditions[] = sprintf(
-                $templateString,
-                $where->key,
+                '%s %s ?',
+                $key,
                 $where->comparator
             );
         }

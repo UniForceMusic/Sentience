@@ -57,7 +57,7 @@ class ManyToMany extends Relation implements RelationInterface
                 ),
                 Query::EQUALS,
                 $model->getPrimaryKeyValue(),
-                true
+                false
             );
 
         if ($modifyQuery) {

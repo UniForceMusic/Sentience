@@ -42,7 +42,7 @@ class BelongsTo extends Relation implements RelationInterface
             return null;
         }
 
-        return $relationModel->hydrateByArray(
+        return $relationModel->hydrateByAssoc(
             $statement,
             $statement->fetch(PDO::FETCH_ASSOC)
         );

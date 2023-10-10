@@ -34,7 +34,7 @@ class HasMany extends Relation implements RelationInterface
 
         foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $assoc) {
             $model = new $relationModelName($database);
-            $relationModels[] = $model->hydrateByArray($statement, $assoc);
+            $relationModels[] = $model->hydrateByAssoc($statement, $assoc);
         }
 
         return $relationModels;

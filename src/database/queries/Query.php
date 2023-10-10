@@ -75,14 +75,14 @@ class Query
     {
         $statement = $this->select();
 
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function selectAssocSingle(): ?array
+    public function selectAssocs(): ?array
     {
         $statement = $this->select();
 
-        return $statement->fetch(PDO::FETCH_ASSOC);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function selectModel(): Model
