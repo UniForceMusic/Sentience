@@ -21,5 +21,5 @@ interface QueryBuilderInterface
     public function castFromDatabase(string $nativeType, mixed $value): mixed;
 
     public function getColumnType(string $varType, bool $isPrimaryKey): ?string;
-    public function getColumnWithNamespace(string $table, string $column): string;
+    public function getColumnWithNamespace(string $table, string $column, bool $escapeColumns): string;
 }

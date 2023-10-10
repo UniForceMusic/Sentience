@@ -189,9 +189,13 @@ class MySQL implements QueryBuilderInterface
         return $types[$varType] ?? null;
     }
 
-    public function getColumnWithNamespace(string $table, string $column): string
+    public function getColumnWithNamespace(string $table, string $column, bool $escapeColumns): string
     {
-        return sprintf('`%s`.`%s`', $table, $column);
+        if ($escapeColumns) {
+            return sprintf('`%s`.`%s`', $table, $column);
+        }
+
+        return sprintf('%s.%s', $table, $column);
     }
 
     protected function generateColumnsString(array $columns, bool $escapeColumns): string

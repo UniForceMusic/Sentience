@@ -40,7 +40,8 @@ class ManyToMany extends Relation implements RelationInterface
                     $queryBuilder,
                     $relationModel::getTable(),
                     $relationModel->getColumns()
-                )
+                ),
+                false
             )
             ->join(
                 Join::LEFT_JOIN,
@@ -49,7 +50,11 @@ class ManyToMany extends Relation implements RelationInterface
                 $relationModel->getPrimaryKeyColumnName()
             )
             ->where(
-                $queryBuilder->getColumnWithNamespace($junctionModel::getTable(), $this->junctionTableParentColumnName),
+                $queryBuilder->getColumnWithNamespace(
+                    $junctionModel::getTable(),
+                    $this->junctionTableParentColumnName,
+                    true
+                ),
                 Query::EQUALS,
                 $model->getPrimaryKeyValue(),
                 true
@@ -69,7 +74,7 @@ class ManyToMany extends Relation implements RelationInterface
 
         foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $assoc) {
             $relationModel = new $relationModelName($database);
-            $relationModels[] = $relationModel->hydrateByArray($statement, $assoc);
+            $relationModels[] = $relationModel->hydrateByAssoc($statement, $assoc);
         }
 
         return $relationModels;
@@ -79,7 +84,7 @@ class ManyToMany extends Relation implements RelationInterface
     {
         return array_map(
             function (string $column) use ($table, $queryBuilder) {
-                return $queryBuilder->getColumnWithNamespace($table, $column);
+                return $queryBuilder->getColumnWithNamespace($table, $column, true);
             },
             $columns
         );
