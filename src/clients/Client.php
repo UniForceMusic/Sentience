@@ -18,8 +18,17 @@ abstract class Client
         $this->baseUrl = $baseUrl;
     }
 
-    protected function addAuth(HttpRequest $request): HttpResponse
+    protected function execute(HttpRequest $request): HttpResponse
     {
         return $request->execute();
+    }
+
+    protected function appendOnBaseUrl(string $baseUrl, string $path): string
+    {
+        return sprintf(
+            '%s/%s',
+            trim($baseUrl, '/'),
+            trim($path, '/'),
+        );
     }
 }

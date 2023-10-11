@@ -7,8 +7,4 @@ use src\httpclient\HttpResponse;
 
 class CustomAuthClient extends Client
 {
-    protected function execute(HttpRequest $request): HttpResponse
-    {
-        return $request->execute();
-    }
 }
