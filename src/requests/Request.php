@@ -23,7 +23,9 @@ abstract class Request implements RequestInterface
         if (!isset($payload['email'])) {
             throw new Exception('email is required');
         }
+
         $emailValid = filter_var($payload['email'], FILTER_VALIDATE_EMAIL);
+
         if (!$emailValid) {
             throw new Exception('email invalid');
         }
@@ -34,6 +36,7 @@ abstract class Request implements RequestInterface
         if (!isset($payload['password'])) {
             throw new Exception('password is required');
         }
+
         $password = trim($payload['password']);
 
         if (strlen($password) < $_ENV['PASSWORD_MINIMUM_LENGTH']) {
