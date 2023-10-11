@@ -9,8 +9,12 @@ abstract class Request implements RequestInterface
 {
     protected array $payload;
 
-    public function __construct(array $payload)
+    public function __construct(?array $payload)
     {
+        if (!$payload) {
+            throw new Exception('no payload detected');
+        }
+
         $this->validateData($payload);
     }
 
