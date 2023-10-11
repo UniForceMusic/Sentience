@@ -23,11 +23,11 @@ abstract class Client
         return $request->execute();
     }
 
-    protected function appendOnBaseUrl(string $baseUrl, string $path): string
+    protected function appendOnBaseUrl(string $path): string
     {
         return sprintf(
             '%s/%s',
-            trim($baseUrl, '/'),
+            trim($this->baseUrl, '/'),
             trim($path, '/'),
         );
     }
