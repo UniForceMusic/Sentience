@@ -132,7 +132,7 @@ class Route
         return $this->templateValues;
     }
 
-    public function getPayload(): string
+    public function getPayload(): ?string
     {
         return $this->payload;
     }
