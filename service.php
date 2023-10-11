@@ -15,14 +15,14 @@ use src\database\Database;
 
 class Service
 {
-    public function appVersion(): string
-    {
-        return $_ENV['APP_VERSION'] ?? 'App version not set';
-    }
-
     public function appName(): string
     {
         return $_ENV['APP_NAME'] ?? 'App name not set';
+    }
+
+    public function appVersion(): string
+    {
+        return $_ENV['APP_VERSION'] ?? 'App version not set';
     }
 
     public function database(): Database
