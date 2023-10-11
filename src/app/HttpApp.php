@@ -108,7 +108,7 @@ class HttpApp
             $name = $argument->getName();
 
             if ($name == 'request') {
-                $args['request'] = new Request($route->getTemplateValues());
+                $args['request'] = new Request($route->getTemplateValues(), $route->getPayload());
                 continue;
             }
 

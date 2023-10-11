@@ -11,9 +11,8 @@ class FileController extends Controller
     public function serveFile(Request $request)
     {
         $filePath = sprintf(
-            '%s/%s/%s',
-            BASEDIR,
-            FILEDIR,
+            '%s/%s',
+            getFileDir(),
             $request->getTemplateValue('filePath')
         );
 

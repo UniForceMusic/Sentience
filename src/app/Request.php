@@ -2,7 +2,9 @@
 
 namespace src\app;
 
+use JsonException;
 use SimpleXMLElement;
+use src\requests\Request as RequestObject;
 use src\util\Url;
 
 class Request
@@ -15,8 +17,9 @@ class Request
     protected array $parameters;
     protected array $cookies;
     protected array $templateValues;
+    protected ?string $payload = null;
 
-    public function __construct(array $templateValues)
+    public function __construct(array $templateValues, ?string $payload)
     {
         $this->url = Url::getRequestUrl();
         $this->uri = Url::getRequestUri();
@@ -36,6 +39,7 @@ class Request
         $this->parameters = $_GET;
         $this->cookies = $_COOKIE;
         $this->templateValues = $templateValues;
+        $this->payload = $payload;
     }
 
     public function getUrl(): string
@@ -102,12 +106,18 @@ class Request
 
     public function getJson(): ?array
     {
-        return json_decode($this->body, true);
+        $assoc = json_decode($this->body, true);
+
+        if (is_null($assoc) && json_last_error_msg() != 'No error') {
+            throw new JsonException(json_last_error_msg());
+        }
+
+        return $assoc;
     }
 
     public function getFormData(): ?array
     {
-        if (empty($_POST)) {
+        if (!$_POST) {
             return null;
         }
 
@@ -131,5 +141,14 @@ class Request
         }
 
         return $this->templateValues[$key];
+    }
+
+    public function getPayload(): ?RequestObject
+    {
+        if (!$this->payload) {
+            return null;
+        }
+
+        return new $this->payload($this->getJson());
     }
 }

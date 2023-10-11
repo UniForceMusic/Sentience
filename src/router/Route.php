@@ -12,6 +12,7 @@ class Route
     protected array $middleware;
     protected array $templateValues;
     protected bool $isFile;
+    protected ?string $payload;
 
     public function __construct()
     {
@@ -20,6 +21,7 @@ class Route
         $this->middleware = [];
         $this->templateValues = [];
         $this->isFile = false;
+        $this->payload = null;
     }
 
     public static function create(): static
@@ -130,6 +132,11 @@ class Route
         return $this->templateValues;
     }
 
+    public function getPayload(): string
+    {
+        return $this->payload;
+    }
+
     public function setPath(string $path): static
     {
         $this->path = $path;
@@ -157,6 +164,12 @@ class Route
     public function setFile(bool $state): static
     {
         $this->isFile = $state;
+        return $this;
+    }
+
+    public function setPayload(string $payload): static
+    {
+        $this->payload = $payload;
         return $this;
     }
 

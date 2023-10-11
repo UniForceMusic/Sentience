@@ -21,11 +21,7 @@ class ManagementController extends Controller
 
     public function runMigrations(Database $database)
     {
-        $migrationsDir = sprintf(
-            '%s/%s',
-            BASEDIR,
-            MIGRATIONSDIR
-        );
+        $migrationsDir = getMigrationsDir();
 
         $scannedFiles = scandir($migrationsDir);
         $sortedScannedFiles = [];
@@ -108,7 +104,7 @@ class ManagementController extends Controller
         $migrationModel->appliedAt = Query::now();
         $migrationModel->insert();
 
-        file_put_contents(sprintf('%s/%s/%s', BASEDIR, MIGRATIONSDIR, $migrationName), $query);
+        file_put_contents(sprintf('%s/%s', getMigrationsDir(), $migrationName), $query);
 
         Stdio::printFLn('Migration for model %s created successfully', $flags['class']);
     }

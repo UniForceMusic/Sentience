@@ -73,13 +73,13 @@ class HttpResponse
 
     public function getJson(): ?array
     {
-        $array = json_decode($this->body, true);
+        $assoc = json_decode($this->body, true);
 
-        if (is_null($array) && json_last_error_msg() != 'No error') {
+        if (is_null($assoc) && json_last_error_msg() != 'No error') {
             throw new JsonException(json_last_error_msg());
         }
 
-        return $array;
+        return $assoc;
     }
 
     public function getXml(): ?SimpleXMLElement

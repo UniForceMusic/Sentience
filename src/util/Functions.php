@@ -9,3 +9,23 @@ function replaceNonAsciiChars(string $string): string
 {
     return preg_replace('/[[:^print:]]/', '', $string);
 }
+
+function getMigrationsDir(): string
+{
+    return sprintf(
+        '%s%s%s',
+        BASEDIR,
+        DIRECTORY_SEPARATOR,
+        MIGRATIONSDIR
+    );
+}
+
+function getFileDir(): string
+{
+    return sprintf(
+        '%s%s%s',
+        BASEDIR,
+        DIRECTORY_SEPARATOR,
+        FILEDIR
+    );
+}
