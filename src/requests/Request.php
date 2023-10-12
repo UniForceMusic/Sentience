@@ -8,8 +8,6 @@ use src\util\Strings;
 
 abstract class Request implements RequestInterface
 {
-    protected array $payload;
-
     public function __construct(IncomingRequest $request, mixed $parsedPayload = null)
     {
         $this->validateAndHydrate($request, $parsedPayload);
@@ -24,7 +22,7 @@ abstract class Request implements RequestInterface
         $emailValid = filter_var($email, FILTER_VALIDATE_EMAIL);
 
         if (!$emailValid) {
-            throw new Exception(sprintf('%s invalid', $fieldName));
+            throw new Exception(sprintf('%s is invalid', $fieldName));
         }
     }
 
