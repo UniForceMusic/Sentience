@@ -2,7 +2,9 @@
 
 namespace src\requests;
 
+use src\app\Request as IncomingRequest;
+
 interface RequestInterface
 {
-    public function validateData(array $payload): void;
+    public function validateAndHydrate(IncomingRequest $request, mixed $parsedPayload): void;
 }

@@ -7,12 +7,12 @@ use Closure;
 class Route
 {
     protected string $path;
-    protected array|string|Closure $callable;
+    protected string|array|Closure $callable;
     protected array $methods;
     protected array $middleware;
     protected array $templateValues;
     protected bool $isFile;
-    protected ?string $payload;
+    protected ?string $request;
 
     public function __construct()
     {
@@ -21,7 +21,7 @@ class Route
         $this->middleware = [];
         $this->templateValues = [];
         $this->isFile = false;
-        $this->payload = null;
+        $this->request = null;
     }
 
     public static function create(): static
@@ -132,9 +132,9 @@ class Route
         return $this->templateValues;
     }
 
-    public function getPayload(): ?string
+    public function getRequest(): ?string
     {
-        return $this->payload;
+        return $this->request;
     }
 
     public function setPath(string $path): static
@@ -167,9 +167,9 @@ class Route
         return $this;
     }
 
-    public function setPayload(string $payload): static
+    public function setRequest(string $request): static
     {
-        $this->payload = $payload;
+        $this->request = $request;
         return $this;
     }
 

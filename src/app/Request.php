@@ -17,9 +17,9 @@ class Request
     protected array $parameters;
     protected array $cookies;
     protected array $templateValues;
-    protected ?string $payload = null;
+    protected ?RequestObject $request = null;
 
-    public function __construct(array $templateValues, ?string $payload)
+    public function __construct(array $templateValues, ?string $request)
     {
         $this->url = Url::getRequestUrl();
         $this->uri = Url::getRequestUri();
@@ -39,7 +39,10 @@ class Request
         $this->parameters = $_GET;
         $this->cookies = $_COOKIE;
         $this->templateValues = $templateValues;
-        $this->payload = $payload;
+
+        if ($request) {
+            $this->request = new $request($this);
+        }
     }
 
     public function getUrl(): string
@@ -143,12 +146,8 @@ class Request
         return $this->templateValues[$key];
     }
 
-    public function getPayload(): ?RequestObject
+    public function getRequest(): ?RequestObject
     {
-        if (!$this->payload) {
-            return null;
-        }
-
-        return new $this->payload($this->getJson());
+        return $this->request;
     }
 }
