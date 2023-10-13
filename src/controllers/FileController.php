@@ -5,14 +5,16 @@ namespace src\controllers;
 use src\app\Request;
 use src\app\Response;
 use src\util\Header;
+use src\util\MimeTypes;
 
 class FileController extends Controller
 {
     public function serveFile(Request $request)
     {
         $filePath = sprintf(
-            '%s/%s',
-            getFileDir(),
+            '%s/%s/%s',
+            BASEDIR,
+            FILEDIR,
             $request->getTemplateValue('filePath')
         );
 
@@ -38,7 +40,7 @@ class FileController extends Controller
         Header::contentLength($fileContents);
         Response::ok(
             $fileContents,
-            $mimeType
+            ($mimeType != MimeTypes::JSON) ? $mimeType : MimeTypes::TXT
         );
     }
 }
