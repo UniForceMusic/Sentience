@@ -4,7 +4,6 @@ namespace src\clients;
 
 use src\httpclient\HttpRequest;
 use src\httpclient\HttpResponse;
-use src\util\Auth;
 
 abstract class BasicAuthClient extends Client
 {
@@ -23,7 +22,21 @@ abstract class BasicAuthClient extends Client
     {
         return $request->header(
             $this->authHeader,
-            Auth::getBasicAuthHeader($this->user, $this->pass)
+            $this::getBasicAuthHeader($this->user, $this->pass)
         )->execute();
+    }
+
+    public static function getBasicAuthHeader(string $username, string $password): string
+    {
+        return sprintf(
+            'Basic %s',
+            base64_encode(
+                sprintf(
+                    '%s:%s',
+                    $username,
+                    $password
+                )
+            )
+        );
     }
 }
