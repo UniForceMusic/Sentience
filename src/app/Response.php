@@ -16,7 +16,7 @@ class Response
 
         header(sprintf('content-type: %s', $contentType));
 
-        if ($contentType == MimeTypes::JSON) {
+        if ($contentType == MimeTypes::JSON && static::isSerializable($content)) {
             echo json_encode($content);
         } else {
             echo strval($content);
@@ -25,13 +25,18 @@ class Response
         error_reporting($currentErrorReporting);
     }
 
+    public static function isSerializable(mixed $content): bool
+    {
+        return in_array(gettype($content), ['array', 'object']);
+    }
+
     public static function getContentType(mixed $content, ?string $customContentType): string
     {
         if ($customContentType) {
             return $customContentType;
         }
 
-        if (in_array(gettype($content), ['array', 'object'])) {
+        if (static::isSerializable($content)) {
             return MimeTypes::JSON;
         }
 

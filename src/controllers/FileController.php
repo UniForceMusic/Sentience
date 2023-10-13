@@ -4,8 +4,7 @@ namespace src\controllers;
 
 use src\app\Request;
 use src\app\Response;
-use src\util\Header;
-use src\util\MimeTypes;
+use src\util\Headers;
 
 class FileController extends Controller
 {
@@ -36,11 +35,12 @@ class FileController extends Controller
             return;
         }
 
-        Header::serveFile();
-        Header::contentLength($fileContents);
+        Headers::serveFile();
+        Headers::contentLength($fileContents);
+        Headers::cacheControl(Headers::CACHE_PUBLIC, $_ENV['FILE_CACHE']);
         Response::ok(
             $fileContents,
-            ($mimeType == MimeTypes::JSON) ? MimeTypes::TXT : $mimeType
+            $mimeType
         );
     }
 }
