@@ -40,7 +40,7 @@ class FileController extends Controller
         Header::contentLength($fileContents);
         Response::ok(
             $fileContents,
-            ($mimeType != MimeTypes::JSON) ? $mimeType : MimeTypes::TXT
+            ($mimeType == MimeTypes::JSON) ? MimeTypes::TXT : $mimeType
         );
     }
 }
