@@ -240,7 +240,7 @@ class HttpRequest
 
     public function json(array|object $serializable): static
     {
-        $this->header('content-type', MimeTypes::JSON);
+        $this->header('content-type', MimeTypes::get('json'));
 
         $this->body = json_encode($serializable);
 

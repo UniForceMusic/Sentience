@@ -16,7 +16,7 @@ class Response
 
         header(sprintf('content-type: %s', $contentType));
 
-        if ($contentType == MimeTypes::JSON && static::isSerializable($content)) {
+        if ($contentType == MimeTypes::get('json') && static::isSerializable($content)) {
             echo json_encode($content);
         } else {
             echo strval($content);
@@ -37,10 +37,10 @@ class Response
         }
 
         if (static::isSerializable($content)) {
-            return MimeTypes::JSON;
+            return MimeTypes::get('json');
         }
 
-        return MimeTypes::TXT;
+        return MimeTypes::get('txt');
     }
 
     public static function routeNotFound(array $routes)
@@ -64,7 +64,7 @@ class Response
 
     public static function html(string $content)
     {
-        static::renderContent($content, MimeTypes::HTML);
+        static::renderContent($content, MimeTypes::get('html'));
         http_response_code(200);
     }
 
