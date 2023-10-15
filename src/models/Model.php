@@ -2,7 +2,6 @@
 
 namespace src\models;
 
-use Exception;
 use Throwable;
 use PDO;
 use PDOStatement;
@@ -14,6 +13,7 @@ use src\database\queries\Query;
 use src\database\querybuilders\QueryBuilderInterface;
 use src\exceptions\IdentifierException;
 use src\exceptions\RelationException;
+use src\exceptions\ValidationException;
 use src\models\relations\Relation;
 
 abstract class Model
@@ -130,7 +130,7 @@ abstract class Model
 
     public function insert(): ?static
     {
-        $valid = $this->validateData();
+        $valid = $this->validate();
         if (!$valid) {
             return null;
         }
@@ -155,7 +155,7 @@ abstract class Model
 
     public function update(): ?static
     {
-        $valid = $this->validateData();
+        $valid = $this->validate();
         if (!$valid) {
             return null;
         }
@@ -284,7 +284,7 @@ abstract class Model
             ->getDefaultValue();
     }
 
-    public function checkDataIsValid(): ?string
+    public function testValidate(): ?string
     {
         /**
          * Returns null if no error is detected
@@ -295,10 +295,15 @@ abstract class Model
          */
 
         try {
-            $valid = $this->validateData();
+            $valid = $this->validate();
 
             if (!$valid) {
-                throw new Exception('data invalid');
+                throw new ValidationException(
+                    sprintf(
+                        'data invalid for model: %s',
+                        ($this::class)
+                    )
+                );
             }
 
             return null;
@@ -317,7 +322,7 @@ abstract class Model
             ->retrieve($this->database, $this, $modifyQuery);
     }
 
-    protected function validateData(): bool
+    protected function validate(): bool
     {
         /**
          * If the data is valid return true
