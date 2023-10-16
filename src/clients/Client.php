@@ -23,7 +23,7 @@ abstract class Client
         return $request->execute();
     }
 
-    protected function appendOnBaseUrl(string $path): string
+    protected function appendToBaseUrl(string $path): string
     {
         return sprintf(
             '%s/%s',
