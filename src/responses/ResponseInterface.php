@@ -8,5 +8,5 @@ interface ResponseInterface
 {
     public static function fromAssoc(array $assoc): array;
 
-    public static function fromModel(Model $model): array;
+    public static function fromModel(Model $model, array $relations = []): array;
 }

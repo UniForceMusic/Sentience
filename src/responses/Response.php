@@ -11,9 +11,20 @@ abstract class Response implements ResponseInterface
         return $assoc;
     }
 
-    public static function fromModel(Model $model): array
+    public static function fromModel(Model $model, array $relations = []): array
     {
-        return (array) $model;
+        $assoc = $model->exportAsRecord();
+
+        foreach ($relations as $relation) {
+            $relationModel = $model->getRelation($relation);
+            if (!$relationModel) {
+                continue;
+            }
+
+            $assoc[$relation] = $model->getRelation($relation)->exportAsRecord();
+        }
+
+        return $assoc;
     }
 
     public static function fromArrayOfAssocs(array $array): array
@@ -26,11 +37,11 @@ abstract class Response implements ResponseInterface
         );
     }
 
-    public static function fromArrayOfModels(array $array): array
+    public static function fromArrayOfModels(array $array, array $relations = []): array
     {
         return array_map(
-            function (Model $model) {
-                return static::fromModel($model);
+            function (Model $model) use ($relations) {
+                return static::fromModel($model, $relations);
             },
             $array
         );
