@@ -66,11 +66,6 @@ class HttpResponse
         return $this->body;
     }
 
-    public function getHtml(): ?string
-    {
-        return replaceNonAsciiChars($this->body);
-    }
-
     public function getJson(): ?array
     {
         $assoc = json_decode($this->body, true);
