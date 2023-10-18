@@ -42,6 +42,21 @@ class Database
         return $statement;
     }
 
+    public function beginTransaction(): void
+    {
+        $this->exec('begin;');
+    }
+
+    public function commitTransaction(): void
+    {
+        $this->exec('commit;');
+    }
+
+    public function rollbackTransaction(): void
+    {
+        $this->exec('rollback;');
+    }
+
     public function query(): Query
     {
         return new Query($this);

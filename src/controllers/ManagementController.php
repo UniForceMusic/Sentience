@@ -2,6 +2,7 @@
 
 namespace src\controllers;
 
+use Throwable;
 use src\app\Request;
 use src\app\Response;
 use src\app\Stdio;
@@ -62,9 +63,14 @@ class ManagementController extends Controller
                 $query .= ';';
             }
 
-            $database->exec('begin;');
-            $database->exec(sprintf('%s', $query));
-            $database->exec('commit;');
+            try {
+                $database->beginTransaction();
+                $database->exec(sprintf('%s', $query));
+                $database->commitTransaction();
+            } catch (Throwable $err) {
+                $database->rollbackTransaction();
+                throw $err;
+            }
 
             Stdio::printFLn('migration: "%s" applied', $migration);
 
