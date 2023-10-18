@@ -2,6 +2,7 @@
 
 namespace src\database;
 
+use Throwable;
 use PDO;
 use PDOStatement;
 use src\app\Stdio;
@@ -18,6 +19,10 @@ class Database
     protected PDO $pdo;
     protected string $type;
     protected bool $debug;
+    protected string $initDsn;
+    protected string $initUsername;
+    protected string $initPassword;
+    protected bool $initDebug;
 
     public function __construct(string $dsn, string $username, string $password, bool $debug = false)
     {
@@ -26,6 +31,21 @@ class Database
         $this->pdo = $pdo;
         $this->type = $this->getTypeByDsn($dsn);
         $this->debug = $debug;
+
+        $this->initDsn = $dsn;
+        $this->initUsername = $username;
+        $this->initPassword = $password;
+        $this->initDebug = $debug;
+    }
+
+    public function createInstance(): static
+    {
+        return new static(
+            $this->initDsn,
+            $this->initUsername,
+            $this->initPassword,
+            $this->initDebug
+        );
     }
 
     public function exec(string $query, ?array $params = []): PDOStatement
@@ -55,6 +75,20 @@ class Database
     public function rollbackTransaction(): void
     {
         $this->exec('rollback;');
+    }
+
+    public function transactionAsCallback(callable $callable): void
+    {
+        $connection = $this->createInstance();
+        $connection->beginTransaction();
+
+        try {
+            $callable($connection);
+            $connection->commitTransaction();
+        } catch (Throwable $err) {
+            $connection->rollbackTransaction();
+            throw $err;
+        }
     }
 
     public function query(): Query
@@ -110,7 +144,7 @@ class Database
                 }
 
                 if (is_bool($param)) {
-                    return ($param) ? '1' : '0';
+                    return ($param) ? 'true' : 'false';
                 }
 
                 return (string) $param;
