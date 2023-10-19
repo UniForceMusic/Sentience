@@ -23,7 +23,7 @@ abstract class Client
         return $request->execute();
     }
 
-    protected function appendToBaseUrl(string $baseUrl, ?string $path, string $glue = '/'): ?string
+    protected function appendToBaseUrl(?string $path, string $glue = '/'): ?string
     {
         if (!$path) {
             return null;
@@ -31,7 +31,7 @@ abstract class Client
 
         return sprintf(
             '%s%s%s',
-            trim($baseUrl, $glue),
+            trim($this->baseUrl, $glue),
             $glue,
             trim($path, $glue),
         );
