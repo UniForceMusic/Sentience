@@ -36,11 +36,11 @@ class Service
         $debug = $_ENV['DB_DEBUG'];
 
         return new Database(
-            $username,
-            $password,
             $engine,
             $host,
             $port,
+            $username,
+            $password,
             $name,
             $debug,
         );
