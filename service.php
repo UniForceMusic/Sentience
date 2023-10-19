@@ -35,19 +35,14 @@ class Service
         $name = $_ENV['DB_NAME'];
         $debug = $_ENV['DB_DEBUG'];
 
-        $dsn = sprintf(
-            '%s:host=%s;port=%s;dbname=%s',
+        return new Database(
+            $username,
+            $password,
             $engine,
             $host,
             $port,
-            $name
-        );
-
-        return new Database(
-            $dsn,
-            $username,
-            $password,
-            $debug
+            $name,
+            $debug,
         );
     }
 }

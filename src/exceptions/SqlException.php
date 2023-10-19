@@ -11,10 +11,6 @@ class SqlException extends Exception
     {
         $error = $statement->errorInfo();
 
-        if (count($error) < 3) {
-            parent::__construct(sprintf('Error trying to execute query: "%s"', $statement->queryString));
-        }
-
-        parent::__construct(strval($error[2]));
+        parent::__construct($error[2] ?? $error[0]);
     }
 }

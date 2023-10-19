@@ -17,34 +17,52 @@ class Database
     public const MYSQL = 'mysql';
 
     protected PDO $pdo;
-    protected string $type;
+    protected string $engine;
+    protected string $host;
+    protected int $port;
+    protected string $username;
+    protected string $password;
+    protected string $name;
     protected bool $debug;
-    protected string $initDsn;
-    protected string $initUsername;
-    protected string $initPassword;
-    protected bool $initDebug;
 
-    public function __construct(string $dsn, string $username, string $password, bool $debug = false)
-    {
-        $pdo = new PDO($dsn, $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT]);
+    public function __construct(
+        string $engine,
+        string $host,
+        int $port,
+        string $username,
+        string $password,
+        string $name,
+        bool $debug = false
+    ) {
+        $dsn = sprintf(
+            '%s:host=%s;port=%s;dbname=%s',
+            $engine,
+            $host,
+            $port,
+            $name,
+        );
 
-        $this->pdo = $pdo;
-        $this->type = $this->getTypeByDsn($dsn);
+        $this->pdo = new PDO($dsn, $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT]);
+
+        $this->engine = $engine;
+        $this->host = $host;
+        $this->port = $port;
+        $this->username = $username;
+        $this->password = $password;
+        $this->name = $name;
         $this->debug = $debug;
-
-        $this->initDsn = $dsn;
-        $this->initUsername = $username;
-        $this->initPassword = $password;
-        $this->initDebug = $debug;
     }
 
     public function createInstance(): static
     {
         return new static(
-            $this->initDsn,
-            $this->initUsername,
-            $this->initPassword,
-            $this->initDebug
+            $this->engine,
+            $this->host,
+            $this->port,
+            $this->username,
+            $this->password,
+            $this->name,
+            $this->debug,
         );
     }
 
@@ -56,15 +74,18 @@ class Database
         }
 
         if ($this->debug) {
-            Stdio::errorFLn('Query: %s', $this->formatQueryString($statement, $params));
+            Stdio::errorFLn('Query: %s', $this->printDebug($statement, $params));
         }
 
         return $statement;
     }
 
-    public function beginTransaction(): void
+    public function beginTransaction(): static
     {
-        $this->exec('begin;');
+        $connection = $this->createInstance();
+        $connection->exec('begin;');
+
+        return $connection;
     }
 
     public function commitTransaction(): void
@@ -79,14 +100,15 @@ class Database
 
     public function transactionAsCallback(callable $callable): void
     {
-        $connection = $this->createInstance();
-        $connection->beginTransaction();
+        $connection = $this->beginTransaction();
 
         try {
             $callable($connection);
             $connection->commitTransaction();
+            unset($connection);
         } catch (Throwable $err) {
             $connection->rollbackTransaction();
+            unset($connection);
             throw $err;
         }
     }
@@ -98,16 +120,16 @@ class Database
 
     public function getQueryBuilder(): ?QueryBuilderInterface
     {
-        if ($this->type == $this::MYSQL) {
+        if ($this->engine == $this::MYSQL) {
             return new MySQL();
         }
 
-        throw new DatabaseException(sprintf('Database engine: "%s" is not a valid engine', $this->type));
+        throw new DatabaseException(sprintf('Database engine: "%s" is not a valid engine', $this->engine));
     }
 
-    public function getType(): string
+    public function getEngine(): string
     {
-        return $this->type;
+        return $this->engine;
     }
 
     public function getLastInsertedId(string $pk = null): int
@@ -115,47 +137,25 @@ class Database
         return $this->pdo->lastInsertId($pk);
     }
 
-    protected function getTypeByDsn(string $dsn)
+    protected function printDebug(PDOStatement $statement, array $params): string
     {
-        return trim(
-            strtolower(
-                explode(':', $dsn)[0]
-            )
-        );
-    }
-
-    protected function formatQueryString(PDOStatement $statement, array $params): string
-    {
+        $queryBuilder = $this->getQueryBuilder();
         $queryString = $statement->queryString;
 
-        $questionMarks = [];
-        foreach ($params as $param) {
-            $questionMarks[] = '?';
-        }
+        $index = 0;
+        return preg_replace_callback(
+            '/\?/',
+            function ($matches) use ($params, $queryBuilder, &$index) {
+                $param = $params[$index];
+                $index++;
 
-        $params = array_map(
-            function ($param) {
                 if (is_string($param)) {
                     return sprintf('"%s"', addslashes($param));
                 }
 
-                if (is_null($param)) {
-                    return 'NULL';
-                }
-
-                if (is_bool($param)) {
-                    return ($param) ? 'true' : 'false';
-                }
-
-                return (string) $param;
+                return $queryBuilder->castToDatabase($param);
             },
-            $params
+            $queryString
         );
-
-        foreach ($questionMarks as $index => $questionMark) {
-            $queryString = preg_replace('/\?/', $params[$index], $queryString, 1);
-        }
-
-        return $queryString;
     }
 }

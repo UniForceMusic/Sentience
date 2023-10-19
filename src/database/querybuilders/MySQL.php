@@ -151,6 +151,10 @@ class MySQL implements QueryBuilderInterface
             return ($value) ? 1 : 0;
         }
 
+        if (is_null($value)) {
+            return 'NULL';
+        }
+
         return $value;
     }
 
