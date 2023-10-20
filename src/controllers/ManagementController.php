@@ -113,4 +113,51 @@ class ManagementController extends Controller
 
         Stdio::printFLn('Migration for model %s created successfully', $flags['class']);
     }
+
+    public function runTests()
+    {
+        /**
+         * Each file that doesn't abide by the PHPUnit format will be converted before running tests
+         */
+        $testsDir = getTestsDir();
+
+        $testFiles = array_filter(
+            scandir($testsDir),
+            function ($fileName): bool {
+                return (!in_array($fileName, ['.', '..']) && str_ends_with($fileName, '.php'));
+            }
+        );
+
+        array_walk(
+            $testFiles,
+            function ($fileName) use ($testsDir): void {
+                if (str_ends_with($fileName, 'Test.php')) {
+                    return;
+                }
+
+                $filePath = sprintf('%s/%s', $testsDir, $fileName);
+                $fileNameWithoutType = rtrim($fileName, '.php');
+                $fileNameWithTest = sprintf('%sTest', $fileNameWithoutType);
+                $fileContents = file_get_contents($filePath);
+
+                file_put_contents(
+                    $filePath,
+                    str_replace(
+                        sprintf('class %s extends', $fileNameWithoutType),
+                        sprintf('class %s extends', $fileNameWithTest),
+                        $fileContents
+                    )
+                );
+
+                rename(
+                    $filePath,
+                    sprintf('%s/%s.php', $testsDir, $fileNameWithTest)
+                );
+            }
+        );
+
+        exec('phpunit tests/', $output);
+
+        Stdio::printLn(implode(PHP_EOL, $output));
+    }
 }

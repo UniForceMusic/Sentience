@@ -20,4 +20,8 @@ $commands = [
     Command::create()
         ->setCommand('models/init')
         ->setCallable([ManagementController::class, 'initModel']),
+
+    Command::create()
+        ->setCommand('tests')
+        ->setCallable([ManagementController::class, 'runTests']),
 ];

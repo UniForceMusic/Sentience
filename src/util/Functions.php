@@ -29,3 +29,13 @@ function getFileDir(): string
         FILEDIR
     );
 }
+
+function getTestsDir(): string
+{
+    return sprintf(
+        '%s%s%s',
+        BASEDIR,
+        DIRECTORY_SEPARATOR,
+        TESTSDIR
+    );
+}
