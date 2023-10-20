@@ -105,10 +105,8 @@ class Database
         try {
             $callable($connection);
             $connection->commitTransaction();
-            unset($connection);
         } catch (Throwable $err) {
             $connection->rollbackTransaction();
-            unset($connection);
             throw $err;
         }
     }

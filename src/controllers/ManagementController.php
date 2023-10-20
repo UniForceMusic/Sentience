@@ -64,11 +64,10 @@ class ManagementController extends Controller
             }
 
             try {
-                $database->beginTransaction();
-                $database->exec(sprintf('%s', $query));
-                $database->commitTransaction();
+                $database->transactionAsCallback(function ($connection) use ($query) {
+                    $connection->exec(sprintf('%s', $query));
+                });
             } catch (Throwable $err) {
-                $database->rollbackTransaction();
                 throw $err;
             }
 
