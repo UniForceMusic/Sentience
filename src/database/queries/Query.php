@@ -268,4 +268,9 @@ class Query
     {
         return new DateTime();
     }
+
+    public static function wildcard(string $substr): string
+    {
+        return ('%' . $substr . '%');
+    }
 }
