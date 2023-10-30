@@ -4,11 +4,10 @@ use src\util\Strings;
 
 class DotEnv
 {
-    public static function parseFile(string $filePath)
+    public static function parseFile(string $filePath, ?string $exampleFilePath = null): void
     {
         if (!file_exists($filePath)) {
-            static::createFile($filePath);
-            return;
+            static::createFile($filePath, $exampleFilePath);
         }
 
         $fileContents = file_get_contents($filePath);
@@ -20,9 +19,11 @@ class DotEnv
         }
     }
 
-    protected static function createFile(string $filePath)
+    protected static function createFile(string $filePath, ?string $exampleFilePath): void
     {
-        file_put_contents($filePath, '');
+        ($exampleFilePath)
+            ? copy($exampleFilePath, $filePath)
+            : file_put_contents($filePath, '');
     }
 
     protected static function parseString(string $string): array
@@ -164,4 +165,7 @@ class DotEnv
     }
 }
 
-DotEnv::parseFile(BASEDIR . '/.env');
+DotEnv::parseFile(
+    BASEDIR . '/.env',
+    BASEDIR . '/.env.example',
+);
