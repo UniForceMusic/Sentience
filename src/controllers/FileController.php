@@ -14,7 +14,7 @@ class FileController extends Controller
             '%s/%s/%s',
             BASEDIR,
             FILEDIR,
-            $request->getTemplateValue('filePath')
+            $request->getVar('filePath')
         );
 
         if (str_contains($filePath, '/../')) {

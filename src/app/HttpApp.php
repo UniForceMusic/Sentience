@@ -3,17 +3,13 @@
 namespace src\app;
 
 use Throwable;
-use Closure;
-use ReflectionFunction;
-use ReflectionMethod;
 use Service;
 use src\router\Route;
 use src\router\HttpRouter;
 
-class HttpApp
+class HttpApp extends App implements AppInterface
 {
     protected HttpRouter $router;
-    protected Service $service;
 
     public function __construct(array $routes, Service $service)
     {
@@ -43,7 +39,16 @@ class HttpApp
 
             $callable = $route->getCallable();
             if (is_array($callable)) {
-                $callable = $this->arrayToCallable($callable);
+                $callable = $this->arrayToCallable(
+                    $callable,
+                    function (string $class, string $method): void {
+                        Response::internalServerError([
+                            'error' => [
+                                'text' => sprintf('class: %s does not have a public method named: %s', $class, $method)
+                            ]
+                        ]);
+                    }
+                );
 
                 if (!$callable) {
                     return;
@@ -57,25 +62,7 @@ class HttpApp
 
     }
 
-    protected function arrayToCallable(array $callable): ?callable
-    {
-        $className = $callable[0];
-        $methodName = $callable[1];
-        $controller = new $className();
-
-        if (!method_exists($controller, $methodName)) {
-            Response::internalServerError([
-                'error' => [
-                    'text' => sprintf('class does not have a public method named: "%s"', $methodName)
-                ]
-            ]);
-            return null;
-        }
-
-        return [$controller, $methodName];
-    }
-
-    protected function handleException(Throwable $error): void
+    public function handleException(Throwable $error): void
     {
         Response::internalServerError([
             'error' => [
@@ -109,7 +96,7 @@ class HttpApp
 
             if ($name == 'request') {
                 $args['request'] = new Request(
-                    $route->getTemplateValues(),
+                    $route->getVars(),
                     $route->getRequest()
                 );
                 continue;
@@ -125,18 +112,6 @@ class HttpApp
         }
 
         return $args;
-    }
-
-    protected function getFunctionArgs(string|Closure $callable): array
-    {
-        $reflectionFunction = new ReflectionFunction($callable);
-        return $reflectionFunction->getParameters();
-    }
-
-    protected function getMethodArgs(string|object $class, string $method): array
-    {
-        $reflectionMethod = new ReflectionMethod($class, $method);
-        return $reflectionMethod->getParameters();
     }
 
     protected function executeMiddleware(Route $route, array $args): ?array

@@ -43,7 +43,7 @@ $routes = [
         ->setPath('/example/{id}')
         ->setCallable(
             function (Request $request) {
-                Response::ok($request->getTemplateValues());
+                Response::ok($request->getVars());
             }
         )
         ->setMethods(['GET', 'POST', 'PUT', 'DELETE']),

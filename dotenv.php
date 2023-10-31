@@ -166,6 +166,6 @@ class DotEnv
 }
 
 DotEnv::parseFile(
-    BASEDIR . '/.env',
-    BASEDIR . '/.env.example',
+    sprintf('%s/.env', BASEDIR),
+    sprintf('%s/.env.example', BASEDIR)
 );

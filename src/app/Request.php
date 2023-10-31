@@ -16,10 +16,10 @@ class Request
     protected array $headers;
     protected array $parameters;
     protected array $cookies;
-    protected array $templateValues;
+    protected array $vars;
     protected ?RequestObject $request = null;
 
-    public function __construct(array $templateValues, ?string $request)
+    public function __construct(array $vars, ?string $request)
     {
         $this->url = Url::getRequestUrl();
         $this->uri = Url::getRequestUri();
@@ -38,7 +38,7 @@ class Request
 
         $this->parameters = $_GET;
         $this->cookies = $_COOKIE;
-        $this->templateValues = $templateValues;
+        $this->vars = $vars;
 
         if ($request) {
             $this->request = new $request($this);
@@ -132,18 +132,18 @@ class Request
         return simplexml_load_string($this->body);
     }
 
-    public function getTemplateValues(): array
+    public function getVars(): array
     {
-        return $this->templateValues;
+        return $this->vars;
     }
 
-    public function getTemplateValue(string $key): ?string
+    public function getVar(string $key): ?string
     {
-        if (!key_exists($key, $this->templateValues)) {
+        if (!key_exists($key, $this->vars)) {
             return null;
         }
 
-        return $this->templateValues[$key];
+        return $this->vars[$key];
     }
 
     public function getRequest(): ?RequestObject

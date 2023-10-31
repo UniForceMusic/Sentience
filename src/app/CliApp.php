@@ -3,18 +3,14 @@
 namespace src\app;
 
 use Throwable;
-use Closure;
-use ReflectionFunction;
-use ReflectionMethod;
 use Service;
 use src\router\CliRouter;
 use src\router\Command;
 use src\util\Strings;
 
-class CliApp
+class CliApp extends App implements AppInterface
 {
     protected CliRouter $router;
-    protected Service $service;
 
     public function __construct(array $commands, Service $service, array $args)
     {
@@ -44,7 +40,12 @@ class CliApp
 
             $callable = $command->getCallable();
             if (is_array($callable)) {
-                $callable = $this->arrayToCallable($callable);
+                $callable = $this->arrayToCallable(
+                    $callable,
+                    function (string $class, string $method): void {
+                        Stdio::errorFLn('class %s does not have a public method named: %s', $class, $method);
+                    }
+                );
 
                 if (!$callable) {
                     return;
@@ -57,21 +58,7 @@ class CliApp
         }
     }
 
-    protected function arrayToCallable(array $callable): ?callable
-    {
-        $className = $callable[0];
-        $methodName = $callable[1];
-        $controller = new $className();
-
-        if (!method_exists($controller, $methodName)) {
-            Stdio::errorFLn('class does not have a public method named: "%s"', $methodName);
-            return null;
-        }
-
-        return [$controller, $methodName];
-    }
-
-    protected function handleException(Throwable $error): void
+    public function handleException(Throwable $error): void
     {
         Stdio::errorLn('--------- Exception -------------------------------------------------------');
         Stdio::errorFLn('- Text  : %s', $error->getMessage());
@@ -149,18 +136,6 @@ class CliApp
         }
 
         return $args;
-    }
-
-    protected function getFunctionArgs(string|Closure $callable): array
-    {
-        $reflectionFunction = new ReflectionFunction($callable);
-        return $reflectionFunction->getParameters();
-    }
-
-    protected function getMethodArgs(string|object $class, string $method): array
-    {
-        $reflectionMethod = new ReflectionMethod($class, $method);
-        return $reflectionMethod->getParameters();
     }
 
     protected function executeMiddleware(Command $command, array $args): ?array

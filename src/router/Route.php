@@ -10,7 +10,7 @@ class Route
     protected string|array|Closure $callable;
     protected array $methods;
     protected array $middleware;
-    protected array $templateValues;
+    protected array $vars;
     protected bool $isFile;
     protected ?string $request;
 
@@ -19,7 +19,7 @@ class Route
         $this->path = '';
         $this->methods = [];
         $this->middleware = [];
-        $this->templateValues = [];
+        $this->vars = [];
         $this->isFile = false;
         $this->request = null;
     }
@@ -39,11 +39,11 @@ class Route
 
     protected function isPathMatch(string $requestUri): bool
     {
-        $templateParts = explode('/', trim($this->path, '/'));
+        $routeParts = explode('/', trim($this->path, '/'));
         $requestUriParts = explode('/', trim($requestUri, '/'));
         $modifiedParts = [];
 
-        foreach ($templateParts as $index => $part) {
+        foreach ($routeParts as $index => $part) {
             $matchesTemplateSyntax = preg_match('/{(.*)}/', $part, $matches);
             if (!$matchesTemplateSyntax) {
                 $modifiedParts[] = $part;
@@ -56,9 +56,9 @@ class Route
             }
 
             if (key_exists($index, $requestUriParts)) {
-                $templateKey = $matches[1];
-                $templateValue = $requestUriParts[$index];
-                $this->templateValues[$templateKey] = $templateValue;
+                $key = $matches[1];
+                $value = $requestUriParts[$index];
+                $this->vars[$key] = $value;
             }
 
             $modifiedParts[] = '(.[^/]*)';
@@ -89,7 +89,7 @@ class Route
         }
 
         if (count($matches) > 1) {
-            $this->templateValues['filePath'] = $matches[1];
+            $this->vars['filePath'] = $matches[1];
         }
 
         return true;
@@ -127,9 +127,9 @@ class Route
         return $this->middleware;
     }
 
-    public function getTemplateValues(): array
+    public function getVars(): array
     {
-        return $this->templateValues;
+        return $this->vars;
     }
 
     public function getRequest(): ?string

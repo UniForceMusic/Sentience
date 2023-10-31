@@ -1,3 +1,12 @@
 <?php
 
-exec('php -S localhost:8000 index.php');
+include_once 'requires.php';
+
+exec(
+    sprintf(
+        'php -S %s:%s %s/index.php',
+        $_ENV['HOST'],
+        $_ENV['PORT'],
+        BASEDIR
+    )
+);
