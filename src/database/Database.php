@@ -151,6 +151,10 @@ class Database
                     return sprintf('"%s"', addslashes($param));
                 }
 
+                if (is_null($param)) {
+                    return 'NULL';
+                }
+
                 return $queryBuilder->castToDatabase($param);
             },
             $queryString

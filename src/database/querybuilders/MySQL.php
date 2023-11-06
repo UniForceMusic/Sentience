@@ -151,19 +151,11 @@ class MySQL implements QueryBuilderInterface
             return ($value) ? 1 : 0;
         }
 
-        if (is_null($value)) {
-            return 'NULL';
-        }
-
         return $value;
     }
 
     public function castFromDatabase(string $nativeType, mixed $value): mixed
     {
-        if (is_null($value)) {
-            return null;
-        }
-
         if ($nativeType == 'DATETIME') {
             return DateTime::createFromFormat('Y-m-d H:i:s', $value);
         }
