@@ -59,7 +59,6 @@ class HttpApp extends App implements AppInterface
         } catch (Throwable $error) {
             $this->handleException($error);
         }
-
     }
 
     public function handleException(Throwable $error): void
