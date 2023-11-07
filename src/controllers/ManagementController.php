@@ -12,8 +12,30 @@ use src\models\Migration;
 
 class ManagementController extends Controller
 {
-    public function initDatabase(Database $database)
+    public function initDatabase()
     {
+        $username = $_ENV['DB_USERNAME'];
+        $password = $_ENV['DB_PASSWORD'];
+        $engine = $_ENV['DB_ENGINE'];
+        $host = $_ENV['DB_HOST'];
+        $port = $_ENV['DB_PORT'];
+        $debug = $_ENV['DB_DEBUG'];
+
+        $database = Database::createInstanceWithoutDatabase(
+            $engine,
+            $host,
+            $port,
+            $username,
+            $password,
+            $debug,
+        );
+
+        $database->createDatabase(
+            $_ENV['DB_NAME'],
+            true,
+            true
+        );
+
         $migration = new Migration($database);
         $migration->createTable(true);
 

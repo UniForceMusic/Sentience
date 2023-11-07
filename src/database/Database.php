@@ -66,6 +66,48 @@ class Database
         );
     }
 
+    public static function createInstanceWithoutDatabase(
+        string $engine,
+        string $host,
+        int $port,
+        string $username,
+        string $password,
+        bool $debug = false
+    ): static {
+        return new static(
+            $engine,
+            $host,
+            $port,
+            $username,
+            $password,
+            '',
+            $debug,
+        );
+    }
+
+    public function createDatabase(string $database, bool $ifNotExists = false, bool $use = false): PDOStatement
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        [$query, $params] = $queryBuilder->createDatabase($database, $ifNotExists);
+        $statement = $this->exec($query, $params);
+
+        if ($use) {
+            $this->useDatabase($database);
+        }
+
+        return $statement;
+    }
+
+    public function useDatabase(string $database): PDOStatement
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        [$query, $params] = $queryBuilder->useDatabase($database);
+
+        return $this->exec($query, $params);
+    }
+
     public function exec(string $query, ?array $params = []): PDOStatement
     {
         $statement = $this->pdo->prepare($query);

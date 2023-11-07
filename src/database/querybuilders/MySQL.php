@@ -141,6 +141,33 @@ class MySQL implements QueryBuilderInterface
         return [$query, $params];
     }
 
+    public function createDatabase(string $database, bool $ifNotExists): array
+    {
+        $query = '';
+        $params = [];
+
+        $query .= sprintf(
+            'CREATE DATABASE%s `%s`;',
+            (($ifNotExists) ? ' IF NOT EXISTS' : ''),
+            $database
+        );
+
+        return [$query, $params];
+    }
+
+    public function useDatabase(string $database): array
+    {
+        $query = '';
+        $params = [];
+
+        $query .= sprintf(
+            'USE `%s`;',
+            $database
+        );
+
+        return [$query, $params];
+    }
+
     public function castToDatabase(mixed $value): mixed
     {
         if ($value instanceof DateTime) {
