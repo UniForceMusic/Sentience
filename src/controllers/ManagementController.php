@@ -19,6 +19,7 @@ class ManagementController extends Controller
         $engine = $_ENV['DB_ENGINE'];
         $host = $_ENV['DB_HOST'];
         $port = $_ENV['DB_PORT'];
+        $name = $_ENV['DB_NAME'];
         $debug = $_ENV['DB_DEBUG'];
 
         $database = Database::createInstanceWithoutDatabase(
@@ -31,7 +32,7 @@ class ManagementController extends Controller
         );
 
         $database->createDatabase(
-            $_ENV['DB_NAME'],
+            $name,
             true,
             true
         );
