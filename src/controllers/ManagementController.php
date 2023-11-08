@@ -12,7 +12,7 @@ use src\models\Migration;
 
 class ManagementController extends Controller
 {
-    public function initDatabase()
+    public function createDatabase()
     {
         $username = $_ENV['DB_USERNAME'];
         $password = $_ENV['DB_PASSWORD'];
@@ -37,6 +37,11 @@ class ManagementController extends Controller
             true
         );
 
+        Stdio::printFLn('Database %s created successfully', $name);
+    }
+
+    public function initDatabase(Database $database)
+    {
         $migration = new Migration($database);
         $migration->createTable(true);
 

@@ -10,6 +10,10 @@ $commands = [
         ->setCallable([ExampleController::class, 'exampleCli']),
 
     Command::create()
+        ->setCommand('database/create')
+        ->setCallable([ManagementController::class, 'createDatabase']),
+
+    Command::create()
         ->setCommand('database/init')
         ->setCallable([ManagementController::class, 'initDatabase']),
 
