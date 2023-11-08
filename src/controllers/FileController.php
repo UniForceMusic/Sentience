@@ -10,11 +10,12 @@ class FileController extends Controller
 {
     public function serveFile(Request $request)
     {
+        $fileKey = array_key_first($request->getVars());
         $filePath = sprintf(
             '%s/%s/%s',
             BASEDIR,
             FILEDIR,
-            $request->getVar('filePath')
+            $request->getVar($fileKey)
         );
 
         if (str_contains($filePath, '/../')) {

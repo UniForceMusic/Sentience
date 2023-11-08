@@ -82,15 +82,30 @@ class Route
 
     protected function isFileMatch(string $requestUri): bool
     {
-        $pattern = sprintf('/%s\/(.*)/', FILEDIR);
-        $matchesTemplateSyntax = preg_match($pattern, $requestUri, $matches);
+        $matchesVarPattern = '/\/(.*)\/{(.*)}/';
+        $matchesVar = preg_match($matchesVarPattern, $this->path, $varMatches);
+        if (!$matchesVar) {
+            return false;
+        }
+
+        if (count($varMatches) < 2) {
+            return false;
+        }
+
+        $fileDir = $varMatches[1];
+        $varKey = $varMatches[2];
+
+        $matchesTemplateSyntaxPattern = sprintf('/%s\/(.*)/', $fileDir);
+        $matchesTemplateSyntax = preg_match($matchesTemplateSyntaxPattern, $requestUri, $templateMatches);
         if (!$matchesTemplateSyntax) {
             return false;
         }
 
-        if (count($matches) > 1) {
-            $this->vars['filePath'] = $matches[1];
+        if (count($templateMatches) < 2) {
+            return false;
         }
+
+        $this->vars[$varKey] = $templateMatches[1];
 
         return true;
     }
@@ -161,9 +176,11 @@ class Route
         return $this;
     }
 
-    public function setFile(bool $state): static
+    public function setFilePath(string $path): static
     {
-        $this->isFile = $state;
+        $this->isFile = true;
+        $this->path = $path;
+
         return $this;
     }
 

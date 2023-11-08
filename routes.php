@@ -14,8 +14,7 @@ function exampleFunction(Request $request)
 
 $routes = [
     Route::create()
-        ->setFile(true)
-        ->setPath('<placeholder shown on route not found page>')
+        ->setFilePath(sprintf('/%s/{filePath}', FILEDIR))
         ->setCallable([FileController::class, 'serveFile'])
         ->setMethods(['GET']),
 
