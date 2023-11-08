@@ -2,7 +2,6 @@
 
 namespace src\app;
 
-use src\router\Route;
 use src\util\MimeTypes;
 
 class Response
@@ -45,17 +44,22 @@ class Response
 
     public static function routeNotFound(array $routes)
     {
-        $routeStrings = array_map(
-            function (Route $route) {
-                return $route->getPath();
-            },
-            $routes
-        );
+        $routesWithMethods = [];
+
+        foreach ($routes as $route) {
+            $path = $route->getPath();
+            $methods = $route->getMethods();
+
+            $routesWithMethods[$path] = array_unique([
+                ...$routesWithMethods[$path] ?? [],
+                ...$methods
+            ]);
+        }
 
         static::renderContent([
             'error' => [
                 'text' => 'the route was invalid',
-                'available_routes' => $routeStrings
+                'available_routes' => $routesWithMethods
             ]
         ]);
 
