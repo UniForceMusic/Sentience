@@ -8,7 +8,7 @@ use src\util\Headers;
 
 class FileController extends Controller
 {
-    public function serveFile(Request $request)
+    public function serveFile(Request $request): void
     {
         $fileKey = array_key_first($request->getVars());
         $filePath = sprintf(

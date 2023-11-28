@@ -12,7 +12,19 @@ use src\models\Migration;
 
 class ManagementController extends Controller
 {
-    public function createDatabase()
+    public function startServer(): void
+    {
+        exec(
+            sprintf(
+                'php -S %s:%s %s/index.php',
+                $_ENV['HOST'],
+                $_ENV['PORT'],
+                BASEDIR
+            )
+        );
+    }
+
+    public function createDatabase(): void
     {
         $username = $_ENV['DB_USERNAME'];
         $password = $_ENV['DB_PASSWORD'];
@@ -40,7 +52,7 @@ class ManagementController extends Controller
         Stdio::printFLn('Database %s created successfully', $name);
     }
 
-    public function initDatabase(Database $database)
+    public function initDatabase(Database $database): void
     {
         $migration = new Migration($database);
         $migration->createTable(true);
@@ -48,7 +60,7 @@ class ManagementController extends Controller
         Stdio::printLn('Migrations table created');
     }
 
-    public function runMigrations(Database $database)
+    public function runMigrations(Database $database): void
     {
         $migrationsDir = getMigrationsDir();
 
@@ -108,7 +120,7 @@ class ManagementController extends Controller
         }
     }
 
-    public function initModel(Database $database, array $flags)
+    public function initModel(Database $database, array $flags): void
     {
         if (!isset($flags['class'])) {
             Stdio::errorLn('No flag --class={className} set');
@@ -142,7 +154,7 @@ class ManagementController extends Controller
         Stdio::printFLn('Migration for model %s created successfully', $flags['class']);
     }
 
-    public function runTests()
+    public function runTests(): void
     {
         /**
          * Each file that doesn't abide by the PHPUnit format will be converted before running tests

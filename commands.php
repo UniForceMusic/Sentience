@@ -6,6 +6,10 @@ use src\router\Command;
 
 $commands = [
     Command::create()
+        ->setCommand('server/start')
+        ->setCallable([ManagementController::class, 'startServer']),
+
+    Command::create()
         ->setCommand('example')
         ->setCallable([ExampleController::class, 'exampleCli']),
 
