@@ -129,6 +129,7 @@ class HttpResponse
             if (!str_contains($headerLine, ':')) {
                 continue;
             }
+
             $headerSplitColon = explode(':', $headerLine, 2);
 
             $key = strtolower(trim($headerSplitColon[0]));
