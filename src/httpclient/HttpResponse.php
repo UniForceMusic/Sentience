@@ -9,7 +9,7 @@ use src\exceptions\CurlException;
 
 class HttpResponse
 {
-    public const HTTP_EOL = "\r\n\r\n";
+    public const HTTP_EOL = "\r\n";
 
     protected CurlHandle $curlHandle;
     protected ?string $url;
@@ -20,6 +20,12 @@ class HttpResponse
 
     public function __construct(CurlHandle $curlHandle, int $retryCount)
     {
+        $this->url = null;
+        $this->code = null;
+        $this->http = null;
+        $this->headers = null;
+        $this->body = null;
+
         for ($i = 0; $i < $retryCount + 1; $i++) {
             $response = curl_exec($curlHandle);
             if ($response) {
@@ -85,6 +91,17 @@ class HttpResponse
     public function getCurlInfo(int $curlOption): mixed
     {
         return curl_getinfo($this->curlHandle, $curlOption);
+    }
+
+    public function asAssoc(): array
+    {
+        return [
+            'url' => $this->url,
+            'code' => $this->code,
+            'http' => $this->http,
+            'headers' => $this->headers,
+            'body' => $this->body,
+        ];
     }
 
     protected function parseCurlHandle(CurlHandle $curlHandle)
