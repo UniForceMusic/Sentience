@@ -2,10 +2,11 @@
 
 use src\app\Request;
 use src\app\Response;
+use src\middleware\CORSMiddleware;
+use src\middleware\ExampleMiddleware;
 use src\router\Route;
 use src\controllers\ExampleController;
 use src\controllers\FileController;
-use src\middleware\ExampleMiddleware;
 
 function exampleFunction(Request $request)
 {
@@ -16,7 +17,8 @@ $routes = [
     Route::create()
         ->setFilePath(sprintf('/%s/{filePath}', FILEDIR))
         ->setCallable([FileController::class, 'serveFile'])
-        ->setMethods(['GET']),
+        ->setMethods(['GET'])
+        ->setMiddleware([CORSMiddleware::class]),
 
     Route::create()
         ->setPath('/')

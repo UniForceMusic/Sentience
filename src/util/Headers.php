@@ -28,9 +28,9 @@ class Headers
 
     public static function cors(Request $request, $returnOrigin = false): void
     {
-        $originHeader = $request->getHeader('origin')
-            ?? $request->getHeader('host')
-            ?? '*';
+        $originHeader = ($request->getHeader('origin'))
+            ? $request->getHeader('origin')
+            : $request->getHeader('host');
 
         $originEnv = implode(', ', $_ENV['ACCESS_CONTROL_ALLOW_ORIGIN']);
 
