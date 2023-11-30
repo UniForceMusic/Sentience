@@ -271,6 +271,11 @@ class Query
 
     public static function wildcard(string $substr): string
     {
+        $substr = str_replace('%', '\%', $substr);
+        $substr = str_replace('_', '\_', $substr);
+        $substr = str_replace('[', '\[', $substr);
+        $substr = str_replace('-', '\-', $substr);
+
         return ('%' . $substr . '%');
     }
 }
