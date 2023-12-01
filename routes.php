@@ -24,7 +24,8 @@ $routes = [
         ->setPath('/')
         ->setCallable([ExampleController::class, 'exampleHttp'])
         ->setMethods(['*'])
-        ->setMiddleware([ExampleMiddleware::class]),
+        ->setMiddleware([ExampleMiddleware::class])
+        ->setHide(),
 
     Route::create()
         ->setPath('/stringfunction-example')

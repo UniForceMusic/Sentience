@@ -47,6 +47,10 @@ class Response
         $routesWithMethods = [];
 
         foreach ($routes as $route) {
+            if ($route->getHide()) {
+                continue;
+            }
+
             $path = $route->getPath();
             $methods = $route->getMethods();
 

@@ -12,6 +12,7 @@ class Route
     protected array $middleware;
     protected array $vars;
     protected bool $isFile;
+    protected bool $hide;
     protected ?string $request;
 
     public function __construct()
@@ -21,6 +22,7 @@ class Route
         $this->middleware = [];
         $this->vars = [];
         $this->isFile = false;
+        $this->hide = false;
         $this->request = null;
     }
 
@@ -147,6 +149,11 @@ class Route
         return $this->vars;
     }
 
+    public function getHide(): bool
+    {
+        return $this->hide;
+    }
+
     public function getRequest(): ?string
     {
         return $this->request;
@@ -180,6 +187,13 @@ class Route
     {
         $this->isFile = true;
         $this->path = $path;
+
+        return $this;
+    }
+
+    public function setHide(): static
+    {
+        $this->hide = true;
 
         return $this;
     }
