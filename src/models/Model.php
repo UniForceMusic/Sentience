@@ -322,6 +322,19 @@ abstract class Model
             ->retrieve($this->database, $this, $modifyQuery);
     }
 
+    public function formatProperties(): static
+    {
+        foreach ($this->fields as $propertyName => $columnName) {
+            if (!(new ReflectionProperty($this, $propertyName))->isInitialized($this)) {
+                continue;
+            }
+
+            $this->formatProperty($propertyName);
+        }
+
+        return $this;
+    }
+
     protected function validate(): bool
     {
         /**
@@ -355,14 +368,10 @@ abstract class Model
                 continue;
             }
 
+            $this->formatProperty($propertyName);
+
             $key = $columnName;
             $value = $this->{$propertyName};
-
-            if (is_null($value)) {
-                continue;
-            }
-
-            $value = $this->formatProperty($propertyName, $value);
 
             $values[$key] = $this->castFromModelToDatabase($value);
         }
@@ -370,26 +379,29 @@ abstract class Model
         return $values;
     }
 
-    protected function formatProperty(string $propertyName, mixed $value): mixed
+    protected function formatProperty(string $propertyName): void
     {
+        $value = $this->{$propertyName};
+
         $onSaveFunc = $this->onSave[$propertyName] ?? null;
         if (!$onSaveFunc) {
-            return $value;
+            return;
         }
 
         if (is_array($onSaveFunc)) {
-            return $onSaveFunc($value);
+            $this->{$propertyName} = $onSaveFunc($value);
+            return;
         }
 
         if (method_exists($this, $onSaveFunc)) {
-            return $this->{$onSaveFunc}($value);
+            $this->{$propertyName} = $this->{$onSaveFunc}($value);
+            return;
         }
 
         if (function_exists($onSaveFunc)) {
-            return $onSaveFunc($value);
+            $this->{$propertyName} = $onSaveFunc($value);
+            return;
         }
-
-        return $value;
     }
 
     protected function getColumnType(PDOStatement $statement, array $data, string $key): ?string
