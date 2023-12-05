@@ -116,7 +116,9 @@ class Database
         }
 
         if ($this->debug) {
+            Stdio::printLn('');
             Stdio::errorFLn('Query: %s', $this->printDebug($statement, $params));
+            Stdio::printLn('');
         }
 
         return $statement;

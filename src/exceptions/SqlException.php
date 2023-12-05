@@ -11,6 +11,12 @@ class SqlException extends Exception
     {
         $error = $statement->errorInfo();
 
-        parent::__construct($error[2] ?? $error[0]);
+        parent::__construct(
+            sprintf(
+                'error: (%s) query: (%s)',
+                ($error[2] ?? $error[0]),
+                $statement->queryString
+            )
+        );
     }
 }

@@ -362,15 +362,34 @@ abstract class Model
                 continue;
             }
 
-            $onSaveMethod = $this->onSave[$propertyName] ?? null;
-            if ($onSaveMethod) {
-                $value = $this->{$onSaveMethod}($value);
-            }
+            $value = $this->formatProperty($propertyName, $value);
 
             $values[$key] = $this->castFromModelToDatabase($value);
         }
 
         return $values;
+    }
+
+    protected function formatProperty(string $propertyName, mixed $value): mixed
+    {
+        $onSaveFunc = $this->onSave[$propertyName] ?? null;
+        if (!$onSaveFunc) {
+            return $value;
+        }
+
+        if (is_array($onSaveFunc)) {
+            return $onSaveFunc($value);
+        }
+
+        if (method_exists($this, $onSaveFunc)) {
+            return $this->{$onSaveFunc}($value);
+        }
+
+        if (function_exists($onSaveFunc)) {
+            return $onSaveFunc($value);
+        }
+
+        return $value;
     }
 
     protected function getColumnType(PDOStatement $statement, array $data, string $key): ?string
