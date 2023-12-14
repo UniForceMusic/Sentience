@@ -11,6 +11,7 @@ class Request
 {
     protected string $url;
     protected string $uri;
+    protected ?string $queryString;
     protected string $method;
     protected string $body;
     protected array $headers;
@@ -19,14 +20,17 @@ class Request
     protected array $vars;
     protected ?RequestObject $request = null;
 
-    public function __construct(array $vars, ?string $request)
+    public function __construct(array $vars = [], ?string $request = null)
     {
-        $this->url = Url::getRequestUrl();
-        $this->uri = Url::getRequestUri();
-        $this->method = strtoupper($_SERVER['REQUEST_METHOD']);
-        $this->body = file_get_contents('php://input');
-
+        $url = Url::getRequestUrl();
+        $uri = Url::getRequestUri();
+        $queryString = Url::getQueryString();
+        $method = strtoupper($_SERVER['REQUEST_METHOD']);
+        $body = file_get_contents('php://input');
+        $parameters = Url::urlDecodeParameters($queryString);
+        $cookies = $_COOKIE;
         $rawHeaders = getallheaders();
+        $headers = [];
         array_walk(
             $rawHeaders,
             function (string $val, string $key) use (&$headers) {
@@ -34,10 +38,15 @@ class Request
                 $headers[$lowerCaseKey] = $val;
             }
         );
-        $this->headers = $headers;
 
-        $this->parameters = $_GET;
-        $this->cookies = $_COOKIE;
+        $this->url = $url;
+        $this->uri = $uri;
+        $this->queryString = $queryString;
+        $this->method = $method;
+        $this->body = $body;
+        $this->headers = $headers;
+        $this->parameters = $parameters;
+        $this->cookies = $cookies;
         $this->vars = $vars;
 
         if ($request) {
@@ -53,6 +62,11 @@ class Request
     public function getUri(): string
     {
         return $this->uri;
+    }
+
+    public function getQueryString(): ?string
+    {
+        return $this->queryString;
     }
 
     public function getMethod(): string
@@ -84,7 +98,7 @@ class Request
         return $this->parameters;
     }
 
-    public function getParameter(string $key): ?string
+    public function getParameter(string $key): null|string|array
     {
         if (!key_exists($key, $this->parameters)) {
             return null;

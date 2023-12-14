@@ -44,6 +44,8 @@ class Response
 
     public static function routeNotFound(array $routes)
     {
+        $request = new Request();
+
         $routesWithMethods = [];
 
         foreach ($routes as $route) {
@@ -63,6 +65,14 @@ class Response
         static::renderContent([
             'error' => [
                 'text' => 'the route was invalid',
+                'request' => [
+                    'url' => $request->getUrl(),
+                    'parameters' => $request->getParameters(),
+                    'method' => $request->getMethod(),
+                    'headers' => $request->getHeaders(),
+                    'cookies' => $request->getCookies(),
+                    'body' => $request->getBody(),
+                ],
                 'available_routes' => $routesWithMethods
             ]
         ]);

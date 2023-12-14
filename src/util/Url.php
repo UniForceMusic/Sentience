@@ -27,6 +27,24 @@ class Url
         return trim($requestUri, '/');
     }
 
+    public static function getQueryString(): ?string
+    {
+        $requestUri = $_SERVER['REQUEST_URI'];
+
+        if (str_contains($requestUri, '?')) {
+            return trim(
+                strstr(
+                    $requestUri,
+                    '?',
+                    false
+                ),
+                '/'
+            );
+        }
+
+        return null;
+    }
+
     public static function getRequestUrl(): string
     {
         return sprintf('%s/%s', static::getBaseUrl(), static::getPath());
@@ -75,7 +93,7 @@ class Url
         );
     }
 
-    public static function urlencodeParameters(array $parameters): string
+    public static function urlEncodeParametersFromAssoc(array $parameters): string
     {
         $parametersArray = [];
 
@@ -89,19 +107,61 @@ class Url
         return $queryString;
     }
 
-    public static function urldecodeParameters(string $string): array
+    public static function urlDecodeParametersToAssoc(?string $string): array
     {
-        $parts = explode('&', $string);
-        $partsArray = [];
+        if (!$string) {
+            return [];
+        }
+
+        $parts = explode(
+            '&',
+            ltrim(
+                $string,
+                '?'
+            )
+        );
+        $params = [];
 
         foreach ($parts as $part) {
             $partSplit = explode('=', $part, 2);
+
             $key = urldecode($partSplit[0]);
             $value = urldecode($partSplit[1]);
 
-            $partsArray[$key] = $value;
+            $params[$key] = $value;
         }
 
-        return $partsArray;
+        return $params;
+    }
+
+    public static function urlDecodeParameters(?string $string): array
+    {
+        if (!$string) {
+            return [];
+        }
+
+        $parts = explode(
+            '&',
+            ltrim(
+                $string,
+                '?'
+            )
+        );
+        $params = [];
+
+        foreach ($parts as $part) {
+            $partSplit = explode('=', $part, 2);
+
+            $key = urldecode($partSplit[0]);
+            $value = urldecode($partSplit[1]);
+
+            if (!key_exists($key, $params)) {
+                $params[$key] = [];
+            }
+
+            $params[$key][] = $value;
+        }
+
+        return $params;
     }
 }
