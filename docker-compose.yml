@@ -12,7 +12,7 @@ services:
       - 3306:3306
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./config/mysql:/docker-entrypoint-initdb.d
+      # - ./config/mysql:/docker-entrypoint-initdb.d
     networks:
       - public
     healthcheck:
