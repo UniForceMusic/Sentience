@@ -3,8 +3,6 @@
 namespace src\controllers;
 
 use Throwable;
-use src\app\Request;
-use src\app\Response;
 use src\app\Stdio;
 use src\database\Database;
 use src\database\queries\Query;
@@ -199,5 +197,46 @@ class ManagementController extends Controller
         exec('phpunit tests/', $output);
 
         Stdio::printLn(implode(PHP_EOL, $output));
+    }
+
+    public function dockerInit(): void
+    {
+        Stdio::printFLn(
+            'Removing old %s project and building new project. This might take a while',
+            $_ENV['DOCKER_PROJECT_NAME']
+        );
+
+        $this->dockerDown();
+        $this->dockerRebuild();
+    }
+
+    public function dockerUp(): void
+    {
+        exec(
+            sprintf(
+                'docker compose -p %s up -d',
+                $_ENV['DOCKER_PROJECT_NAME']
+            )
+        );
+    }
+
+    public function dockerDown(): void
+    {
+        exec(
+            sprintf(
+                'docker compose -p %s down',
+                $_ENV['DOCKER_PROJECT_NAME']
+            )
+        );
+    }
+
+    public function dockerRebuild(): void
+    {
+        exec(
+            sprintf(
+                'docker compose -p %s up -d --force-recreate',
+                $_ENV['DOCKER_PROJECT_NAME']
+            )
+        );
     }
 }

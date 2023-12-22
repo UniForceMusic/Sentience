@@ -32,4 +32,20 @@ $commands = [
     Command::create()
         ->setCommand('tests')
         ->setCallable([ManagementController::class, 'runTests']),
+
+    Command::create()
+        ->setCommand('docker/init')
+        ->setCallable([ManagementController::class, 'dockerInit']),
+
+    Command::create()
+        ->setCommand('docker/up')
+        ->setCallable([ManagementController::class, 'dockerUp']),
+
+    Command::create()
+        ->setCommand('docker/down')
+        ->setCallable([ManagementController::class, 'dockerDown']),
+
+    Command::create()
+        ->setCommand('docker/rebuild')
+        ->setCallable([ManagementController::class, 'dockerRebuild']),
 ];
