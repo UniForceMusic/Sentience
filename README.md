@@ -230,4 +230,56 @@ The easiest way to execute queries however is the `$database->query()` method. I
 
 Here is a list of methods that the query class supports:
 ```
+->table('table')
+->model(\src\models\Model::class)
+
+->columns(['id', 'name'])
+->values([
+    'id' => 1,
+    'name' => 'John Doe'
+])
+
+->where('id',
+    \src\database\queries\Query::EQUALS,
+    5
+)
+->and()
+->where(
+    'name',
+    \src\database\queries\Query::IN_ARRAY,
+    ['John']
+)
+->or()
+->where(
+    'name',
+    \src\database\queries\Query::LIKE,
+    \src\database\queries\Query::wildcard('Doe')
+)
+
+->orderBy(
+    'id',
+    \src\database\objects\OrderBy::ASC
+)
+            
+->limit(1)
+->offset(1)    
+
+->select()
+->selectAssoc()
+->selectAssocs()
+->selectModel()
+->selectModels()
+->count()
+->exists()
+->selectSql()
+
+->insert()
+->insertWithLastId()
+->insertSql()
+
+->update()
+->updateSql()
+
+->delete()
+->deleteSql()
 ```
