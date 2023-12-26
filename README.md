@@ -408,3 +408,4 @@ To create a new HTTP request you need to call the static method `new` on the Htt
 ```
 
 This returns a `\src\httpclient\HttpRequest` object, which can be modified using method chaining.
+
