@@ -214,3 +214,20 @@ As described above, `$request`, `$words` and `$flags` are function arguments, bu
 
 Request, words and flags are reserved words, but any other word can be used for service methods to import any type of variable.
 
+The service class can be found in the root of the Sentience project. By default a database method is included in the application.
+
+The database can be imported by adding it as a method/function arg to your callable. Like this `function methodName(Request $request, \src\database\Database $database)`. Make sure the datatype of the service method and the method/function arg match to prevent any unexpected errors.
+
+## 3 Functionality documentation
+
+### 3.1 Database / Querybuilder
+
+The database class is a wrapper class built on top of PHP's built in PDO. The wrapper adds support for transactions and debug printing. The logs print to STDERR by default to make them visible in the logs of the built in HTTP server.
+
+Raw queries can be executed by calling `$database->exec()` which takes the query as its first argument, and an array of prepared parameters as a second. An array of prepared parameters is optional.
+
+The easiest way to execute queries however is the `$database->query()` method. It returns a query object that supports method chaining to build and execute the full query.
+
+Here is a list of methods that the query class supports:
+```
+```
