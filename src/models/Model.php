@@ -78,7 +78,7 @@ abstract class Model
         return $this;
     }
 
-    public function hydrateByField(string $field, int|string $value): static
+    public function hydrateByField(string $field, mixed $value): static
     {
         $statement = $this->database->query()
             ->table($this->table)
