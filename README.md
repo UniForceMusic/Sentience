@@ -402,10 +402,195 @@ Sentience offers a lightweight alternative for libraries like Guzzle.
 
 #### 3.3.1 Creating a new request
 
-To create a new HTTP request you need to call the static method `new` on the HttpClient class.
+To create a new HTTP request you need to call the static method `new()` on the HttpClient class.
 ```
 \src\httpclient\HttpClient::new()
 ```
 
 This returns a `\src\httpclient\HttpRequest` object, which can be modified using method chaining.
 
+The HttpRequest class has the following methods:
+```
+->url()
+->method()
+->parameters()
+->parameter()
+->headers()
+->header()
+->cookies()
+->cookie()
+->body()
+->json()
+->timeout()
+->timeoutMs()
+->retryCount()
+->customOption('key', 'value')
+```
+
+The `customOption()` method is able to manually override or set new cURL options.
+
+#### 3.3.2 Executing a request
+
+When the request is ready to be executed. The `->execute()` method can be called, and an `\src\httpclient\HttpResponse` object will be returned.
+
+#### 3.3.3 Handling the response
+
+The HttpResponse class has the following methods:
+```
+->getHttp()
+->getCode()
+->getUrl()
+->getHeaders()
+->getBody()
+->getJson()
+->getXml()
+->getCurlInfo('key')
+->asAssoc()
+```
+
+### 3.4 Response class
+
+When running a method designed for an HTTP route, the \src\app\Response class is usually imported by default. The response object contains a big selection of static methods with automatic serialization to make it easier to send responses.
+
+The Response class has static methods that corresponds with HTTP status codes:
+```
+Response::ok()                  // 200
+Response::created()             // 201
+Response::notFound()            // 404
+Response::internalServerError() // 500
+```
+
+These are just some examples. All the documented status code from the Mozilla docs are integrated (https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+
+By default arrays and objects are serialized into json. Strings, integers and floats are returned as txt. If you wish to override this, include the mime type as the second argument:
+```
+Response::ok('iVBORw0KGgoAAAA', MimeTypes::get('image/png'))
+
+Note: Once a static Response method is called, the application does not quit. You need to place a return or exit in your method.
+```
+
+### 3.5 Stdio class
+
+When running a method designed for the command line, the \src\app\Stdio class is usually imported by default. The Stdio class has static methods that make writing to the STDOUT and STDERR easier.
+
+The methods are:
+```
+Stdio::print()
+Stdio::printLn()
+Stdio::printF()
+Stdio::printFLn()
+
+Stdio::error()
+Stdio::errorLn()
+Stdio::errorF()
+Stdio::errorFLn()
+```
+
+Note: Once a static Stdio method is called, the application does not quit. You need to place a return or exit in your method.
+
+### 3.6 Incoming request objects
+
+Sentience offers a way to unserialize incoming requests. This gives the following benefits:
+- Intellisense autocompletion
+- Input checking before any method code is executed
+- Re-use the same request for different methods
+
+To create a new request, create a new file in src/requests. Use the template below for the file contents:
+```
+<?php
+
+namespace src\requests;
+
+use src\app\Request as IncomingRequest;
+
+class ClassNameHere extends Request implements RequestInterface
+{
+    public mixed $classProperty;
+    
+    public function validateAndHydrate(IncomingRequest $request, mixed $parsedPayload): void
+    {
+        $payload = ($parsedPayload)
+            ? $parsedPayload
+            : $request->getJson();
+
+        $this->classProperty = $payload['class_property'];
+    }
+}
+```
+
+The public class properties can later by accessed once the payload has been parsed and the values from the payload are assigned to the correct properties.
+
+The reason the parsed payload is included is the ability to nest request object.
+
+#### 3.6.1 Nesting
+
+If you want to parse an array of comments provided, you'd create a new property `public array $comments`.
+
+Then you'd create a request class that maps all fields to class properties.
+
+In your main request class, in the validateAndHydrate method, you add the following code:
+```
+$this->comments = [];
+
+foreach ($payload['comments'] as $comment) {
+    $this->comments = new CommentRequest($request, $comment);
+}
+```
+
+If you include the
+```
+$payload = ($parsedPayload)
+    ? $parsedPayload
+    : $request->getJson();
+```
+
+statement at the beginning of the method, you'll parse the comment object instead of the entire request body.
+
+#### 3.6.2 Using the request object in a route
+
+To include the request object in a route, go to the `routes.php` file and add the following method at the end of a route:
+```
+->setRequest(ClassNameHere::class)
+```
+
+In your method, include the following code at the top:
+```
+/** @var ClassNameHere $parsedRequest */
+$parsedRequest = $request->getRequest();
+```
+
+### 3.7 Migrations
+
+Sentience supports database migrations. Create a new file ending with .sql in the migrations folder. It executes the files in alphabetical order. Sentience recommends using a number system such as:
+
+`yyyymmddhhmmss_migration_name.sql`, for example `20220228145804_remove_name_column.sql`
+
+When a new model has been created, Sentience supports a way to create a database migration for that model. Run the command:
+
+`php index.php models/init --class={MODEL_NAME}` replacing MODEL_NAME with the class name of your model. It creates and executes the migration.
+
+### 3.8 Static files
+
+Static files are served from the `static` directory. Most filetypes are supported, provided they have a valid mimetype.
+
+### 3.9 DotEnv
+
+Sentience has its own .env parser. It adds support for mixed arrays, booleans and strict strings.
+
+An array looks like this:
+```
+ARRAY=[1, 2, null, 'string', "template string"]
+```
+
+Single quote strings don't compile templated variables. Double quoted strings compile variables.
+Variables are added like this:
+```
+NAME='Sentience'
+DESCRIPTION="${NAME} is a lightweight api framework"
+```
+
+And `DESCRIPTION` will compile to "Sentience is a lightweight api framework".
+
+Support for multiline strings is not supported as of yet
+
+## Good luck creating an application with Sentience!
