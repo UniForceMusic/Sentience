@@ -373,7 +373,7 @@ An assosiative array where the key is the name of the class property, and the va
 If the method exists in the class, it will execute this method. If it does not exist, but a globally declared function does, it will execute this function. Static methods are also supported by using an array as a callable. Lambda's are not supported.
 
 `protected function registerRelations()`:
-Allows you to register relations by calling this protected method `registerRelation`.
+Allows you to register relations by calling the protected method `registerRelation`.
 
 The model class has more built in methods you can override in your model to make your life easier.
 
