@@ -114,6 +114,10 @@ class Route
 
     protected function isMethodMatch(string $method): bool
     {
+        if (count($this->methods) < 1) {
+            return true;
+        }
+
         if (in_array('*', $this->methods)) {
             return true;
         }
