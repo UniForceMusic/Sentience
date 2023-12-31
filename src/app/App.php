@@ -39,7 +39,56 @@ abstract class App
         ]);
     }
 
-    protected function getFunctionArgs(string|Closure $callable): array
+    protected function executeMiddlewareCallable(string|array|callable|Closure $callable, array $args, Service $service): ?array
+    {
+        if (is_array($callable)) {
+            $arguments = $this->getMethodArgs($callable[0], $callable[1]);
+            $callable[0] = new $callable[0]();
+        } else {
+            $arguments = $this->getFunctionArgs($callable);
+        }
+
+        $serviceMethods = get_class_methods($service);
+
+        /**
+         * When a named argument is used in a middleware method or function,
+         * The value disappears from ...$args
+         * 
+         * If a named argument is found, it needs to be added back after executing the middleware
+         */
+        $addBackAfterExecuting = [];
+
+        foreach ($arguments as $argument) {
+            $name = $argument->getName();
+
+            if (key_exists($name, $args)) {
+                $addBackAfterExecuting[] = $name;
+                continue;
+            }
+
+            if (in_array($name, $serviceMethods)) {
+                $addBackAfterExecuting[] = $name;
+
+                $serviceCallable = [$service, $name];
+                $args[] = $serviceCallable();
+
+                continue;
+            }
+        }
+
+        $modifiedArgs = $callable(...$args);
+        if (!is_array($modifiedArgs)) {
+            return null;
+        }
+
+        foreach ($addBackAfterExecuting as $key) {
+            $modifiedArgs[$key] = $args[$key];
+        }
+
+        return $modifiedArgs;
+    }
+
+    protected function getFunctionArgs(string|callable|Closure $callable): array
     {
         $reflectionFunction = new ReflectionFunction($callable);
         return $reflectionFunction->getParameters();

@@ -18,13 +18,17 @@ $routes = [
         ->setFilePath(sprintf('/%s/{filePath}', FILEDIR))
         ->setCallable([FileController::class, 'serveFile'])
         ->setMethods(['GET'])
-        ->setMiddleware([CORSMiddleware::class]),
+        ->setMiddleware([
+            [CORSMiddleware::class, 'execute']
+        ]),
 
     Route::create()
         ->setPath('/')
         ->setCallable([ExampleController::class, 'exampleHttp'])
         ->setMethods(['*'])
-        ->setMiddleware([ExampleMiddleware::class])
+        ->setMiddleware([
+            [ExampleMiddleware::class, 'execute']
+        ])
         ->setHide(),
 
     Route::create()

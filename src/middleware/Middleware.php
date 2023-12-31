@@ -2,10 +2,12 @@
 
 namespace src\middleware;
 
-interface Middleware
+class Middleware
 {
     /**
-     * Return null if the middleware rejects the request
+     * When creating a middleware method, make sure to include ...$args as the last argument
+     * 
+     * Return $args if the middleware executed successfully
+     * Return null if the middleware failed
      */
-    public function execute($args): ?array;
 }

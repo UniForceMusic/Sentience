@@ -33,7 +33,7 @@ class CliApp extends App implements AppInterface
                 return;
             }
 
-            $modifiedArgs = $this->executeMiddleware($command, $args);
+            $modifiedArgs = $this->executeMiddleware($command, $args, $this->service);
             if (!is_array($modifiedArgs)) {
                 return;
             }
@@ -138,19 +138,18 @@ class CliApp extends App implements AppInterface
         return $args;
     }
 
-    protected function executeMiddleware(Command $command, array $args): ?array
+    protected function executeMiddleware(Command $command, array $args, Service $service): ?array
     {
         $middleware = $command->getMiddleware();
 
         $modifiedArgs = $args;
 
-        foreach ($middleware as $middlewareClass) {
-            $callable = [(new $middlewareClass()), 'execute'];
-            $modifiedArgs = $callable($modifiedArgs);
-
-            if (!$modifiedArgs) {
-                return null;
-            }
+        foreach ($middleware as $callable) {
+            $modifiedArgs = $this->executeMiddlewareCallable(
+                $callable,
+                $modifiedArgs,
+                $service
+            );
         }
 
         return $modifiedArgs;

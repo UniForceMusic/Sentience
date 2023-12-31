@@ -5,13 +5,10 @@ namespace src\middleware;
 use src\app\Request;
 use src\app\Response;
 
-class ExampleMiddleware implements Middleware
+class ExampleMiddleware extends Middleware
 {
-    public function execute($args): ?array
+    public function execute(Request $request, ...$args): ?array
     {
-        /** @var Request $request */
-        $request = $args['request'];
-
         if ($request->getParameter('killswitch') == 'true') {
             Response::internalServerError('early termination');
             return null;

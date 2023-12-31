@@ -5,13 +5,10 @@ namespace src\middleware;
 use src\app\Request;
 use src\util\Headers;
 
-class CORSMiddleware implements Middleware
+class CORSMiddleware extends Middleware
 {
-    public function execute($args): ?array
+    public function execute(Request $request, ...$args): ?array
     {
-        /** @var Request $request */
-        $request = $args['request'];
-
         Headers::cors($request, true);
 
         return $args;

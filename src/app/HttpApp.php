@@ -32,7 +32,7 @@ class HttpApp extends App implements AppInterface
                 return;
             }
 
-            $modifiedArgs = $this->executeMiddleware($route, $args);
+            $modifiedArgs = $this->executeMiddleware($route, $args, $this->service);
             if (!is_array($modifiedArgs)) {
                 return;
             }
@@ -113,19 +113,18 @@ class HttpApp extends App implements AppInterface
         return $args;
     }
 
-    protected function executeMiddleware(Route $route, array $args): ?array
+    protected function executeMiddleware(Route $route, array $args, Service $service): ?array
     {
         $middleware = $route->getMiddleware();
 
         $modifiedArgs = $args;
 
-        foreach ($middleware as $middlewareClass) {
-            $callable = [(new $middlewareClass()), 'execute'];
-            $modifiedArgs = $callable($modifiedArgs);
-
-            if (!$modifiedArgs) {
-                return null;
-            }
+        foreach ($middleware as $callable) {
+            $modifiedArgs = $this->executeMiddlewareCallable(
+                $callable,
+                $modifiedArgs,
+                $service
+            );
         }
 
         return $modifiedArgs;
