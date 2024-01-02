@@ -39,7 +39,7 @@ abstract class App
         ]);
     }
 
-    protected function executeMiddlewareCallable(string|array|callable|Closure $callable, array $args, Service $service): ?array
+    protected function executeMiddlewareCallable(string|array|callable|Closure $callable, array $args, Service $service, ?Request $request = null, ?array $words = null, ?array $flags = null): ?array
     {
         if (is_array($callable)) {
             $arguments = $this->getMethodArgs($callable[0], $callable[1]);
@@ -70,7 +70,25 @@ abstract class App
                 $addBackAfterExecuting[] = $name;
 
                 $serviceCallable = [$service, $name];
-                $args[] = $serviceCallable();
+                $args[$name] = $serviceCallable();
+
+                continue;
+            }
+
+            if (in_array($name, ['request', 'words', 'flags'])) {
+                $addBackAfterExecuting[] = $name;
+
+                switch ($name) {
+                    case 'request':
+                        $args[$name] = $request;
+                        break;
+                    case 'words':
+                        $args[$name] = $words;
+                        break;
+                    case 'flags':
+                        $args[$name] = $flags;
+                        break;
+                }
 
                 continue;
             }

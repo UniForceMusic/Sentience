@@ -27,13 +27,22 @@ class CliApp extends App implements AppInterface
                 return;
             }
 
-            $args = $this->getArgs($command, $this->service);
+            $words = $command->getWords();
+            $flags = $command->getFlags();
+
+            $args = $this->getArgs($command, $this->service, $words, $flags);
             if (!is_array($args)) {
                 Stdio::errorLn('error getting arguments for callable');
                 return;
             }
 
-            $modifiedArgs = $this->executeMiddleware($command, $args, $this->service);
+            $modifiedArgs = $this->executeMiddleware(
+                $command,
+                $args,
+                $this->service,
+                $words,
+                $flags
+            );
             if (!is_array($modifiedArgs)) {
                 return;
             }
@@ -97,7 +106,7 @@ class CliApp extends App implements AppInterface
         Stdio::errorLn('---------------------------------------------------------------------------');
     }
 
-    protected function getArgs(Command $command, Service $service): ?array
+    protected function getArgs(Command $command, Service $service, array $words, array $flags): ?array
     {
         $callable = $command->getCallable();
         if (!$callable) {
@@ -117,12 +126,12 @@ class CliApp extends App implements AppInterface
             $name = $argument->getName();
 
             if ($name == 'flags') {
-                $args['flags'] = $command->getFlags();
+                $args['flags'] = $words;
                 continue;
             }
 
             if ($name == 'words') {
-                $args['words'] = $command->getWords();
+                $args['words'] = $flags;
                 continue;
             }
 
@@ -138,7 +147,7 @@ class CliApp extends App implements AppInterface
         return $args;
     }
 
-    protected function executeMiddleware(Command $command, array $args, Service $service): ?array
+    protected function executeMiddleware(Command $command, array $args, Service $service, array $words, array $flags): ?array
     {
         $middleware = $command->getMiddleware();
 
@@ -148,8 +157,15 @@ class CliApp extends App implements AppInterface
             $modifiedArgs = $this->executeMiddlewareCallable(
                 $callable,
                 $modifiedArgs,
-                $service
+                $service,
+                null,
+                $words,
+                $flags
             );
+
+            if (is_null($modifiedArgs)) {
+                return null;
+            }
         }
 
         return $modifiedArgs;

@@ -26,13 +26,18 @@ class HttpApp extends App implements AppInterface
                 return;
             }
 
-            $args = $this->getArgs($route, $this->service);
+            $request = new Request(
+                $route->getVars(),
+                $route->getRequest()
+            );
+
+            $args = $this->getArgs($route, $this->service, $request);
             if (!is_array($args)) {
                 Response::internalServerError('error getting arguments for callable');
                 return;
             }
 
-            $modifiedArgs = $this->executeMiddleware($route, $args, $this->service);
+            $modifiedArgs = $this->executeMiddleware($route, $args, $this->service, $request);
             if (!is_array($modifiedArgs)) {
                 return;
             }
@@ -74,7 +79,7 @@ class HttpApp extends App implements AppInterface
         ]);
     }
 
-    protected function getArgs(Route $route, Service $service): ?array
+    protected function getArgs(Route $route, Service $service, Request $request): ?array
     {
         $callable = $route->getCallable();
         if (!$callable) {
@@ -94,10 +99,7 @@ class HttpApp extends App implements AppInterface
             $name = $argument->getName();
 
             if ($name == 'request') {
-                $args['request'] = new Request(
-                    $route->getVars(),
-                    $route->getRequest()
-                );
+                $args['request'] = $request;
                 continue;
             }
 
@@ -113,7 +115,7 @@ class HttpApp extends App implements AppInterface
         return $args;
     }
 
-    protected function executeMiddleware(Route $route, array $args, Service $service): ?array
+    protected function executeMiddleware(Route $route, array $args, Service $service, Request $request): ?array
     {
         $middleware = $route->getMiddleware();
 
@@ -123,8 +125,13 @@ class HttpApp extends App implements AppInterface
             $modifiedArgs = $this->executeMiddlewareCallable(
                 $callable,
                 $modifiedArgs,
-                $service
+                $service,
+                $request
             );
+
+            if (is_null($modifiedArgs)) {
+                return null;
+            }
         }
 
         return $modifiedArgs;
