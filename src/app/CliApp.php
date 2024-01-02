@@ -125,17 +125,17 @@ class CliApp extends App implements AppInterface
         foreach ($arguments as $argument) {
             $name = $argument->getName();
 
-            if ($name == 'flags') {
-                $args['flags'] = $words;
-                continue;
-            }
-
             if ($name == 'words') {
-                $args['words'] = $flags;
+                $args['words'] = $words;
                 continue;
             }
 
-            if (!in_array($name, ['flags', 'words', ...$serviceMethods])) {
+            if ($name == 'flags') {
+                $args['flags'] = $flags;
+                continue;
+            }
+
+            if (!in_array($name, ['words', 'flags', ...$serviceMethods])) {
                 $args[$name] = null;
                 continue;
             }
