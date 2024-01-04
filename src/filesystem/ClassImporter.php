@@ -8,7 +8,7 @@ class ClassImporter
 {
     public static function importAsString(string $baseDir, string $path, array $exclude = []): ?array
     {
-        $absolutePath = static::appendToBaseDir($baseDir, $path);
+        $absolutePath = appendToBaseDir($baseDir, $path);
 
         if (!file_exists($absolutePath)) {
             throw new FilesystemException(sprintf('file %s does not exist', $absolutePath));
@@ -56,22 +56,5 @@ class ClassImporter
         );
 
         return array_values($classes);
-    }
-
-    protected static function appendToBaseDir(string $baseDir, string $relativePath): string
-    {
-        $chars = ['/', '\\'];
-
-        foreach ($chars as $char) {
-            $baseDir = rtrim($baseDir, $char);
-            $relativePath = trim($relativePath, $char);
-        }
-
-        return sprintf(
-            '%s%s%s',
-            $baseDir,
-            DIRECTORY_SEPARATOR,
-            $relativePath
-        );
     }
 }

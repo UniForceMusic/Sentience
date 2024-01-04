@@ -39,3 +39,34 @@ function getTestsDir(): string
         TESTSDIR
     );
 }
+
+function appendToBaseUrl(string $baseUrl, string $path, string $glue = '/'): ?string
+{
+    if (!$path) {
+        return null;
+    }
+
+    return sprintf(
+        '%s%s%s',
+        trim($baseUrl, $glue),
+        $glue,
+        trim($path, $glue),
+    );
+}
+
+function appendToBaseDir(string $baseDir, string $relativePath): string
+{
+    $chars = ['/', '\\'];
+
+    foreach ($chars as $char) {
+        $baseDir = rtrim($baseDir, $char);
+        $relativePath = trim($relativePath, $char);
+    }
+
+    return sprintf(
+        '%s%s%s',
+        $baseDir,
+        DIRECTORY_SEPARATOR,
+        $relativePath
+    );
+}

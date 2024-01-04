@@ -29,11 +29,10 @@ abstract class Client
             return null;
         }
 
-        return sprintf(
-            '%s%s%s',
-            trim($this->baseUrl, $glue),
-            $glue,
-            trim($path, $glue),
+        return appendToBaseUrl(
+            $this->baseUrl,
+            $path,
+            $glue
         );
     }
 }
