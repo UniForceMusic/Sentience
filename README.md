@@ -5,9 +5,14 @@
 Sentience is a lightweight, yet versatile api framework created as a personal project of Koen de Wolf (UniForceMusic), and later adopted as the framework for the service of The Rent Friend.
 
 ### 1.1 In house written features (the philosofy of Sentience)
-Sentience was created with the idea of writing all the features required by a modern web framework yourself. Unless you spend years working with a framework you'll probably never know all the functionality in the framework. It's also easy to get stuck in design patterns prevalent commonly found in PHP frameworks. Sentience takes its inspiration not only from PHP frameworks, but also Golang (Chi, Bun orm) and Python (Django and Flask).
+Sentience was created with the idea of writing all the features required by a modern web framework yourself. Unless you spend years working with a framework you'll probably never know all the functionality in the framework. It's also easy to get stuck in design patterns prevalent commonly found in PHP frameworks. Sentience takes its inspiration not only from other PHP frameworks, but also Golang (Chi, Bun ORM) and Python (Django and Flask).
 
-### 1.2 Features of Sentience
+### 1.2 Why choose Sentience?
+The philosophy of Sentience is "If it can be written, it shall be written". Or rather "If i can write it myself, why use an external library for it". This creates a framework where code is written with intent instead of importing an entire library just to use one functionality.
+
+As you'll notice, the composer.json does not require any packages except for PHPUnit as a dev package. This adds the flexibility of being able to import packages, without having a bunch of packages that need to be included by default.
+
+### 1.3 Features of Sentience
 - DotEnv support (custom implementation that supports mixed type arrays)
 - HTTP server / command line application in one
 - Controllers with methods
@@ -29,23 +34,55 @@ Sentience was created with the idea of writing all the features required by a mo
     - Automatically marshal array/object to a response object
     - Supports nested response objects
 
-### 1.3 Setup guide
+### 1.4 Setup guide
 
-#### 1.3.1 Docker
+Note: Make sure a local version of PHP is installed and added to the path. The easiest way to install PHP for each operating system is:
+
+#### Windows
+Download the following applications and install them in order:
+- XAMPP: https://www.apachefriends.org/
+- Composer: https://getcomposer.org/
+
+#### Mac OS
+Make sure Brew is installed and run the following command:
+`brew install php@8.2`
+
+After it is installed, run the following commands to install Composer
+```
+curl -sS https://getcomposer.org/installer | php 
+mkdir -p /usr/local/bin 
+mv composer.phar /usr/local/bin/composer 
+chmod +x /usr/local/bin/composer 
+```
+
+#### Linux
+As there are too many Linux distributions to cover. It is recommended googling for your specific version. Here the process will be described for Debian based distributions:
+
+Run the following commands in order:
+```
+sudo apt upgrade
+sudo apt update
+sudo apt install --no-install-recommends php8.1
+sudo apt install php-cli unzip
+curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+```
+
+#### 1.4.1 Docker
 The use of Docker is highly encouraged to run this application, but absolutely not required ofcourse. If you wish to use Docker to run this project, simply type the following command: (PHP => 8.1 must be installed locally)
 ```
-PHP index.PHP docker/init
+PHP index.php docker/init
 ```
 
 The other commands to control the Docker instance are:
 ```
-PHP index.PHP docker/up
-PHP index.PHP docker/down
-PHP index.PHP docker/rebuild
+PHP index.php docker/up
+PHP index.php docker/down
+PHP index.php docker/rebuild
 ```
 These should be self explanatory.
 
-#### 1.3.2 Local
+#### 1.4.2 Local
 
 If you want to run Sentience locally, the easiest way to install the required dependencies locally is by installing Xampp (or another Apache MySQL PHP alternative). Composer is required for package management.
 
@@ -53,19 +90,19 @@ As soon as MySQL is running, the following commands need to be run in order to i
 ```
 composer install
 
-PHP index.PHP database/create
-PHP index.PHP database/init
-PHP index.PHP database/migrate
+PHP index.php database/create
+PHP index.php database/init
+PHP index.php database/migrate
 ```
 
 To start the HTTP server, run the following command to start the built-in PHP development server
 ```
-PHP index.PHP server/start
+PHP index.php server/start
 ```
 
 ## 2. Creating routes and commands
 
-Sentience uses callable functions that are executed when the incoming request or command matches a string defined in the `routes.PHP` or `commands.PHP` file.
+Sentience uses callable functions that are executed when the incoming request or command matches a string defined in the `routes.php` or `commands.php` file.
 
 All types of callables are supported.
 
