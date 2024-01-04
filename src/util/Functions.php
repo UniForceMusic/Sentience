@@ -12,32 +12,17 @@ function replaceNonAsciiChars(string $string): string
 
 function getMigrationsDir(): string
 {
-    return sprintf(
-        '%s%s%s',
-        BASEDIR,
-        DIRECTORY_SEPARATOR,
-        MIGRATIONSDIR
-    );
+    return appendToBaseDir(BASEDIR, MIGRATIONSDIR);
 }
 
 function getFileDir(): string
 {
-    return sprintf(
-        '%s%s%s',
-        BASEDIR,
-        DIRECTORY_SEPARATOR,
-        FILEDIR
-    );
+    return appendToBaseDir(BASEDIR, FILEDIR);
 }
 
 function getTestsDir(): string
 {
-    return sprintf(
-        '%s%s%s',
-        BASEDIR,
-        DIRECTORY_SEPARATOR,
-        TESTSDIR
-    );
+    return appendToBaseDir(BASEDIR, TESTSDIR);
 }
 
 function appendToBaseUrl(string $baseUrl, string $path, string $glue = '/'): ?string
