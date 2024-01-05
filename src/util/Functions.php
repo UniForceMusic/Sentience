@@ -25,7 +25,7 @@ function getTestsDir(): string
     return appendToBaseDir(BASEDIR, TESTSDIR);
 }
 
-function appendToBaseUrl(string $baseUrl, string $path, string $glue = '/'): ?string
+function appendToBaseUrl(string $baseUrl, ?string $path, string $glue = '/'): ?string
 {
     if (!$path) {
         return null;
@@ -39,8 +39,12 @@ function appendToBaseUrl(string $baseUrl, string $path, string $glue = '/'): ?st
     );
 }
 
-function appendToBaseDir(string $baseDir, string $relativePath): string
+function appendToBaseDir(string $baseDir, ?string $relativePath): ?string
 {
+    if (!$relativePath) {
+        return null;
+    }
+
     $chars = ['/', '\\'];
 
     foreach ($chars as $char) {
