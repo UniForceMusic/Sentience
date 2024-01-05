@@ -2,6 +2,7 @@
 
 namespace src\models\relations;
 
+use Closure;
 use PDO;
 use src\database\Database;
 use src\database\objects\Join;
@@ -15,12 +16,13 @@ class ManyToMany extends Relation implements RelationInterface
     protected string $junctionTableParentColumnName;
     protected string $junctionTableRelationColumnName;
 
-    public function __construct(string $relationModel, string $junctionTableModel, string $junctionTableParentColumnName, string $junctionTableRelationColumnName)
+    public function __construct(string $relationModel, string $junctionTableModel, string $junctionTableParentColumnName, string $junctionTableRelationColumnName, callable|Closure $modifyDefaultQuery = null)
     {
         $this->relationModel = $relationModel;
         $this->junctionTableModel = $junctionTableModel;
         $this->junctionTableParentColumnName = $junctionTableParentColumnName;
         $this->junctionTableRelationColumnName = $junctionTableRelationColumnName;
+        $this->modifyDefaultQuery = $modifyDefaultQuery;
     }
 
     public function retrieve(Database $database, Model $model, callable $modifyQuery = null): array
@@ -56,6 +58,11 @@ class ManyToMany extends Relation implements RelationInterface
                 $model->getPrimaryKeyValue(),
                 false
             );
+
+        if ($this->modifyDefaultQuery) {
+            $modifyDefaultQuery = $this->modifyDefaultQuery;
+            $query = $modifyDefaultQuery($query);
+        }
 
         if ($modifyQuery) {
             $query = $modifyQuery($query);

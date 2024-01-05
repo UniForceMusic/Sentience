@@ -2,6 +2,7 @@
 
 namespace src\models\relations;
 
+use Closure;
 use PDO;
 use src\database\Database;
 use src\database\queries\Query;
@@ -11,10 +12,11 @@ class BelongsTo extends Relation implements RelationInterface
 {
     protected string $foreignKeyColumnName;
 
-    public function __construct(string $relationModel, string $foreignKeyColumnName)
+    public function __construct(string $relationModel, string $foreignKeyColumnName, callable|Closure $modifyDefaultQuery = null)
     {
         $this->relationModel = $relationModel;
         $this->foreignKeyColumnName = $foreignKeyColumnName;
+        $this->modifyDefaultQuery = $modifyDefaultQuery;
     }
 
     public function retrieve(Database $database, Model $model, callable $modifyQuery = null): ?Model
@@ -29,6 +31,11 @@ class BelongsTo extends Relation implements RelationInterface
                 $model->getPrimaryKeyValue()
             )
             ->limit(1);
+
+        if ($this->modifyDefaultQuery) {
+            $modifyDefaultQuery = $this->modifyDefaultQuery;
+            $query = $modifyDefaultQuery($query);
+        }
 
         if ($modifyQuery) {
             $query = $modifyQuery($query);
