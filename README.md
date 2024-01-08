@@ -33,6 +33,7 @@ As you'll notice, the composer.json does not require any packages except for PHP
 - Custom response object
     - Automatically marshal array/object to a response object
     - Supports nested response objects
+- Class importer
 
 ### 1.4 Setup guide
 
@@ -629,5 +630,44 @@ DESCRIPTION="${NAME} is a lightweight api framework"
 And `DESCRIPTION` will compile to "Sentience is a lightweight api framework".
 
 Support for multiline strings is not supported as of yet
+
+### 3.10
+
+Sentience has a class importer that makes importing an array of classes easier.
+
+The class can be found in `src/filesystem/ClassImporter.php`
+
+The class importer has two methods:
+- `ClassImporter::importAsString` (imports the classes as an array of strings including the relative namespace)
+- `ClassImporter::importAsClass` (imports the classes as initialized classes)
+
+#### 3.10.1 Code examples:
+
+ClassImporter::importAsString:
+```
+ClassImporter::importAsClass(
+    BASEDIR,
+    '/src/apis',
+    [
+        ApiAbstract::class,
+        ApiInterface::class
+    ]
+);
+```
+
+ClassImporter::importAsClass:
+```
+ClassImporter::importAsClass(
+    BASEDIR,
+    '/src/apis',
+    [
+        ApiAbstract::class,
+        ApiInterface::class
+    ],
+    [
+        'httpClient' => new HttpClient()
+    ]
+);
+```
 
 ## Good luck creating an application with Sentience!
