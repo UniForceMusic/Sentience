@@ -75,15 +75,22 @@ class CliApp extends App implements AppInterface
         Stdio::errorFLn('- File  : %s', Strings::strip(BASEDIR . DIRECTORY_SEPARATOR, $error->getFile()));
         Stdio::errorFLn('- Line  : %s', $error->getLine());
 
+        $subtractFromIndex = 0;
+
         if (($_ENV['STACK_TRACE'] ?? false)) {
             Stdio::errorLn('- Trace :');
             foreach ($error->getTrace() as $index => $trace) {
+                if (!isset($trace['file'])) {
+                    $subtractFromIndex++;
+                    continue;
+                }
+
                 Stdio::error('      ');
 
                 if (isset($trace['class'])) {
                     Stdio::errorFLn(
                         '%s : %s:%s %s%s%s()',
-                        ($index + 1),
+                        ($index + 1 - $subtractFromIndex),
                         Strings::strip(BASEDIR . DIRECTORY_SEPARATOR, $trace['file']),
                         $trace['line'],
                         $trace['class'],
@@ -95,7 +102,7 @@ class CliApp extends App implements AppInterface
 
                 Stdio::errorFLn(
                     '%s : %s:%s %s()',
-                    ($index + 1),
+                    ($index + 1 - $subtractFromIndex),
                     Strings::strip(BASEDIR . DIRECTORY_SEPARATOR, $trace['file']),
                     $trace['line'],
                     $trace['function']
