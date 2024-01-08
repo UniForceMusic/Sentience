@@ -288,7 +288,7 @@ abstract class Model
             ->getDefaultValue();
     }
 
-    public function testValidate(): ?string
+    public function testValidate(bool $runOnInsertOrUpdateFirst = false): ?string
     {
         /**
          * Returns null if no error is detected
@@ -297,6 +297,10 @@ abstract class Model
          * 
          * If a generic false is returned the method return 'data invalid'
          */
+
+        if ($runOnInsertOrUpdateFirst) {
+            $this->onInsertOrUpdate();
+        }
 
         try {
             $valid = $this->validate();
