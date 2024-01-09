@@ -73,7 +73,7 @@ trait Select
         $assocs = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(
-            function (array $assoc) use ($statement): Model {
+            function (array $assoc) use ($statement): ModelClass {
                 $model = new $this->model($this->database);
                 return $model->hydrateByAssoc($statement, $assoc);
             },
