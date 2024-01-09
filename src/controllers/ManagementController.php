@@ -75,6 +75,11 @@ class ManagementController extends Controller
             $sortedScannedFiles[$key] = $scannedFile;
         }
 
+        if (!$sortedScannedFiles) {
+            Stdio::printLn('No migrations found');
+            return;
+        }
+
         ksort($sortedScannedFiles);
 
         $migrations = array_filter(
@@ -93,7 +98,7 @@ class ManagementController extends Controller
                 ->exists();
 
             if ($migrationAlreadyApplied) {
-                Stdio::printFLn('migration: "%s" already applied', $migration);
+                Stdio::printFLn('Migration: "%s" already applied', $migration);
                 continue;
             }
 
@@ -109,7 +114,7 @@ class ManagementController extends Controller
                 throw $err;
             }
 
-            Stdio::printFLn('migration: "%s" applied', $migration);
+            Stdio::printFLn('Migration: "%s" applied', $migration);
 
             $migrationModel = new Migration($database);
             $migrationModel->filename = $migration;

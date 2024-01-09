@@ -4,11 +4,13 @@ namespace src\database\objects;
 
 class TableField
 {
+    public string $name;
     public string $type;
     public bool $allowsNull;
 
-    public function __construct(string $type, bool $allowsNull)
+    public function __construct(string $name, string $type, bool $allowsNull)
     {
+        $this->name = $name;
         $this->type = $type;
         $this->allowsNull = $allowsNull;
     }

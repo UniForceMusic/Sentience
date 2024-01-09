@@ -3,11 +3,11 @@
 namespace src\database\queries;
 
 use DateTime;
-use PDO;
-use PDOStatement;
 use src\database\Database;
 use src\database\queries\Columns as ColumnsTrait;
+use src\database\queries\Delete as DeleteTrait;
 use src\database\queries\IfNotExists as IfNotExistsTrait;
+use src\database\queries\Insert as InsertTrait;
 use src\database\queries\Join as JoinTrait;
 use src\database\queries\Limit as LimitTrait;
 use src\database\queries\Model as ModelTrait;
@@ -15,11 +15,11 @@ use src\database\queries\Offset as OffsetTrait;
 use src\database\queries\OrderBy as OrderByTrait;
 use src\database\queries\PrimaryKey as PrimaryKeyTrait;
 use src\database\queries\Properties as PropertiesTrait;
+use src\database\queries\Select as SelectTrait;
 use src\database\queries\Table as TableTrait;
+use src\database\queries\Update as UpdateTrait;
 use src\database\queries\Values as ValuesTrait;
 use src\database\queries\Where as WhereTrait;
-use src\exceptions\ModelException;
-use src\models\Model;
 
 class Query
 {
@@ -35,7 +35,9 @@ class Query
     public const MORE_THAN_OR_EQUALS = '>=';
 
     use ColumnsTrait;
+    use DeleteTrait;
     use IfNotExistsTrait;
+    use InsertTrait;
     use JoinTrait;
     use LimitTrait;
     use ModelTrait;
@@ -43,7 +45,9 @@ class Query
     use OrderByTrait;
     use PrimaryKeyTrait;
     use PropertiesTrait;
+    use SelectTrait;
     use TableTrait;
+    use UpdateTrait;
     use ValuesTrait;
     use WhereTrait;
 
@@ -52,216 +56,6 @@ class Query
     public function __construct(Database $database)
     {
         $this->database = $database;
-    }
-
-    public function select(): PDOStatement
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->select(
-            $this->table,
-            $this->columns,
-            $this->escapeColumns,
-            $this->joins,
-            $this->where,
-            $this->orderBys,
-            $this->limit,
-            $this->offset
-        );
-
-        return $this->database->exec($query, $params);
-    }
-
-    public function selectAssoc(): ?array
-    {
-        $statement = $this->select();
-
-        return $statement->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function selectAssocs(): ?array
-    {
-        $statement = $this->select();
-
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function selectModel(): ?Model
-    {
-        if (!$this->model) {
-            throw new ModelException('no model supplied');
-        }
-
-        $statement = $this->select();
-
-        if ($statement->rowCount() < 1) {
-            return null;
-        }
-
-        $assoc = $statement->fetch(PDO::FETCH_ASSOC);
-
-        $model = new $this->model($this->database);
-        return $model->hydrateByAssoc($statement, $assoc);
-    }
-
-    public function selectModels(): array
-    {
-        if (!$this->model) {
-            throw new ModelException('no model supplied');
-        }
-
-        $statement = $this->select();
-
-        if ($statement->rowCount() < 1) {
-            return [];
-        }
-
-        $assocs = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map(
-            function (array $assoc) use ($statement): Model {
-                $model = new $this->model($this->database);
-                return $model->hydrateByAssoc($statement, $assoc);
-            },
-            $assocs
-        );
-    }
-
-    public function count(): int
-    {
-        $statement = $this->select();
-
-        return $statement->rowCount();
-    }
-
-    public function exists(): bool
-    {
-        $count = $this->count();
-
-        return ($count > 0);
-    }
-
-    public function insert(): PDOStatement
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->insert(
-            $this->table,
-            $this->values
-        );
-
-        return $this->database->exec($query, $params);
-    }
-
-    public function insertWithLastId(string $primaryKey = null): int
-    {
-        $this->insert();
-
-        return $this->database->getLastInsertedId($primaryKey);
-    }
-
-    public function update(): PDOStatement
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->update(
-            $this->table,
-            $this->values,
-            $this->where
-        );
-
-        return $this->database->exec($query, $params);
-    }
-
-    public function delete(): PDOStatement
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->delete(
-            $this->table,
-            $this->where,
-            $this->orderBys,
-            $this->limit
-        );
-
-        return $this->database->exec($query, $params);
-    }
-
-    public function create(): PDOStatement
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->create(
-            $this->table,
-            $this->ifNotExists,
-            $this->properties,
-            $this->primaryKey,
-            $this->primaryKeyAutoGenerated,
-        );
-
-        return $this->database->exec($query, $params);
-    }
-
-    public function selectSql(): string
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->select(
-            $this->table,
-            $this->columns,
-            $this->escapeColumns,
-            $this->joins,
-            $this->where,
-            $this->orderBys,
-            $this->limit,
-            $this->offset
-        );
-
-        return $query;
-    }
-
-    public function insertSql(): string
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->insert(
-            $this->table,
-            $this->values
-        );
-
-        return $query;
-    }
-
-    public function updateSql(): string
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->update(
-            $this->table,
-            $this->values,
-            $this->where
-        );
-
-        return $query;
-    }
-
-    public function deleteSql(): string
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->delete(
-            $this->table,
-            $this->where,
-            $this->orderBys,
-            $this->limit
-        );
-
-        return $query;
-    }
-
-    public function createSql(): string
-    {
-        $queryBuilder = $this->database->getQueryBuilder();
-        [$query, $params] = $queryBuilder->create(
-            $this->table,
-            $this->ifNotExists,
-            $this->properties,
-            $this->primaryKey,
-            $this->primaryKeyAutoGenerated,
-        );
-
-        return $query;
     }
 
     public static function now(): DateTime

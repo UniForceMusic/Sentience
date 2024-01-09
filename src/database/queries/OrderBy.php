@@ -12,7 +12,7 @@ trait OrderBy
     {
         $this->orderBys[] = new OrderbyObject(
             $columnName,
-            $orderType
+            $orderType,
         );
 
         return $this;

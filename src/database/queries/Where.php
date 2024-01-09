@@ -15,14 +15,14 @@ trait Where
         return $this;
     }
 
-    public function and (): static
+    public function and(): static
     {
         $this->where[] = 'AND';
 
         return $this;
     }
 
-    public function or (): static
+    public function or(): static
     {
         $this->where[] = 'OR';
 
