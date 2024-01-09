@@ -5,6 +5,7 @@ namespace src\database\queries;
 use PDO;
 use PDOStatement;
 use src\exceptions\ModelException;
+use src\models\Model as ModelClass;
 
 trait Select
 {
@@ -39,7 +40,7 @@ trait Select
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function selectModel(): ?Model
+    public function selectModel(): ?ModelClass
     {
         if (!$this->model) {
             throw new ModelException('no model supplied');
