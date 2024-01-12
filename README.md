@@ -427,7 +427,6 @@ The model class has more built in methods you can override in your model to make
 
 - bool
 - int
-- double
 - float
 - string
 - DateTime

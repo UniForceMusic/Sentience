@@ -38,7 +38,7 @@ class ManyToMany extends Relation implements RelationInterface
                 $this->getColumnsWithNamespace(
                     $queryBuilder,
                     $relationModel::getTable(),
-                    $relationModel->getColumns()
+                    $relationModel->getColumnNames()
                 ),
                 false
             )

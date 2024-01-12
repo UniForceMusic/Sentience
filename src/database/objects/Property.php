@@ -2,7 +2,7 @@
 
 namespace src\database\objects;
 
-class TableField
+class Property
 {
     public string $name;
     public string $type;

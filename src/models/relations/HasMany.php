@@ -23,7 +23,11 @@ class HasMany extends Relation implements RelationInterface
     {
         $query = $database->query()
             ->table($this->relationModel::getTable())
-            ->where($this->foreignKeyColumnName, Query::EQUALS, $model->getPrimaryKeyValue());
+            ->where(
+                $this->foreignKeyColumnName,
+                Query::EQUALS,
+                $model->getPrimaryKeyValue()
+            );
 
         if ($this->modifyDefaultQuery) {
             $modifyDefaultQuery = $this->modifyDefaultQuery;
