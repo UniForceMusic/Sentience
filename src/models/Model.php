@@ -383,7 +383,7 @@ abstract class Model
             $key = $columnName;
             $value = $this->{$propertyName};
 
-            $values[$key] = $this->castFromModelToDatabase($value);
+            $values[$key] = $value;
         }
 
         return $values;

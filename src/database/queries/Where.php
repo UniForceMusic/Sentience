@@ -2,13 +2,14 @@
 
 namespace src\database\queries;
 
+use DateTime;
 use src\database\objects\Where as WhereObject;
 
 trait Where
 {
     protected array $where = [];
 
-    public function where(string $key, string $comparator, null|bool|int|float|string|array $value, bool $escapeKey = true): static
+    public function where(string $key, string $comparator, null|bool|int|float|string|array|DateTime $value, bool $escapeKey = true): static
     {
         $this->where[] = new WhereObject($key, $comparator, $value, $escapeKey);
 
