@@ -5,7 +5,7 @@ namespace src\database\queries;
 use PDO;
 use PDOStatement;
 use src\exceptions\ModelException;
-use src\models\Model as ModelClass;
+use src\models\Model as DatabaseModel;
 
 trait Select
 {
@@ -40,7 +40,7 @@ trait Select
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function selectModel(): ?ModelClass
+    public function selectModel(): ?DatabaseModel
     {
         if (!$this->model) {
             throw new ModelException('no model supplied');
@@ -73,7 +73,7 @@ trait Select
         $assocs = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(
-            function (array $assoc) use ($statement): ModelClass {
+            function (array $assoc) use ($statement): DatabaseModel {
                 $model = new $this->model($this->database);
                 return $model->hydrateByAssoc($statement, $assoc);
             },
