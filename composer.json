@@ -9,7 +9,10 @@
     "autoload": {
         "psr-4": {
             "src\\": "src/"
-        }
+        },
+        "files": [
+            "src/util/Functions.php"
+        ]
     },
     "require-dev": {
         "phpunit/phpunit": "^10.4"

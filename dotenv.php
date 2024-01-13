@@ -4,7 +4,16 @@ use src\util\Strings;
 
 class DotEnv
 {
-    public static function parseFile(string $filePath, ?string $exampleFilePath = null): void
+    public static function loadFile(string $filePath, ?string $exampleFilePath = null): void
+    {
+        $variables = static::parseFile($filePath, $exampleFilePath);
+
+        foreach ($variables as $key => $value) {
+            $_ENV[$key] = $value;
+        }
+    }
+
+    public static function parseFile(string $filePath, ?string $exampleFilePath = null): array
     {
         if (!file_exists($filePath)) {
             static::createFile($filePath, $exampleFilePath);
@@ -14,9 +23,12 @@ class DotEnv
 
         $variables = static::parseString($fileContents);
 
-        foreach ($variables as $key => $value) {
-            $_ENV[$key] = static::parseVariable($value);
-        }
+        return array_map(
+            function (mixed $value): mixed {
+                return static::parseVariable($value);
+            },
+            $variables
+        );
     }
 
     protected static function createFile(string $filePath, ?string $exampleFilePath): void
@@ -165,7 +177,7 @@ class DotEnv
     }
 }
 
-DotEnv::parseFile(
-    sprintf('%s/.env', BASEDIR),
-    sprintf('%s/.env.example', BASEDIR)
+DotEnv::loadFile(
+    appendToBaseDir(BASEDIR, '/.env'),
+    appendToBaseDir(BASEDIR, '/.env.example')
 );
