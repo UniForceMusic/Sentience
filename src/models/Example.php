@@ -24,6 +24,10 @@ class Example extends Model
         'name' => 'strtolower'
     ];
 
+    protected array $unique = [
+        'name'
+    ];
+
     public int $id;
     public string $name;
     public ?int $profileId;
