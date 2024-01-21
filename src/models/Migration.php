@@ -3,7 +3,6 @@
 namespace src\models;
 
 use DateTime;
-use src\database\Database;
 
 class Migration extends Model
 {

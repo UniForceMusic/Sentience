@@ -119,6 +119,8 @@ trait CreateReadUpdateDelete
             $query->insert();
         }
 
+        $this->afterInsertUpdateOrDelete();
+
         return $this;
     }
 
@@ -146,6 +148,8 @@ trait CreateReadUpdateDelete
             )
             ->update();
 
+        $this->afterInsertUpdateOrDelete();
+
         return $this;
     }
 
@@ -163,6 +167,8 @@ trait CreateReadUpdateDelete
             )
             ->delete();
 
+        $this->afterInsertUpdateOrDelete();
+
         return $this;
     }
 
@@ -175,6 +181,8 @@ trait CreateReadUpdateDelete
             ->values($insertableValues)
             ->insert();
 
+        $this->afterInsertUpdateOrDelete();
+
         return $this;
     }
 
@@ -184,6 +192,15 @@ trait CreateReadUpdateDelete
          * Override in model
          * 
          * Use this function for properties that should be modified on insert or save
+         */
+    }
+
+    protected function afterInsertUpdateOrDelete(): void
+    {
+        /**
+         * Override in model
+         * 
+         * Use this function for operations that should complete after the model is saved
          */
     }
 }
