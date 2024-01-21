@@ -321,15 +321,12 @@ class Csv
         return implode($delimiter, $serializedItems);
     }
 
-    public function filter($callback = 'empty'): static
+    public function filter($callback = null): static
     {
-        $rows = $this->rows;
-
-        foreach ($rows as $index => $values) {
-            if (!$callback($values, $index)) {
-                unset($rows[$index]);
-            }
-        }
+        $rows = array_filter(
+            $this->rows,
+            $callback
+        );
 
         $this->rows = array_values($rows);
 
