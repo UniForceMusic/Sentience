@@ -56,7 +56,7 @@ class Csv
         $csv->setKeys($keys);
 
         foreach ($arrayOfObjects as $object) {
-            $csv->add((array) $object);
+            $csv->addRow((array) $object);
         }
 
         return $csv;
@@ -145,28 +145,41 @@ class Csv
         return $this;
     }
 
-    public function getString(): string
+    public function addRow(array $values): static
+    {
+        $this->rows[] = $values;
+
+        return $this;
+    }
+
+    public function writeToString(): string
     {
         $keys = $this->stringifyKeys($this->newLine, $this->delimiter);
         $rows = $this->stringifyRows($this->newLine, $this->delimiter);
 
         if ($this->delimiter !== static::DEFAULT_DELIMITER) {
-            return $this->joinStrings([
-                sprintf('sep=%s', $this->delimiter),
-                $keys,
-                $rows
-            ]);
+            return $this->joinStrings(
+                [
+                    sprintf('sep=%s', $this->delimiter),
+                    $keys,
+                    $rows
+                ],
+                $this->newLine
+            );
         }
 
-        return $this->joinStrings([
-            $keys,
-            $rows
-        ]);
+        return $this->joinStrings(
+            [
+                $keys,
+                $rows,
+            ],
+            $this->newLine
+        );
     }
 
     public function writeToFile(string $filePath): static
     {
-        file_put_contents($filePath, $this->getString());
+        file_put_contents($filePath, $this->writeToString());
 
         return $this;
     }
@@ -225,7 +238,7 @@ class Csv
             );
         }
 
-        return $this->joinStrings($rowStrings);
+        return $this->joinStrings($rowStrings, $newLine);
     }
 
     protected function matchKeyOrder(array $keys, array $values): array
@@ -269,9 +282,9 @@ class Csv
         return $sortedKeyValuePairs;
     }
 
-    protected function joinStrings(array $strings): string
+    protected function joinStrings(array $strings, string $newLine): string
     {
-        return implode(PHP_EOL, $strings);
+        return implode($newLine, $strings);
     }
 
     protected function join(array $items, string $newLine, string $delimiter): string
@@ -332,13 +345,6 @@ class Csv
         }
 
         $this->rows = array_values($rows);
-
-        return $this;
-    }
-
-    public function add(array $values): static
-    {
-        $this->rows[] = $values;
 
         return $this;
     }
