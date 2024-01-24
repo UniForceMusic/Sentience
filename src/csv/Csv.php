@@ -58,12 +58,21 @@ class Csv
         $newLine = Strings::detectNewline($string);
         $delimiter = $delimiter ?? $this->detectDelimiter($string, $newLine);
 
-        $lines = explode($newLine, $string);
+        $lines = $this->removeSeparatorFromString(
+            explode($newLine, $string)
+        );
+
         $keys = $this->split($lines[0], $delimiter);
-        $rows = (count($lines) > 1) ? array_slice($lines, 1) : [];
+
+        $rows = (count($lines) > 1)
+            ? array_slice($lines, 1)
+            : [];
 
         foreach ($rows as $index => $values) {
-            $rows[$index] = $this->matchValuesToKeys($keys, $this->split($values, $delimiter));
+            $rows[$index] = $this->matchValuesToKeys(
+                $keys,
+                $this->split($values, $delimiter)
+            );
         }
 
         $this->newLine = $newLine;
@@ -211,6 +220,21 @@ class Csv
         }
 
         return $this->delimiter;
+    }
+
+    protected function removeSeparatorFromString(array $lines): array
+    {
+        if (!$lines) {
+            return $lines;
+        }
+
+        if (str_contains($lines[0], 'sep=')) {
+            preg_match('/sep=(.[^\)]*)/', $lines[0], $matches);
+
+            return array_slice($lines, 1);
+        }
+
+        return $lines;
     }
 
     protected function split(string $string, string $separator): array
