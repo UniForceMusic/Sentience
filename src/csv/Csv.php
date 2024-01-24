@@ -39,24 +39,11 @@ class Csv
     public static function fromArrayOfObjects(array $arrayOfObjects): static
     {
         $csv = new static();
-        $keys = [];
 
-        foreach ($arrayOfObjects as $object) {
-            $objectKeys = array_keys(
+        foreach ($arrayOfObjects as $index => $object) {
+            $csv->addRow(
                 get_object_vars($object)
             );
-
-            foreach ($objectKeys as $key) {
-                if (!in_array($key, $keys)) {
-                    $keys[] = $key;
-                }
-            }
-        }
-
-        $csv->setKeys($keys);
-
-        foreach ($arrayOfObjects as $object) {
-            $csv->addRow((array) $object);
         }
 
         return $csv;
@@ -126,8 +113,8 @@ class Csv
 
         $this->keys = array_values($this->keys);
 
-        foreach ($this->rows as $i => $r) {
-            unset($this->rows[$i][$key]);
+        foreach ($this->rows as $index => $row) {
+            unset($this->rows[$index][$key]);
         }
 
         return $this;
@@ -140,6 +127,14 @@ class Csv
 
     public function setRows(array $rows): static
     {
+        foreach ($rows as $row) {
+            foreach ($row as $key => $value) {
+                if (!in_array($key, $this->keys)) {
+                    $this->addKey($key);
+                }
+            }
+        }
+
         $this->rows = $rows;
 
         return $this;
@@ -147,6 +142,12 @@ class Csv
 
     public function addRow(array $values): static
     {
+        foreach ($values as $key => $value) {
+            if (!in_array($key, $this->keys)) {
+                $this->addKey($key);
+            }
+        }
+
         $this->rows[] = $values;
 
         return $this;
@@ -255,20 +256,16 @@ class Csv
         }
 
         /**
-         * Create an array that has the keys sorted alphabetically like this:
-         * 'a' => ['key', 'value']
-         * 'b' => ['key', 'value']
+         * Create an array that has the keys sorted numerically like this:
+         * '0' => ['key', 'value']
+         * '1' => ['key', 'value']
          * 
          * Then it turns them back into an assosiative array with the key and value from the array
          */
-        foreach ($values as $valueKey => $value) {
-            if (!in_array($valueKey, $keys)) {
-                continue;
-            }
+        foreach ($values as $key => $value) {
+            $index = array_search($key, $keys);
 
-            $keyIndex = array_search($valueKey, $keys);
-
-            $sortedValues[$keyIndex] = [$valueKey, $value];
+            $sortedValues[$index] = [$key, $value];
         }
 
         ksort($sortedValues);
@@ -276,7 +273,9 @@ class Csv
         $sortedKeyValuePairs = [];
 
         foreach ($sortedValues as $valuePair) {
-            $sortedKeyValuePairs[$valuePair[0]] = $valuePair[1];
+            $key = $valuePair[0];
+            $value = $valuePair[1];
+            $sortedKeyValuePairs[$key] = $value;
         }
 
         return $sortedKeyValuePairs;
