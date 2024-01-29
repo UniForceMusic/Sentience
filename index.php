@@ -13,10 +13,8 @@ if (!$_ENV['SYNTAX_REPORTING'] && !$_ENV['ERROR_REPORTING']) {
     error_reporting(0);
 }
 
-if (isCli()) {
-    $app = new CliApp($commands, $service, $argv);
-} else {
-    $app = new HttpApp($routes, $service);
-}
+$app = isCli()
+    ? new CliApp($commands, $service, $argv)
+    : new HttpApp($routes, $service);
 
 $app->execute();
