@@ -15,7 +15,7 @@ class Csv
     protected array $keys = [];
     protected array $rows = [];
 
-    public static function parseFromFile(string $filePath, string $delimiter = CSV::DEFAULT_DELIMITER): static
+    public static function parseFromFile(string $filePath, ?string $delimiter = CSV::DEFAULT_DELIMITER): static
     {
         if (!file_exists($filePath)) {
             throw new FileException('Csv file path is invalid');
@@ -26,17 +26,12 @@ class Csv
         return new static($csvString, $delimiter);
     }
 
-    public static function parseFromString(string $string, string $delimiter = CSV::DEFAULT_DELIMITER): static
+    public static function parseFromString(string $string, ?string $delimiter = CSV::DEFAULT_DELIMITER): static
     {
         return new static($string, $delimiter);
     }
 
-    public static function createEmpty(): static
-    {
-        return new static();
-    }
-
-    public static function fromArrayOfObjects(array $arrayOfObjects): static
+    public static function parseFromArrayOfObjects(array $arrayOfObjects): static
     {
         $csv = new static();
 
@@ -47,6 +42,11 @@ class Csv
         }
 
         return $csv;
+    }
+
+    public static function createEmpty(): static
+    {
+        return new static();
     }
 
     public function __construct(string $string = '', string $delimiter = null)
