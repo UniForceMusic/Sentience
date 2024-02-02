@@ -21,6 +21,15 @@ trait Table
             ->getDefaultValue();
     }
 
+    public static function getColumnNames(): array
+    {
+        $columns = (new ReflectionClass(static::class))
+            ->getProperty('columns')
+            ->getDefaultValue();
+
+        return array_values($columns);
+    }
+
     public function createTable(bool $ifNotExists = false): PDOStatement
     {
         if (!$this->queryBuilder) {
@@ -47,11 +56,6 @@ trait Table
             ->createTable();
 
         return $statement;
-    }
-
-    public function getColumnNames(): array
-    {
-        return array_values($this->columns);
     }
 
     public function exportAsRecord(): array

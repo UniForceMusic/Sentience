@@ -268,41 +268,18 @@ class Csv
 
     protected function matchKeyOrder(array $keys, array $values): array
     {
-        $sortedValues = [];
+        $orderedValues = [];
 
-        /**
-         * Add missing keys to values array so missing keys don't mess up the order
-         */
         foreach ($keys as $key) {
             if (!key_exists($key, $values)) {
-                $values[$key] = null;
+                $orderedValues[$key] = null;
+                continue;
             }
+
+            $orderedValues[$key] = $values[$key];
         }
 
-        /**
-         * Create an array that has the keys sorted numerically like this:
-         * '0' => ['key', 'value']
-         * '1' => ['key', 'value']
-         * 
-         * Then it turns them back into an assosiative array with the key and value from the array
-         */
-        foreach ($values as $key => $value) {
-            $index = array_search($key, $keys);
-
-            $sortedValues[$index] = [$key, $value];
-        }
-
-        ksort($sortedValues);
-
-        $sortedKeyValuePairs = [];
-
-        foreach ($sortedValues as $valuePair) {
-            $key = $valuePair[0];
-            $value = $valuePair[1];
-            $sortedKeyValuePairs[$key] = $value;
-        }
-
-        return $sortedKeyValuePairs;
+        return $orderedValues;
     }
 
     protected function joinStrings(array $strings, string $newLine): string
