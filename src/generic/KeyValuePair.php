@@ -13,7 +13,7 @@ class KeyValuePair
         $this->value = $value;
     }
 
-    public function getKey(): ?string
+    public function getKey(): string
     {
         return $this->key;
     }
