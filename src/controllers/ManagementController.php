@@ -15,8 +15,8 @@ class ManagementController extends Controller
         exec(
             sprintf(
                 'php -S %s:%s %s/index.php',
-                $_ENV['HOST'],
-                $_ENV['PORT'],
+                $_ENV['SERVER_HOST'],
+                $_ENV['SERVER_PORT'],
                 BASEDIR
             )
         );

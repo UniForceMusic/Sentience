@@ -71,7 +71,7 @@ class HttpApp extends App implements AppInterface
                 'type' => $error::class,
                 'file' => $error->getFile(),
                 'line' => $error->getLine(),
-                'trace' => (($_ENV['STACK_TRACE'] ?? false)) ? $error->getTrace() : 'disabled'
+                'trace' => (($_ENV['APP_STACK_TRACE'] ?? false)) ? $error->getTrace() : 'disabled'
             ]
         ]);
     }

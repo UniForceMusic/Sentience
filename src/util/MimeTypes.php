@@ -512,7 +512,7 @@ class MimeTypes
             'png' => 'image/png',
             'pnm' => 'image/x-portable-anymap',
             'pod' => 'text/x-pod',
-            'portpkg' => 'application/vnd.macports.portpkg',
+            'SERVER_PORTpkg' => 'application/vnd.macports.portpkg',
             'potm' => 'application/vnd.ms-powerpoint.template.macroenabled.12',
             'potx' => 'application/vnd.openxmlformats-officedocument.presentationml.template',
             'ppam' => 'application/vnd.ms-powerpoint.addin.macroenabled.12',

@@ -95,14 +95,20 @@ class Url
 
     public static function urlEncodeParametersFromAssoc(array $parameters): string
     {
-        $parametersArray = [];
+        $serializableParameters = [];
 
-        foreach ($parameters as $parameterName => $parameterValue) {
-            $urlEncodedParameter = sprintf('%s=%s', urlencode($parameterName), urlencode($parameterValue));
-            $parametersArray[] = $urlEncodedParameter;
+        foreach ($parameters as $name => $value) {
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    $serializableParameters[] = sprintf('%s=%s', urlencode($k), urlencode($v));
+                }
+                continue;
+            }
+
+            $serializableParameters[] = sprintf('%s=%s', urlencode($name), urlencode($value));
         }
 
-        $queryString = implode('&', $parametersArray);
+        $queryString = implode('&', $serializableParameters);
 
         return $queryString;
     }
@@ -123,6 +129,11 @@ class Url
         $params = [];
 
         foreach ($parts as $part) {
+            if (!str_contains('=', $part)) {
+                $params[$part] = '';
+                continue;
+            }
+
             $partSplit = explode('=', $part, 2);
 
             $key = urldecode($partSplit[0]);
@@ -150,6 +161,11 @@ class Url
         $params = [];
 
         foreach ($parts as $part) {
+            if (!str_contains('=', $part)) {
+                $params[$part] = [];
+                continue;
+            }
+
             $partSplit = explode('=', $part, 2);
 
             $key = urldecode($partSplit[0]);

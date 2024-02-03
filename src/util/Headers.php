@@ -30,7 +30,7 @@ class Headers
     {
         $originHeader = ($request->getHeader('origin'))
             ? $request->getHeader('origin')
-            : $request->getHeader('host');
+            : $request->getHeader('SERVER_HOST');
 
         $originEnv = implode(', ', $_ENV['ACCESS_CONTROL_ALLOW_ORIGIN']);
 
