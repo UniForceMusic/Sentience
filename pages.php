@@ -19,8 +19,8 @@ if ($_ENV['PAGES_ENABLED']) {
         );
 
         $removeIndex = str_replace(
-            'index.php',
-            '',
+            '/index.php',
+            '/',
             $removeAbsolutePath
         );
 
