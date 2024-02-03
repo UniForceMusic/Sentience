@@ -8,17 +8,8 @@ class ClassImporter
 {
     public static function importAsString(string $baseDir, string $path, array $exclude = []): ?array
     {
-        $absolutePath = appendToBaseDir($baseDir, $path);
-
-        if (!file_exists($absolutePath)) {
-            throw new FilesystemException(sprintf('file %s does not exist', $absolutePath));
-        }
-
-        $dirItems = array_filter(
-            scandir($absolutePath),
-            function (string $item) {
-                return (!in_array($item, ['.', '..']) && str_ends_with($item, '.php'));
-            }
+        $dirItems = Filesystem::scandir(
+            appendToBaseDir($baseDir, $path)
         );
 
         $classNames = array_map(

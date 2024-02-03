@@ -2,11 +2,10 @@
 
 use src\app\Request;
 use src\app\Response;
-use src\middleware\CORSMiddleware;
 use src\middleware\ExampleMiddleware;
 use src\router\Route;
 use src\controllers\ExampleController;
-use src\controllers\FileController;
+use src\util\Methods;
 
 function exampleFunction(Request $request)
 {
@@ -15,42 +14,34 @@ function exampleFunction(Request $request)
 
 $routes = [
     Route::create()
-        ->setFilePath(sprintf('/%s/{filePath}', FILEDIR))
-        ->setCallable([FileController::class, 'serveFile'])
-        ->setMethods(['GET'])
-        ->setMiddleware([
-            [CORSMiddleware::class, 'execute']
-        ]),
-
-    Route::create()
-        ->setPath('/')
+        ->setPath('/api')
         ->setCallable([ExampleController::class, 'exampleHttp'])
-        ->setMethods(['*'])
+        ->setMethods(Methods::WILDCARD)
         ->setMiddleware([
             [ExampleMiddleware::class, 'execute']
         ])
         ->setHide(),
 
     Route::create()
-        ->setPath('/stringfunction-example')
+        ->setPath('/api/stringfunction-example')
         ->setCallable('exampleFunction')
-        ->setMethods(['GET', 'POST']),
+        ->setMethods([Methods::GET, Methods::POST]),
 
     Route::create()
-        ->setPath('/lambda-example')
+        ->setPath('/api/lambda-example')
         ->setCallable(
             function (Request $request) {
                 Response::ok(['success' => true]);
             }
         )
-        ->setMethods(['GET', 'POST']),
+        ->setMethods([Methods::GET, Methods::POST]),
 
     Route::create()
-        ->setPath('/example/{id}')
+        ->setPath('/api/example/{id}')
         ->setCallable(
             function (Request $request) {
                 Response::ok($request->getVars());
             }
         )
-        ->setMethods(['GET', 'POST', 'PUT', 'DELETE']),
+        ->setMethods([Methods::GET, Methods::POST, Methods::PUT, Methods::DELETE]),
 ];

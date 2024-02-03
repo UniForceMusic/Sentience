@@ -20,6 +20,16 @@ function getFileDir(): string
     return appendToBaseDir(BASEDIR, FILEDIR);
 }
 
+function getPagesDir(): string
+{
+    return appendToBaseDir(BASEDIR, PAGESDIR);
+}
+
+function getComponentsDir(): string
+{
+    return appendToBaseDir(BASEDIR, COMPONENTSDIR);
+}
+
 function getTestsDir(): string
 {
     return appendToBaseDir(BASEDIR, TESTSDIR);
@@ -33,15 +43,15 @@ function appendToBaseUrl(string $baseUrl, ?string $path, string $glue = '/'): ?s
 
     return sprintf(
         '%s%s%s',
-        trim($baseUrl, $glue),
+        rtrim($baseUrl, $glue),
         $glue,
-        trim($path, $glue),
+        ltrim($path, $glue),
     );
 }
 
-function appendToBaseDir(string $baseDir, ?string $relativePath): ?string
+function appendToBaseDir(string $baseDir, ?string ...$paths): ?string
 {
-    if (!$relativePath) {
+    if (!$paths) {
         return null;
     }
 
@@ -49,13 +59,32 @@ function appendToBaseDir(string $baseDir, ?string $relativePath): ?string
 
     foreach ($chars as $char) {
         $baseDir = rtrim($baseDir, $char);
-        $relativePath = trim($relativePath, $char);
+
+        foreach ($paths as $index => $path) {
+            $paths[$index] = trim($path, $char);
+        }
     }
 
-    return sprintf(
-        '%s%s%s',
-        $baseDir,
+    return implode(
         DIRECTORY_SEPARATOR,
-        $relativePath
+        [
+            $baseDir,
+            ...$paths
+        ]
     );
+}
+
+function component(string $name, array $vars = []): void
+{
+    $componentsDir = getComponentsDir();
+
+    foreach ($vars as $var => $value) {
+        $$var = $value;
+    }
+
+    if (!str_ends_with($name, '.php')) {
+        $name = sprintf('%s.php', $name);
+    }
+
+    include appendToBaseDir($componentsDir, $name);
 }

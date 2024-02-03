@@ -26,10 +26,7 @@ class HttpApp extends App implements AppInterface
                 return;
             }
 
-            $request = new Request(
-                $route->getVars(),
-                $route->getRequest()
-            );
+            $request = new Request($route);
 
             $args = $this->getArgs($route, $this->service, $request);
             if (!is_array($args)) {

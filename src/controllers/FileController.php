@@ -10,13 +10,7 @@ class FileController extends Controller
 {
     public function serveFile(Request $request): void
     {
-        $fileKey = array_key_first($request->getVars());
-        $filePath = sprintf(
-            '%s/%s/%s',
-            BASEDIR,
-            FILEDIR,
-            $request->getVar($fileKey)
-        );
+        $filePath = $request->getVar('filePath');
 
         if (str_contains($filePath, '/../')) {
             Response::forbidden();

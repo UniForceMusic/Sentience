@@ -11,7 +11,6 @@ class Route
     protected array $methods;
     protected array $middleware;
     protected array $vars;
-    protected bool $isFile;
     protected bool $hide;
     protected ?string $request;
 
@@ -21,7 +20,6 @@ class Route
         $this->methods = [];
         $this->middleware = [];
         $this->vars = [];
-        $this->isFile = false;
         $this->hide = false;
         $this->request = null;
     }
@@ -33,7 +31,7 @@ class Route
 
     public function isMatch(string $requestUri, string $method): bool
     {
-        $pathMatch = ($this->isFile) ? $this->isFileMatch($requestUri) : $this->isPathMatch($requestUri);
+        $pathMatch = $this->isPathMatch($requestUri);
         $methodMatch = $this->isMethodMatch($method);
 
         return ($pathMatch && $methodMatch);
@@ -80,36 +78,6 @@ class Route
         );
 
         return preg_match($regex, $requestUri);
-    }
-
-    protected function isFileMatch(string $requestUri): bool
-    {
-        $matchesVarPattern = '/\/(.*)\/{(.*)}/';
-        $matchesVar = preg_match($matchesVarPattern, $this->path, $varMatches);
-        if (!$matchesVar) {
-            return false;
-        }
-
-        if (count($varMatches) < 2) {
-            return false;
-        }
-
-        $fileDir = $varMatches[1];
-        $varKey = $varMatches[2];
-
-        $matchesTemplateSyntaxPattern = sprintf('/%s\/(.*)/', $fileDir);
-        $matchesTemplateSyntax = preg_match($matchesTemplateSyntaxPattern, $requestUri, $templateMatches);
-        if (!$matchesTemplateSyntax) {
-            return false;
-        }
-
-        if (count($templateMatches) < 2) {
-            return false;
-        }
-
-        $this->vars[$varKey] = $templateMatches[1];
-
-        return true;
     }
 
     protected function isMethodMatch(string $method): bool
@@ -175,8 +143,12 @@ class Route
         return $this;
     }
 
-    public function setMethods(array $methods): static
+    public function setMethods(string|array $methods): static
     {
+        if (is_string($methods)) {
+            $methods = [$methods];
+        }
+
         $this->methods = $this->methodsToUppercase($methods);
         return $this;
     }
@@ -187,10 +159,18 @@ class Route
         return $this;
     }
 
-    public function setFilePath(string $path): static
+    public function setVar(string $key, string $value): static
     {
-        $this->isFile = true;
-        $this->path = $path;
+        $this->vars[$key] = $value;
+
+        return $this;
+    }
+
+    public function setVars(array $values): static
+    {
+        foreach ($values as $key => $value) {
+            $this->vars[$key] = $value;
+        }
 
         return $this;
     }

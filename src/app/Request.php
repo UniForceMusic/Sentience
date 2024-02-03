@@ -5,12 +5,14 @@ namespace src\app;
 use JsonException;
 use SimpleXMLElement;
 use src\requests\Request as RequestObject;
+use src\router\Route;
 use src\util\Url;
 
 class Request
 {
     protected string $url;
     protected string $uri;
+    protected string $path;
     protected ?string $queryString;
     protected string $method;
     protected string $body;
@@ -20,10 +22,11 @@ class Request
     protected array $vars;
     protected ?RequestObject $request = null;
 
-    public function __construct(array $vars = [], ?string $request = null)
+    public function __construct(?Route $route = null)
     {
         $url = Url::getRequestUrl();
         $uri = Url::getRequestUri();
+        $path = ($route) ? $route->getPath() : '';
         $queryString = Url::getQueryString();
         $method = strtoupper($_SERVER['REQUEST_METHOD']);
         $body = file_get_contents('php://input');
@@ -38,9 +41,12 @@ class Request
                 $headers[$lowerCaseKey] = $val;
             }
         );
+        $vars = ($route) ? $route->getVars() : [];
+        $request = ($route) ? $route->getRequest() : null;
 
         $this->url = $url;
         $this->uri = $uri;
+        $this->path = $path;
         $this->queryString = $queryString;
         $this->method = $method;
         $this->body = $body;
@@ -62,6 +68,11 @@ class Request
     public function getUri(): string
     {
         return $this->uri;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
     }
 
     public function getQueryString(): ?string
