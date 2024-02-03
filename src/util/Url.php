@@ -100,12 +100,20 @@ class Url
         foreach ($parameters as $name => $value) {
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
-                    $serializableParameters[] = sprintf('%s=%s', urlencode($k), urlencode($v));
+                    $serializableParameters[] = sprintf(
+                        '%s=%s',
+                        urlencode($k),
+                        urlencode($v)
+                    );
                 }
                 continue;
             }
 
-            $serializableParameters[] = sprintf('%s=%s', urlencode($name), urlencode($value));
+            $serializableParameters[] = sprintf(
+                '%s=%s',
+                urlencode($name),
+                urlencode($value)
+            );
         }
 
         $queryString = implode('&', $serializableParameters);
@@ -129,7 +137,7 @@ class Url
         $params = [];
 
         foreach ($parts as $part) {
-            if (!str_contains('=', $part)) {
+            if (!str_contains($part, '=')) {
                 $params[$part] = '';
                 continue;
             }
@@ -161,8 +169,8 @@ class Url
         $params = [];
 
         foreach ($parts as $part) {
-            if (!str_contains('=', $part)) {
-                $params[$part] = [];
+            if (!str_contains($part, '=')) {
+                $params[$part] = '';
                 continue;
             }
 
