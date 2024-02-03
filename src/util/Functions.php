@@ -77,6 +77,7 @@ function appendToBaseDir(string $baseDir, ?string ...$paths): ?string
 function component(string $name, array $vars = []): void
 {
     $componentsDir = getComponentsDir();
+    $name = strtolower($name);
 
     foreach ($vars as $var => $value) {
         $$var = $value;
@@ -86,5 +87,8 @@ function component(string $name, array $vars = []): void
         $name = sprintf('%s.php', $name);
     }
 
-    include appendToBaseDir($componentsDir, $name);
+    include appendToBaseDir(
+        $componentsDir,
+        $name
+    );
 }
