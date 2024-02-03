@@ -1,5 +1,7 @@
 <?php
 
+use src\app\Stdio;
+
 function isCli(): bool
 {
     return (empty($_SERVER['REMOTE_ADDR']) && !isset($_SERVER['HTTP_USER_AGENT']) && count($_SERVER['argv']) > 0);
@@ -87,8 +89,15 @@ function component(string $name, array $vars = []): void
         $lcName = sprintf('%s.php', $lcName);
     }
 
-    include appendToBaseDir(
+    $componentPath = appendToBaseDir(
         $componentsDir,
         $lcName
     );
+
+    if (!file_exists($componentPath)) {
+        Stdio::errorFLn('component "%s" does not exist', $componentPath);
+        return;
+    }
+
+    include $componentPath;
 }

@@ -22,6 +22,7 @@ class Response
         }
 
         error_reporting($currentErrorReporting);
+        exit;
     }
 
     public static function isSerializable(mixed $content): bool

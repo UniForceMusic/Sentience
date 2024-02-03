@@ -14,12 +14,10 @@ class FileController extends Controller
 
         if (str_contains($filePath, '/../')) {
             Response::forbidden();
-            return;
         }
 
         if (!file_exists($filePath)) {
             Response::notFound();
-            return;
         }
 
         $fileContents = file_get_contents($filePath);
@@ -27,7 +25,6 @@ class FileController extends Controller
 
         if (!$mimeType) {
             Response::unsupportedMediaType();
-            return;
         }
 
         Headers::serveFile();
