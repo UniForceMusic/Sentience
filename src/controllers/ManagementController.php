@@ -85,7 +85,10 @@ class ManagementController extends Controller
         $migrations = array_filter(
             $sortedScannedFiles,
             function (string $item) {
-                return str_ends_with($item, '.sql');
+                return str_ends_with(
+                    strtolower($item),
+                    '.sql'
+                );
             }
         );
 
@@ -167,7 +170,7 @@ class ManagementController extends Controller
         $testFiles = array_filter(
             scandir($testsDir),
             function ($fileName): bool {
-                return (!in_array($fileName, ['.', '..']) && str_ends_with($fileName, '.php'));
+                return (!in_array($fileName, ['.', '..']) && str_ends_with(strtolower($fileName), '.php'));
             }
         );
 

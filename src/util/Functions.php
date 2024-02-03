@@ -77,14 +77,14 @@ function appendToBaseDir(string $baseDir, ?string ...$paths): ?string
 function component(string $name, array $vars = []): void
 {
     $componentsDir = getComponentsDir();
-    $name = strtolower($name);
+    $lcName = strtolower($name);
 
     foreach ($vars as $var => $value) {
         $$var = $value;
     }
 
-    if (!str_ends_with($name, '.php')) {
-        $name = sprintf('%s.php', $name);
+    if (!str_ends_with($lcName, '.php')) {
+        $lcName = sprintf('%s.php', $lcName);
     }
 
     include appendToBaseDir(
