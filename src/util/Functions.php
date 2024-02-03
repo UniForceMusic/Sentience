@@ -89,6 +89,6 @@ function component(string $name, array $vars = []): void
 
     include appendToBaseDir(
         $componentsDir,
-        $name
+        $lcName
     );
 }
