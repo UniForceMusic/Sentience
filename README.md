@@ -437,18 +437,17 @@ All variable types are nullable. Except for the property which holds the primary
 
 Sentience offers a lightweight alternative for libraries like Guzzle.
 
-#### 3.3.1 Creating a new request
+#### 3.3.1 Creating a new client
 
-To create a new HTTP request you need to call the static method `new()` on the HttpClient class.
-```
-\src\httpclient\HttpClient::new()
-```
+To create a new HTTP client you need to initialize a new `\src\httpclient\HttpClient` class. 
 
-This returns a `\src\httpclient\HttpRequest` object, which can be modified using method chaining.
+In the HTTP client, a number of properties can be set that the requests created from the client will inherit.
 
-The HttpRequest class has the following methods:
+The HttpClient class has the following methods:
 ```
-->url()
+->baseUrl()
+->path()
+->url() (overrides ->baseUrl() and ->path())
 ->method()
 ->parameters()
 ->parameter()
@@ -466,11 +465,22 @@ The HttpRequest class has the following methods:
 
 The `customOption()` method is able to manually override or set new cURL options.
 
-#### 3.3.2 Executing a request
+#### 3.3.1 Creating a new request
+
+Call the function `->createRequest()` on the initialized HTTP client.
+
+This returns a `\src\httpclient\HttpRequest` object, which can be modified using method chaining.
+
+The HttpRequest class has same methods as HttpClient, except for one addition:
+```
+->execute()
+```
+
+#### 3.3.3 Executing a request
 
 When the request is ready to be executed. The `->execute()` method can be called, and an `\src\httpclient\HttpResponse` object will be returned.
 
-#### 3.3.3 Handling the response
+#### 3.3.4 Handling the response
 
 The HttpResponse class has the following methods:
 ```
@@ -503,7 +513,7 @@ By default arrays and objects are serialized into json. Strings, integers and fl
 ```
 Response::ok('iVBORw0KGgoAAAA', MimeTypes::get('image/png'))
 
-Note: Once a static Response method is called, the application does not quit. You need to place a return or exit in your method.
+Note: Once a static Response method is called, the application exits.
 ```
 
 ### 3.5 Stdio class
@@ -610,7 +620,62 @@ When a new model has been created, Sentience supports a way to create a database
 
 Static files are served from the `static` directory. Most filetypes are supported, provided they have a valid mimetype.
 
-### 3.9 DotEnv
+The .env file has a number of parameters that influence the behaviour of static files:
+```
+FILES_ENABLED=true      # Enable or disable serving of static files
+FILES_CORS=true         # Add CORS middleware to static files
+FILES_HIDE_ROUTE=false  # Hide file routes on the route not found page
+FILE_CACHE=2592000      # Cache time-to-live in seconds (0 to disable cache)
+```
+
+### 3.9 Pages
+
+Sentience offers a simple way to create routes that serve html. These pages are located in the `src/pages` directory.
+
+Path variables are supported using the {bracket} syntax, used for creating api routes.
+
+For example, these are all valid paths:
+```
+(index defaults to '/')
+index.php
+
+(using template variables as a folder name)
+{id}/index.php
+{id}/edit.php
+
+(using templates variables as file names)
+users/{id}.php
+```
+
+These contents of these variables are available by reading a variable of the same name on the page.
+
+For example: `{userId}` will be available as `$userId` within the PHP tags.
+
+Note: Only PHP files are supported. No `.html` or `.htm` files
+
+#### 3.9.1 Components
+
+Reusable can be created in the `src/components` directory. Variables can be passed to these components using the optional second parameter as an array.
+
+This is what the syntax looks like to import a component:
+```
+<?php component('<component name>', ['name' => 'custom component']) ?>
+```
+
+Within the component, the parameter `name` is usable as the variable `$name` within PHP tags.
+
+Note: all components, and folders containing components must be in lowercase. Otherwise operating systems with a case sensitive file system will not be able to load the components.
+
+#### 3.9.2 Page settings
+
+The .env file has a number of parameters that influence the behaviour of pages:
+```
+PAGES_ENABLED=true      # Enables or disables serving of pages
+PAGES_CORS=true         # Add CORS middleware to static files
+PAGES_HIDE_ROUTE=false  # Hide page routes on the route not found page
+```
+
+### 3.10 DotEnv
 
 Sentience has its own .env parser. It adds support for mixed arrays, booleans and strict strings.
 
@@ -630,7 +695,7 @@ And `DESCRIPTION` will compile to "Sentience is a lightweight api framework".
 
 Support for multiline strings is not supported as of yet
 
-### 3.10
+### 3.11
 
 Sentience has a class importer that makes importing an array of classes easier.
 
@@ -640,7 +705,7 @@ The class importer has two methods:
 - `ClassImporter::importAsString` (imports the classes as an array of strings including the relative namespace)
 - `ClassImporter::importAsClass` (imports the classes as initialized classes)
 
-#### 3.10.1 Code examples:
+#### 3.11.1 Code examples:
 
 ClassImporter::importAsString:
 ```
