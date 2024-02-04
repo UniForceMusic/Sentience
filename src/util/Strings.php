@@ -17,4 +17,14 @@ class Strings
     {
         return str_replace($pattern, '', $subject);
     }
+
+    public static function join(string $glue, string|array $elements): string
+    {
+        return implode(
+            $glue,
+            (is_string($elements))
+                ? [$elements]
+                : $elements
+        );
+    }
 }

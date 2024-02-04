@@ -28,19 +28,16 @@ class Headers
 
     public static function cors(Request $request, $returnOrigin = false): void
     {
-        $originHeader = ($request->getHeader('origin'))
-            ? $request->getHeader('origin')
-            : $request->getHeader('SERVER_HOST');
+        $originHeader = $request->getHeader('origin');
+        $originEnv = Strings::join(', ', $_ENV['ACCESS_CONTROL_ALLOW_ORIGIN']);
 
-        $originEnv = implode(', ', $_ENV['ACCESS_CONTROL_ALLOW_ORIGIN']);
-
-        $origin = ($returnOrigin)
+        $origin = ($returnOrigin && $originHeader)
             ? $originHeader
             : $originEnv;
 
         header(sprintf('Access-Control-Allow-Origin: %s', $origin));
         header(sprintf('Access-Control-Allow-Credentials: %s', (($_ENV['ACCESS_CONTROL_ALLOW_CREDENTIALS']) ? 'true' : 'false')));
-        header(sprintf('Access-Control-Allow-Methods: %s', implode(', ', $_ENV['ACCESS_CONTROL_ALLOW_METHODS'])));
-        header(sprintf('Access-Control-Allow-Headers: %s', implode(', ', $_ENV['ACCESS_CONTROL_ALLOW_HEADERS'])));
+        header(sprintf('Access-Control-Allow-Methods: %s', Strings::join(', ', $_ENV['ACCESS_CONTROL_ALLOW_METHODS'])));
+        header(sprintf('Access-Control-Allow-Headers: %s', Strings::join(', ', $_ENV['ACCESS_CONTROL_ALLOW_HEADERS'])));
     }
 }

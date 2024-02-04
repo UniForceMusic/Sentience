@@ -9,7 +9,10 @@ class CORSMiddleware extends Middleware
 {
     public function execute(Request $request, ...$args): ?array
     {
-        Headers::cors($request, true);
+        Headers::cors(
+            $request,
+            $_ENV['ACCESS_CONTROL_RETURN_ORIGIN']
+        );
 
         return $args;
     }
