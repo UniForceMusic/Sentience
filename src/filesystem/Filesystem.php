@@ -68,7 +68,7 @@ class Filesystem
             $paths = array_map(
                 function (string $item) use ($absolutePath): string {
                     return str_replace(
-                        $absolutePath,
+                        sprintf('%s%s', $absolutePath, DIRECTORY_SEPARATOR),
                         '',
                         $item
                     );
