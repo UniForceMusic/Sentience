@@ -13,7 +13,7 @@ class Filesystem
         }
 
         $items = array_filter(
-            scandir($absolutePath),
+            static::scandirSortedAlphabetical($absolutePath),
             function (string $item) {
                 return !in_array($item, ['.', '..']);
             }
@@ -42,7 +42,7 @@ class Filesystem
         }
 
         $items = array_filter(
-            scandir($absolutePath),
+            static::scandirSortedAlphabetical($absolutePath),
             function (string $item) {
                 return !in_array($item, ['.', '..']);
             }
@@ -85,7 +85,7 @@ class Filesystem
         $paths = [];
 
         $items = array_filter(
-            scandir($absolutePath),
+            static::scandirSortedAlphabetical($absolutePath),
             function (string $item) {
                 return !in_array($item, ['.', '..']);
             }
@@ -108,5 +108,14 @@ class Filesystem
         }
 
         return array_values($paths);
+    }
+
+    protected static function scandirSortedAlphabetical(string $path)
+    {
+        $items = scandir($path);
+
+        sort($items);
+
+        return $items;
     }
 }

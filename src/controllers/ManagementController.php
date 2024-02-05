@@ -6,6 +6,7 @@ use Throwable;
 use src\app\Stdio;
 use src\database\Database;
 use src\database\queries\Query;
+use src\filesystem\Filesystem;
 use src\models\Migration;
 
 class ManagementController extends Controller
@@ -62,35 +63,27 @@ class ManagementController extends Controller
     {
         $migrationsDir = getMigrationsDir();
 
-        $scannedFiles = scandir($migrationsDir);
-        $sortedScannedFiles = [];
+        $scannedFiles = Filesystem::scandir($migrationsDir, false);
+        $migrations = [];
 
         foreach ($scannedFiles as $scannedFile) {
+            if (!str_ends_with(strtolower($scannedFile), '.sql')) {
+                continue;
+            }
+
             $match = preg_match('/(.[^\D+$]*)/', $scannedFile, $matches);
             if (!$match) {
                 continue;
             }
 
             $key = $matches[1];
-            $sortedScannedFiles[$key] = $scannedFile;
+            $migrations[$key] = $scannedFile;
         }
 
-        if (!$sortedScannedFiles) {
+        if (!$migrations) {
             Stdio::printLn('No migrations found');
             return;
         }
-
-        ksort($sortedScannedFiles);
-
-        $migrations = array_filter(
-            $sortedScannedFiles,
-            function (string $item) {
-                return str_ends_with(
-                    strtolower($item),
-                    '.sql'
-                );
-            }
-        );
 
         foreach ($migrations as $migration) {
             $query = trim(file_get_contents(sprintf('%s/%s', $migrationsDir, $migration)));
@@ -167,16 +160,15 @@ class ManagementController extends Controller
          */
         $testsDir = getTestsDir();
 
-        $testFiles = array_filter(
-            scandir($testsDir),
-            function ($fileName): bool {
-                return (!in_array($fileName, ['.', '..']) && str_ends_with(strtolower($fileName), '.php'));
-            }
-        );
+        $testFiles = Filesystem::scandir($testsDir, false);
 
         array_walk(
             $testFiles,
             function ($fileName) use ($testsDir): void {
+                if (!str_ends_with($fileName, '.php')) {
+                    return;
+                }
+
                 if (str_ends_with($fileName, 'Test.php')) {
                     return;
                 }

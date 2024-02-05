@@ -20,11 +20,31 @@ class Strings
 
     public static function join(string $glue, string|array $elements): string
     {
+        if (is_string($elements)) {
+            return $elements;
+        }
+
         return implode(
             $glue,
-            (is_string($elements))
-                ? [$elements]
-                : $elements
+            $elements
         );
+    }
+
+    public static function beforeSubstr(string $string, string $separator): string
+    {
+        if (!str_contains($string, $separator)) {
+            return $string;
+        }
+
+        return explode($separator, $string, 2)[0];
+    }
+
+    public static function afterSubstr(string $string, string $separator): string
+    {
+        if (!str_contains($string, $separator)) {
+            return $string;
+        }
+
+        return explode($separator, $string, 2)[1];
     }
 }

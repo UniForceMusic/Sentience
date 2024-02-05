@@ -127,13 +127,10 @@ class Url
             return [];
         }
 
-        $parts = explode(
-            '&',
-            ltrim(
-                $string,
-                '?'
-            )
-        );
+        $string = Strings::beforeSubstr($string, '#');
+        $string = Strings::afterSubstr($string, '?');
+
+        $parts = explode('&', $string);
         $params = [];
 
         foreach ($parts as $part) {
@@ -159,13 +156,10 @@ class Url
             return [];
         }
 
-        $parts = explode(
-            '&',
-            ltrim(
-                $string,
-                '?'
-            )
-        );
+        $string = Strings::beforeSubstr($string, '#');
+        $string = Strings::afterSubstr($string, '?');
+
+        $parts = explode('&', $string);
         $params = [];
 
         foreach ($parts as $part) {

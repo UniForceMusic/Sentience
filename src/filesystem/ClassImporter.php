@@ -2,20 +2,21 @@
 
 namespace src\filesystem;
 
-use src\exceptions\FilesystemException;
+use src\util\Strings;
 
 class ClassImporter
 {
     public static function importAsString(string $baseDir, string $path, array $exclude = []): ?array
     {
         $dirItems = Filesystem::scandir(
-            appendToBaseDir($baseDir, $path)
+            appendToBaseDir($baseDir, $path),
+            false
         );
 
         $classNames = array_map(
             function (string $item) use ($path) {
                 $namespacePath = str_replace(['/', '\\'], '\\', $path);
-                $className = explode('.', $item)[0];
+                $className = Strings::beforeSubstr('.', $item);
 
                 return trim(
                     sprintf('%s\\%s', $namespacePath, $className),
