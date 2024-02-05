@@ -25,6 +25,7 @@ class Command
     public function injectArgs(array $args): static
     {
         $this->args = $args;
+
         return $this;
     }
 
@@ -74,18 +75,21 @@ class Command
     public function setCommand(string $command): static
     {
         $this->command = $command;
+
         return $this;
     }
 
     public function setMiddleware(array $middleware): static
     {
         $this->middleware = $middleware;
+
         return $this;
     }
 
     public function setCallable(array|string|callable $callable): static
     {
         $this->callable = $callable;
+
         return $this;
     }
 

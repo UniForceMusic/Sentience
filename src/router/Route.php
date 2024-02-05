@@ -137,12 +137,14 @@ class Route
         $path = sprintf('/%s', $path);
 
         $this->path = $path;
+
         return $this;
     }
 
     public function setCallable(array|string|callable $callable): static
     {
         $this->callable = $callable;
+
         return $this;
     }
 
@@ -153,12 +155,14 @@ class Route
         }
 
         $this->methods = $this->methodsToUppercase($methods);
+
         return $this;
     }
 
     public function setMiddleware(array $middleware): static
     {
         $this->middleware = $middleware;
+
         return $this;
     }
 
@@ -188,6 +192,7 @@ class Route
     public function setRequest(string $request): static
     {
         $this->request = $request;
+
         return $this;
     }
 
