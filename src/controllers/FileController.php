@@ -12,10 +12,6 @@ class FileController extends Controller
     {
         $filePath = $request->getVar('filePath');
 
-        if (str_contains($filePath, '/../')) {
-            Response::forbidden();
-        }
-
         if (!file_exists($filePath)) {
             Response::notFound();
         }

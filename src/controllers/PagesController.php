@@ -10,17 +10,10 @@ class PagesController
     {
         $pagePath = $request->getVar('pagePath');
 
-        $absolutePagesPath = appendToBaseDir(
-            BASEDIR,
-            'src',
-            'pages',
-            $pagePath
-        );
-
         foreach ($request->getVars() as $var => $value) {
             $$var = $value;
         }
 
-        include_once($absolutePagesPath);
+        include_once($pagePath);
     }
 }

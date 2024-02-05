@@ -2,33 +2,20 @@
 
 namespace src\filesystem;
 
-use src\exceptions\FilesystemException;
-
 class PageImporter
 {
-    public static function scanPages(string $baseDir, string $path): array
+    public static function scanPages(string $baseDir, string $path, bool $returnAbsolute = true): array
     {
         $absolutePath = appendToBaseDir($baseDir, $path);
 
-        $paths = static::scanPagesRecursive($absolutePath);
-
-        return array_map(
-            function (string $path) use ($absolutePath): string {
-                return str_replace(
-                    $absolutePath,
-                    '',
-                    $path
-                );
-            },
-            $paths
-        );
+        return static::scanPagesRecursive($absolutePath, $returnAbsolute);
     }
 
-    protected static function scanPagesRecursive(string $absolutePath): array
+    protected static function scanPagesRecursive(string $absolutePath, bool $returnAbsolute = true): array
     {
         $pages = [];
 
-        $items = Filesystem::scandir($absolutePath);
+        $items = Filesystem::scandir($absolutePath, $returnAbsolute, ['.php', '.html', '.htm']);
 
         foreach ($items as $item) {
             if (is_file($item)) {

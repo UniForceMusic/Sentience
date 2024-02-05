@@ -4,34 +4,22 @@ use src\controllers\PagesController;
 use src\filesystem\PageImporter;
 use src\middleware\CORSMiddleware;
 use src\router\Route;
+use src\util\Strings;
 
 if ($_ENV['PAGES_ENABLED']) {
-    $pages = PageImporter::scanPages(
-        BASEDIR,
-        PAGESDIR
-    );
+    $pagesPath = getPagesDir();
+    $pages = PageImporter::scanPages(BASEDIR, PAGESDIR);
 
     foreach ($pages as $page) {
-        $removeAbsolutePath = str_replace(
-            PAGESDIR,
-            '',
-            $page
-        );
+        $path = Strings::strip($pagesPath, $page);
+        $path = Strings::beforeSubstr($path, '.');
 
-        $removeIndex = str_replace(
-            '/index.php',
-            '/',
-            $removeAbsolutePath
-        );
-
-        $removePhp = str_replace(
-            '.php',
-            '',
-            $removeIndex
-        );
+        if (is_file($page) && str_starts_with(basename($page), 'index.')) {
+            $path = rtrim($path, 'index');
+        }
 
         $route = Route::create()
-            ->setPath($removePhp)
+            ->setPath($path)
             ->setVar('pagePath', $page)
             ->setCallable([PagesController::class, 'loadPage'])
             ->setMethods(['*']);

@@ -10,13 +10,14 @@ class ClassImporter
     {
         $dirItems = Filesystem::scandir(
             appendToBaseDir($baseDir, $path),
-            false
+            false,
+            ['.php']
         );
 
         $classNames = array_map(
             function (string $item) use ($path) {
                 $namespacePath = str_replace(['/', '\\'], '\\', $path);
-                $className = Strings::beforeSubstr('.', $item);
+                $className = Strings::beforeSubstr($item, '.');
 
                 return trim(
                     sprintf('%s\\%s', $namespacePath, $className),

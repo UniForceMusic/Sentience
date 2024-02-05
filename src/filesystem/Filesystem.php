@@ -6,18 +6,17 @@ use src\exceptions\FilesystemException;
 
 class Filesystem
 {
-    public static function scandir(string $absolutePath, bool $returnAbsolute = true): array
+    public static function scandir(string $absolutePath, bool $returnAbsolute = true, ?array $allowedFileExtensions = null): array
     {
         if (!file_exists($absolutePath)) {
-            throw new FilesystemException(sprintf('file/dir %s does not exist', $absolutePath));
+            throw new FilesystemException(sprintf('directory %s does not exist', $absolutePath));
         }
 
-        $items = array_filter(
-            static::scandirSortedAlphabetical($absolutePath),
-            function (string $item) {
-                return !in_array($item, ['.', '..']);
-            }
-        );
+        $items = static::scandirSortedAlphabetical($absolutePath);
+
+        if ($allowedFileExtensions) {
+            $items = static::filterFileExtensions($items, $allowedFileExtensions);
+        }
 
         $absolutePaths = array_map(
             function (string $item) use ($absolutePath, $returnAbsolute): string {
@@ -33,20 +32,15 @@ class Filesystem
         return array_values($absolutePaths);
     }
 
-    public static function scandirRecursive(string $absolutePath, bool $returnAbsolute = true): array
+    public static function scandirRecursive(string $absolutePath, bool $returnAbsolute = true, ?array $allowedFileExtensions = null): array
     {
         $paths = [];
 
         if (!file_exists($absolutePath)) {
-            throw new FilesystemException(sprintf('file/dir %s does not exist', $absolutePath));
+            throw new FilesystemException(sprintf('directory %s does not exist', $absolutePath));
         }
 
-        $items = array_filter(
-            static::scandirSortedAlphabetical($absolutePath),
-            function (string $item) {
-                return !in_array($item, ['.', '..']);
-            }
-        );
+        $items = static::scandirSortedAlphabetical($absolutePath);
 
         foreach ($items as $item) {
             $absoluteItemPath = appendToBaseDir($absolutePath, $item);
@@ -77,6 +71,10 @@ class Filesystem
             );
         }
 
+        if ($allowedFileExtensions) {
+            $paths = static::filterFileExtensions($paths, $allowedFileExtensions);
+        }
+
         return array_values($paths);
     }
 
@@ -84,12 +82,7 @@ class Filesystem
     {
         $paths = [];
 
-        $items = array_filter(
-            static::scandirSortedAlphabetical($absolutePath),
-            function (string $item) {
-                return !in_array($item, ['.', '..']);
-            }
-        );
+        $items = static::scandirSortedAlphabetical($absolutePath);
 
         foreach ($items as $item) {
             $absoluteItemPath = appendToBaseDir($absolutePath, $item);
@@ -110,12 +103,45 @@ class Filesystem
         return array_values($paths);
     }
 
-    protected static function scandirSortedAlphabetical(string $path)
+    protected static function scandirSortedAlphabetical(string $path, $includeDirectories = true)
     {
         $items = scandir($path);
 
         sort($items);
 
-        return $items;
+        return array_values(
+            array_filter(
+                $items,
+                function (string $item) use ($path, $includeDirectories): bool {
+                    if (!$includeDirectories && is_dir(appendToBaseDir($path, $item))) {
+                        return false;
+                    }
+
+                    return !in_array($item, ['.', '..']);
+                }
+            )
+        );
+    }
+
+    protected static function filterFileExtensions(array $items, array $allowedFileExtensions): array
+    {
+        return array_values(
+            array_filter(
+                $items,
+                function (string $item) use ($allowedFileExtensions): bool {
+                    $lcItem = strtolower($item);
+
+                    foreach ($allowedFileExtensions as $fileExtension) {
+                        $lcFileExtension = strtolower($fileExtension);
+
+                        if (str_ends_with($lcItem, $lcFileExtension)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            )
+        );
     }
 }
