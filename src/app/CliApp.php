@@ -108,6 +108,8 @@ class CliApp extends App implements AppInterface
                     $trace['function']
                 );
             }
+        } else {
+            Stdio::errorLn('- Trace : disabled');
         }
 
         Stdio::errorLn('---------------------------------------------------------------------------');

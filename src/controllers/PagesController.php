@@ -8,7 +8,7 @@ class PagesController
 {
     public function loadPage(Request $request): void
     {
-        $pagePath = $request->getVar('pagePath');
+        $pagePath = $request->getVar('filePath');
 
         foreach ($request->getVars() as $var => $value) {
             $$var = $value;

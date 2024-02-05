@@ -23,7 +23,7 @@ $routes = [
         ->setHide(),
 
     Route::create()
-        ->setPath('/api/stringfunction-example')
+        ->setPath('//api/stringfunction-example/')
         ->setCallable('exampleFunction')
         ->setMethods([Methods::GET, Methods::POST]),
 

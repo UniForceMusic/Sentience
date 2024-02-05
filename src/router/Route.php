@@ -133,6 +133,9 @@ class Route
 
     public function setPath(string $path): static
     {
+        $path = trim($path, '/');
+        $path = sprintf('/%s', $path);
+
         $this->path = $path;
         return $this;
     }

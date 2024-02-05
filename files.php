@@ -1,31 +1,20 @@
 <?php
 
 use src\controllers\FileController;
+use src\filesystem\FileImporter;
 use src\filesystem\Filesystem;
 use src\middleware\CORSMiddleware;
 use src\router\Route;
+use src\util\Strings;
 
 if ($_ENV['FILES_ENABLED']) {
-    $files = Filesystem::scandirRecursive(
-        getFileDir(),
-        false
-    );
+    $filesPath = getFileDir();
+    $files = FileImporter::scanFiles(BASEDIR, FILEDIR);
 
-    foreach ($files as $file) {
+    foreach ($files as $filePath => $file) {
         $route = Route::create()
-            ->setPath(
-                sprintf(
-                    '/%s',
-                    appendToBaseUrl(FILEDIR, $file)
-                )
-            )
-            ->setVar(
-                'filePath',
-                appendToBaseDir(
-                    getFileDir(),
-                    $file
-                )
-            )
+            ->setPath($file)
+            ->setVar('filePath', $filePath)
             ->setCallable([FileController::class, 'serveFile'])
             ->setMethods(['GET']);
 

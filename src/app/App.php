@@ -26,19 +26,6 @@ abstract class App
         return [$controller, $methodName];
     }
 
-    protected function handleException(Throwable $error): void
-    {
-        Response::internalServerError([
-            'error' => [
-                'text' => $error->getMessage(),
-                'type' => $error::class,
-                'file' => $error->getFile(),
-                'line' => $error->getLine(),
-                'trace' => (($_ENV['APP_STACK_TRACE'] ?? false)) ? $error->getTrace() : 'disabled'
-            ]
-        ]);
-    }
-
     protected function executeMiddlewareCallable(string|array|callable|Closure $callable, array $args, Service $service, ?Request $request = null, ?array $words = null, ?array $flags = null): ?array
     {
         if (is_array($callable)) {

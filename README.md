@@ -651,7 +651,7 @@ These contents of these variables are available by reading a variable of the sam
 
 For example: `{userId}` will be available as `$userId` within the PHP tags.
 
-Note: Only PHP files are supported. No `.html` or `.htm` files
+Note: Only .php, .html and .html files are supported.
 
 #### 3.9.1 Components
 
