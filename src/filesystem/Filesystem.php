@@ -50,6 +50,8 @@ class Filesystem
             }
 
             if (is_dir($absoluteItemPath)) {
+                $paths[] = $absoluteItemPath;
+
                 $resurciveItems = static::scandirRecursiveScanner($absoluteItemPath);
 
                 foreach ($resurciveItems as $resurciveItem) {
@@ -92,6 +94,8 @@ class Filesystem
             }
 
             if (is_dir($absoluteItemPath)) {
+                $paths[] = $absoluteItemPath;
+
                 $resurciveItems = static::scandirRecursiveScanner($absoluteItemPath);
 
                 foreach ($resurciveItems as $resurciveItem) {

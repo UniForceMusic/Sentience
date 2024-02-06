@@ -275,7 +275,8 @@ class ManagementController extends Controller
         File::append(
             $dotEnvFilePath,
             sprintf(
-                '# imported variables from .env.example at %s',
+                '# imported variables from %s on %s',
+                File::name($dotEnvExampleFilePath),
                 (new DateTime)->format('F jS Y, H:i')
             )
         );

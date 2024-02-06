@@ -37,12 +37,14 @@ class Dir
             }
 
             if (is_dir($item)) {
-                $dirsToRemove[] = $dirsToRemove;
+                $dirsToRemove[] = $item;
             }
         }
 
         foreach ($dirsToRemove as $dirToRemove) {
             rmdir($dirToRemove);
         }
+
+        rmdir($dir);
     }
 }
