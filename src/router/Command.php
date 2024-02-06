@@ -10,16 +10,18 @@ class Command
     protected array|string|Closure $callable;
     protected array $middleware;
     protected array $args;
-    protected ?array $flags;
-    protected ?array $words;
+    protected bool $argsParsed;
+    protected array $flags;
+    protected array $words;
 
     public function __construct()
     {
         $this->command = '';
         $this->middleware = [];
         $this->args = [];
-        $this->flags = null;
-        $this->words = null;
+        $this->argsParsed = false;
+        $this->flags = [];
+        $this->words = [];
     }
 
     public function injectArgs(array $args): static
@@ -56,18 +58,14 @@ class Command
 
     public function getFlags(): array
     {
-        if (!$this->flags) {
-            $this->parseArgs();
-        }
+        $this->parseArgs();
 
         return $this->flags;
     }
 
     public function getWords(): array
     {
-        if (!$this->words) {
-            $this->parseArgs();
-        }
+        $this->parseArgs();
 
         return $this->words;
     }
@@ -93,11 +91,13 @@ class Command
         return $this;
     }
 
-    protected function parseArgs()
+    protected function parseArgs(): void
     {
+        if ($this->argsParsed) {
+            return;
+        }
+
         $usableArgs = array_slice($this->args, 2);
-        $this->flags = [];
-        $this->words = [];
 
         foreach ($usableArgs as $arg) {
             $matchesSyntax = preg_match('/--(.[^=]*)=(.*)/', $arg, $matches);
