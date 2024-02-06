@@ -4,6 +4,7 @@ namespace src\controllers;
 
 use src\app\Request;
 use src\app\Response;
+use src\filesystem\File;
 use src\util\Headers;
 
 class FileController extends Controller
@@ -16,7 +17,7 @@ class FileController extends Controller
             Response::notFound();
         }
 
-        $fileContents = file_get_contents($filePath);
+        $fileContents = File::read($filePath);
         $mimeType = mime_content_type($filePath);
 
         if (!$mimeType) {

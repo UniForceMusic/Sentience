@@ -1,7 +1,7 @@
 <?php
 
 use src\controllers\PagesController;
-use src\filesystem\PageImporter;
+use src\importers\PageImporter;
 use src\middleware\CORSMiddleware;
 use src\router\Route;
 use src\util\Strings;

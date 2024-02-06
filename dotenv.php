@@ -6,19 +6,19 @@ class DotEnv
 {
     public static function loadFile(string $filePath, ?string $exampleFilePath = null): void
     {
-        $variables = static::parseFile($filePath, $exampleFilePath);
+        if (!file_exists($filePath)) {
+            static::createFile($filePath, $exampleFilePath);
+        }
+
+        $variables = static::parseFile($filePath);
 
         foreach ($variables as $key => $value) {
             $_ENV[$key] = $value;
         }
     }
 
-    public static function parseFile(string $filePath, ?string $exampleFilePath = null): array
+    public static function parseFile(string $filePath): array
     {
-        if (!file_exists($filePath)) {
-            static::createFile($filePath, $exampleFilePath);
-        }
-
         $fileContents = file_get_contents($filePath);
 
         $variables = static::parseString($fileContents);
@@ -29,6 +29,13 @@ class DotEnv
             },
             $variables
         );
+    }
+
+    public static function parseFileRaw(string $filePath): array
+    {
+        $fileContents = file_get_contents($filePath);
+
+        return static::parseString($fileContents);
     }
 
     protected static function createFile(string $filePath, ?string $exampleFilePath): void

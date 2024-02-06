@@ -1,7 +1,8 @@
 <?php
 
-namespace src\filesystem;
+namespace src\importers;
 
+use src\filesystem\Filesystem;
 use src\util\Strings;
 
 class ClassImporter

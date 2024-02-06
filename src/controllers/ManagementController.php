@@ -2,12 +2,16 @@
 
 namespace src\controllers;
 
+use DateTime;
+use DotEnv;
 use Throwable;
 use src\app\Stdio;
 use src\database\Database;
 use src\database\queries\Query;
+use src\filesystem\File;
 use src\filesystem\Filesystem;
 use src\models\Migration;
+use src\util\Strings;
 
 class ManagementController extends Controller
 {
@@ -42,11 +46,7 @@ class ManagementController extends Controller
             $debug,
         );
 
-        $database->createDatabase(
-            $name,
-            true,
-            true
-        );
+        $database->createDatabase($name, true);
 
         Stdio::printFLn('Database %s created successfully', $name);
     }
@@ -86,7 +86,9 @@ class ManagementController extends Controller
         }
 
         foreach ($migrations as $migration) {
-            $query = trim(file_get_contents(sprintf('%s/%s', $migrationsDir, $migration)));
+            $query = trim(
+                File::read(sprintf('%s/%s', $migrationsDir, $migration))
+            );
 
             $migrationAlreadyApplied = $database->query()
                 ->table(Migration::getTable())
@@ -238,5 +240,66 @@ class ManagementController extends Controller
                 $_ENV['DOCKER_PROJECT_NAME']
             )
         );
+    }
+
+    public function fixDotEnv(): void
+    {
+        $dotEnvFilePath = appendToBaseDir(BASEDIR, '.env');
+        $dotEnvExampleFilePath = appendToBaseDir(BASEDIR, '.env.example');
+
+        $dotEnvData = DotEnv::parseFile($dotEnvFilePath);
+        $dotEnvExampleData = DotEnv::parseFileRaw($dotEnvExampleFilePath);
+
+        $missingVariables = [];
+
+        foreach ($dotEnvExampleData as $key => $value) {
+            if (key_exists($key, $dotEnvData)) {
+                continue;
+            }
+
+            $missingVariables[$key] = $value;
+        }
+
+        if (!$missingVariables) {
+            Stdio::printLn('.env is up to date');
+            return;
+        }
+
+        $dotEnvFileContents = File::read($dotEnvFilePath);
+        $newLine = Strings::detectNewline($dotEnvFileContents);
+
+        if (!str_ends_with($dotEnvFilePath, $newLine)) {
+            File::append($dotEnvFilePath, $newLine);
+        }
+
+        File::append(
+            $dotEnvFilePath,
+            sprintf(
+                '# imported variables from .env.example at %s',
+                (new DateTime)->format('F jS Y, H:i')
+            )
+        );
+        File::append(
+            $dotEnvFilePath,
+            $newLine
+        );
+
+        foreach ($missingVariables as $key => $value) {
+            File::append(
+                $dotEnvFilePath,
+                sprintf(
+                    '%s=%s',
+                    $key,
+                    $value,
+                    $newLine
+                )
+            );
+            File::append(
+                $dotEnvFilePath,
+                $newLine
+            );
+        }
+
+        Stdio::printFLn('Added %s variables to .env', count($missingVariables));
     }
 }

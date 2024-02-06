@@ -1,11 +1,9 @@
 <?php
 
 use src\controllers\FileController;
-use src\filesystem\FileImporter;
-use src\filesystem\Filesystem;
+use src\importers\FileImporter;
 use src\middleware\CORSMiddleware;
 use src\router\Route;
-use src\util\Strings;
 
 if ($_ENV['FILES_ENABLED']) {
     $filesPath = getFileDir();

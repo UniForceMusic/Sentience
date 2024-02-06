@@ -698,9 +698,9 @@ Support for multiline strings is not supported as of yet
 
 ### 3.11
 
-Sentience has a class importer that makes importing an array of classes easier.
+Sentience has a class importer that makes importing an array of classes from a directory easier.
 
-The class can be found in `src/filesystem/ClassImporter.php`
+The class can be found in `src/importers/ClassImporter.php`
 
 The class importer has two methods:
 - `ClassImporter::importAsString` (imports the classes as an array of strings including the relative namespace)

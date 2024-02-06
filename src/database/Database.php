@@ -85,16 +85,12 @@ class Database
         );
     }
 
-    public function createDatabase(string $database, bool $ifNotExists = false, bool $use = false): PDOStatement
+    public function createDatabase(string $database, bool $ifNotExists = false): PDOStatement
     {
         $queryBuilder = $this->getQueryBuilder();
 
         [$query, $params] = $queryBuilder->createDatabase($database, $ifNotExists);
         $statement = $this->exec($query, $params);
-
-        if ($use) {
-            $this->useDatabase($database);
-        }
 
         return $statement;
     }

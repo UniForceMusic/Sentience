@@ -48,4 +48,8 @@ $commands = [
     Command::create()
         ->setCommand('docker/rebuild')
         ->setCallable([ManagementController::class, 'dockerRebuild']),
+
+    Command::create()
+        ->setCommand('dotenv/fix')
+        ->setCallable([ManagementController::class, 'fixDotEnv']),
 ];
