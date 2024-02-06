@@ -6,11 +6,9 @@ use src\util\Strings;
 
 class PageImporter
 {
-    public static function scanPages(string $baseDir, string $path): array
+    public static function scanPages(string $baseDir, string $path, array $allowedFileExtensions): array
     {
         $absolutePath = appendToBaseDir($baseDir, $path);
-
-        $allowedFileExtensions = ['.php', '.html', '.htm'];
 
         $scannedPages = Filesystem::scandirRecursive(
             $absolutePath,

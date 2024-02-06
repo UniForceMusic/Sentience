@@ -670,9 +670,10 @@ Note: all components, and folders containing components must be in lowercase. Ot
 
 The .env file has a number of parameters that influence the behaviour of pages:
 ```
-PAGES_ENABLED=true      # Enables or disables serving of pages
-PAGES_CORS=true         # Add CORS middleware to static files
-PAGES_HIDE_ROUTE=false  # Hide page routes on the route not found page
+PAGES_ENABLED=true              # Enables or disables serving of pages
+PAGES_CORS=true                 # Add CORS middleware to static files
+PAGES_HIDE_ROUTE=false          # Hide page routes on the route not found page
+PAGES_ALLOWED_FILE_EXTENSIONS   # Allowed file extensions to serve as a page
 ```
 
 ### 3.10 DotEnv

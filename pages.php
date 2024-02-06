@@ -7,7 +7,11 @@ use src\router\Route;
 use src\util\Strings;
 
 if ($_ENV['PAGES_ENABLED']) {
-    $pages = PageImporter::scanPages(BASEDIR, PAGESDIR);
+    $pages = PageImporter::scanPages(
+        BASEDIR,
+        PAGESDIR,
+        $_ENV['PAGES_ALLOWED_FILE_EXTENSIONS']
+    );
 
     foreach ($pages as $filePath => $path) {
         $route = Route::create()
