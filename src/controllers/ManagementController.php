@@ -63,14 +63,10 @@ class ManagementController extends Controller
     {
         $migrationsDir = getMigrationsDir();
 
-        $scannedFiles = Filesystem::scandir($migrationsDir, false);
+        $scannedFiles = Filesystem::scandir($migrationsDir, false, ['.sql']);
         $migrations = [];
 
         foreach ($scannedFiles as $scannedFile) {
-            if (!str_ends_with(strtolower($scannedFile), '.sql')) {
-                continue;
-            }
-
             $match = preg_match('/(.[^\D+$]*)/', $scannedFile, $matches);
             if (!$match) {
                 continue;
@@ -87,7 +83,7 @@ class ManagementController extends Controller
 
         foreach ($migrations as $migration) {
             $query = trim(
-                File::read(sprintf('%s/%s', $migrationsDir, $migration))
+                File::read(appendToBaseDir($migrationsDir, $migration))
             );
 
             $migrationAlreadyApplied = $database->query()
@@ -244,8 +240,11 @@ class ManagementController extends Controller
 
     public function fixDotEnv(): void
     {
-        $dotEnvFilePath = appendToBaseDir(BASEDIR, '.env');
-        $dotEnvExampleFilePath = appendToBaseDir(BASEDIR, '.env.example');
+        $dotEnv = '.env';
+        $dotEnvExample = '.env.example';
+
+        $dotEnvFilePath = appendToBaseDir(BASEDIR, $dotEnv);
+        $dotEnvExampleFilePath = appendToBaseDir(BASEDIR, $dotEnvExample);
 
         $dotEnvData = DotEnv::parseFile($dotEnvFilePath);
         $dotEnvExampleData = DotEnv::parseFileRaw($dotEnvExampleFilePath);
@@ -261,7 +260,10 @@ class ManagementController extends Controller
         }
 
         if (!$missingVariables) {
-            Stdio::printLn('.env is up to date');
+            Stdio::printFLn(
+                '%s is up to date',
+                $dotEnv
+            );
             return;
         }
 
@@ -276,7 +278,7 @@ class ManagementController extends Controller
             $dotEnvFilePath,
             sprintf(
                 '# imported variables from %s on %s',
-                File::name($dotEnvExampleFilePath),
+                $dotEnvExample,
                 (new DateTime)->format('F jS Y, H:i')
             )
         );
