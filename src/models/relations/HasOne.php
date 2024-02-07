@@ -3,7 +3,6 @@
 namespace src\models\relations;
 
 use Closure;
-use PDO;
 use src\database\Database;
 use src\database\queries\Query;
 use src\models\Model;
@@ -24,7 +23,7 @@ class HasOne extends Relation implements RelationInterface
         $relationModel = new $this->relationModel($database);
 
         $query = $database->query()
-            ->table($relationModel::getTable())
+            ->model($this->relationModel)
             ->where(
                 $relationModel->getPrimaryKeyColumnName(),
                 Query::EQUALS,
@@ -32,24 +31,8 @@ class HasOne extends Relation implements RelationInterface
             )
             ->limit(1);
 
-        if ($this->modifyDefaultQuery) {
-            $modifyDefaultQuery = $this->modifyDefaultQuery;
-            $query = $modifyDefaultQuery($query);
-        }
+        $query = $this->modifyQuery($query, $modifyQuery);
 
-        if ($modifyQuery) {
-            $query = $modifyQuery($query);
-        }
-
-        $statement = $query->select();
-
-        if ($statement->rowCount() < 1) {
-            return null;
-        }
-
-        return $relationModel->hydrateByAssoc(
-            $statement,
-            $statement->fetch(PDO::FETCH_ASSOC)
-        );
+        return $query->selectModel();
     }
 }

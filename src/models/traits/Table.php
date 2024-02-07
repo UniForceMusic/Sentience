@@ -11,7 +11,7 @@ trait Table
 {
     protected string $table = '';
     protected array $columns = [
-        'property name' => 'column name'
+        '<property name>' => '<column name>'
     ];
 
     public static function getTable(): ?string

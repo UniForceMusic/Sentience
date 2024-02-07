@@ -3,7 +3,6 @@
 namespace src\models\relations;
 
 use Closure;
-use PDO;
 use src\database\Database;
 use src\database\queries\Query;
 use src\models\Model;
@@ -21,10 +20,8 @@ class BelongsTo extends Relation implements RelationInterface
 
     public function retrieve(Database $database, Model $model, callable $modifyQuery = null): ?Model
     {
-        $relationModel = new $this->relationModel($database);
-
         $query = $database->query()
-            ->table($relationModel::getTable())
+            ->model($this->relationModel)
             ->where(
                 $this->foreignKeyColumnName,
                 Query::EQUALS,
@@ -32,24 +29,8 @@ class BelongsTo extends Relation implements RelationInterface
             )
             ->limit(1);
 
-        if ($this->modifyDefaultQuery) {
-            $modifyDefaultQuery = $this->modifyDefaultQuery;
-            $query = $modifyDefaultQuery($query);
-        }
+        $query = $this->modifyQuery($query, $modifyQuery);
 
-        if ($modifyQuery) {
-            $query = $modifyQuery($query);
-        }
-
-        $statement = $query->select();
-
-        if ($statement->rowCount() < 1) {
-            return null;
-        }
-
-        return $relationModel->hydrateByAssoc(
-            $statement,
-            $statement->fetch(PDO::FETCH_ASSOC)
-        );
+        return $query->selectModel();
     }
 }

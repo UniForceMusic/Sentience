@@ -30,27 +30,18 @@ class ManyToMany extends Relation implements RelationInterface
         $queryBuilder = $database->getQueryBuilder();
 
         $relationModel = new $this->relationModel($database);
-        $junctionModel = new $this->junctionTableModel($database);
 
         $query = $database->query()
-            ->table($junctionModel::getTable())
-            ->columns(
-                $this->getColumnsWithNamespace(
-                    $queryBuilder,
-                    $relationModel::getTable(),
-                    $relationModel->getColumnNames()
-                ),
-                false
-            )
+            ->model($this->junctionTableModel)
             ->join(
                 Join::LEFT_JOIN,
                 $relationModel::getTable(),
                 $this->junctionTableRelationColumnName,
-                $relationModel->getPrimaryKeyColumnName()
+                $relationModel::getPrimaryKeyColumnName()
             )
             ->where(
                 $queryBuilder->getColumnWithNamespace(
-                    $junctionModel::getTable(),
+                    $this->junctionTableModel::getTable(),
                     $this->junctionTableParentColumnName,
                     true
                 ),
@@ -59,38 +50,8 @@ class ManyToMany extends Relation implements RelationInterface
                 false
             );
 
-        if ($this->modifyDefaultQuery) {
-            $modifyDefaultQuery = $this->modifyDefaultQuery;
-            $query = $modifyDefaultQuery($query);
-        }
+        $query = $this->modifyQuery($query, $modifyQuery);
 
-        if ($modifyQuery) {
-            $query = $modifyQuery($query);
-        }
-
-        $statement = $query->select();
-
-        if ($statement->rowCount() < 1) {
-            return [];
-        }
-
-        $relationModels = [];
-
-        foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $assoc) {
-            $relationModel = $this->relationModel;
-            $relationModels[] = (new $relationModel($database))->hydrateByAssoc($statement, $assoc);
-        }
-
-        return $relationModels;
-    }
-
-    protected function getColumnsWithNamespace(QueryBuilderInterface $queryBuilder, string $table, array $columns): array
-    {
-        return array_map(
-            function (string $column) use ($table, $queryBuilder) {
-                return $queryBuilder->getColumnWithNamespace($table, $column, true);
-            },
-            $columns
-        );
+        return $query->selectModels();
     }
 }

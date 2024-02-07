@@ -79,8 +79,8 @@ abstract class Request implements RequestInterface
             throw new Exception(sprintf('%s must be set', $fieldName));
         }
 
-        if ($number == 0 || $number < 0) {
-            throw new Exception(sprintf('%s cannot be empty', $fieldName));
+        if ($number <= 0) {
+            throw new Exception(sprintf('%s cannot be zero', $fieldName));
         }
     }
 

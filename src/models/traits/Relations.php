@@ -16,8 +16,7 @@ trait Relations
             throw new RelationException(sprintf('relation with model %s does not exist', $name));
         }
 
-        return $this->relations[$name]
-            ->retrieve($this->database, $this, $modifyQuery);
+        return $this->relations[$name]->retrieve($this->database, $this, $modifyQuery);
     }
 
     protected function registerRelations(): void
@@ -29,7 +28,7 @@ trait Relations
 
     protected function registerRelation(Relation $relation, ?string $nameOverride = null): void
     {
-        $relationName = $nameOverride ?? $relation->relationModel::getTable();
+        $relationName = $nameOverride ?? $relation->relationModel;
 
         $this->relations[$relationName] = $relation;
     }
