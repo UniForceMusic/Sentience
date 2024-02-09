@@ -63,8 +63,8 @@ class DotEnv
                 continue;
             }
 
-            $key = $matches[1];
-            $value = $matches[2];
+            $key = trim($matches[1]);
+            $value = trim($matches[2]);
 
             $variables[$key] = $value;
         }
@@ -119,7 +119,7 @@ class DotEnv
         }
 
         return array_map(
-            function (string $value): null|bool|int|float|string {
+            function (string $value): mixed {
                 return static::parseVariable($value);
             },
             $matches[0]
