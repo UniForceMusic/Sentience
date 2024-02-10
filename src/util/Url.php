@@ -134,6 +134,10 @@ class Url
         $params = [];
 
         foreach ($parts as $part) {
+            if (empty($part)) {
+                continue;
+            }
+
             if (!str_contains($part, '=')) {
                 $params[$part] = '';
                 continue;
@@ -163,6 +167,10 @@ class Url
         $params = [];
 
         foreach ($parts as $part) {
+            if (empty($part)) {
+                continue;
+            }
+
             if (!str_contains($part, '=')) {
                 $params[$part] = '';
                 continue;
