@@ -4,7 +4,6 @@ use src\controllers\PagesController;
 use src\importers\PageImporter;
 use src\middleware\CORSMiddleware;
 use src\router\Route;
-use src\util\Strings;
 
 if ($_ENV['PAGES_ENABLED']) {
     $pages = PageImporter::scanPages(
