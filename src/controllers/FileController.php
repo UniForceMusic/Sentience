@@ -18,7 +18,7 @@ class FileController extends Controller
         }
 
         $fileContents = File::read($filePath);
-        $mimeType = mime_content_type($filePath);
+        $mimeType = File::mimeType($filePath);
 
         if (!$mimeType) {
             Response::unsupportedMediaType();

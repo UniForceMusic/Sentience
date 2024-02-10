@@ -20,6 +20,10 @@ class PageImporter
         $pages = [];
 
         foreach ($scannedPages as $page) {
+            if (is_dir($page)) {
+                continue;
+            }
+
             $path = Strings::strip($absolutePath, $page);
             $path = Strings::beforeSubstr($path, '.');
 

@@ -6,8 +6,8 @@ use src\middleware\CORSMiddleware;
 use src\router\Route;
 
 if ($_ENV['FILES_ENABLED']) {
-    $filesPath = getFileDir();
-    $files = FileImporter::scanFiles(BASEDIR, FILEDIR);
+    $filesPath = getPublicDir();
+    $files = FileImporter::scanFiles(BASEDIR, PUBLICDIR);
 
     foreach ($files as $filePath => $file) {
         $route = Route::create()

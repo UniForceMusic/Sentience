@@ -16,6 +16,10 @@ class FileImporter
         $files = [];
 
         foreach ($scannedFiles as $file) {
+            if (is_dir($file)) {
+                continue;
+            }
+
             $files[$file] = Strings::strip($absolutePath, $file);
         }
 

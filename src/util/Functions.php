@@ -17,9 +17,9 @@ function getMigrationsDir(): string
     return appendToBaseDir(BASEDIR, MIGRATIONSDIR);
 }
 
-function getFileDir(): string
+function getPublicDir(): string
 {
-    return appendToBaseDir(BASEDIR, FILEDIR);
+    return appendToBaseDir(BASEDIR, PUBLICDIR);
 }
 
 function getPagesDir(): string

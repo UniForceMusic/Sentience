@@ -10,7 +10,7 @@ class File
     {
         $contents = file_get_contents($file);
 
-        if (!$contents) {
+        if (is_bool($contents)) {
             throw new FilesystemException(sprintf('error reading file "%s"', $file));
         }
 
@@ -21,7 +21,7 @@ class File
     {
         $bytes = file_put_contents($file, '');
 
-        if (!$bytes) {
+        if (is_bool($bytes)) {
             throw new FilesystemException(sprintf('error creating file "%s"', $file));
         }
     }
@@ -30,7 +30,7 @@ class File
     {
         $bytes = file_put_contents($file, $contents);
 
-        if (!$bytes) {
+        if (is_bool($bytes)) {
             throw new FilesystemException(sprintf('error writing to file "%s"', $file));
         }
     }
@@ -84,5 +84,16 @@ class File
                 (count($parts) - 1)
             )
         );
+    }
+
+    public static function mimeType(string $file): string
+    {
+        $mimeType = mime_content_type($file);
+
+        if (is_bool($mimeType)) {
+            throw new FilesystemException(sprintf('mimetype not set for file "%s"', $file));
+        }
+
+        return $mimeType;
     }
 }
