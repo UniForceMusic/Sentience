@@ -136,6 +136,10 @@ class Request
 
     public function getJson(): ?array
     {
+        if (empty($this->body)) {
+            return null;
+        }
+
         $assoc = json_decode($this->body, true);
 
         if (is_null($assoc) && json_last_error_msg() != 'No error') {
