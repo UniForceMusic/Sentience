@@ -563,7 +563,7 @@ The key can reference data from headers, parameters, vars and json by using the 
 '<property name>' => 'header:name                           // Allowed types: string, ?string, array, ?array
 '<property name>' => 'parameter:name'                       // Allowed types: string, ?string, array, ?array
 '<property name>' => 'var:name'                             // Allowed types: string, ?string
-'<property name>' => 'json:nested_key.using.dot.notation'   // Allowed types: null, bool, int, float, string, array, object, src\requests\Request
+'<property name>' => 'json:nested_key.using.dot.notation'   // Allowed types: null, bool, int, float, string, array, object, src\requests\Request, src\requests\Request[]
 ```
 
 The public class properties can later by accessed once the payload has been parsed and the values from the payload are assigned to the correct properties.
