@@ -13,6 +13,7 @@ abstract class Request
     public const PARAMETER = 'parameter:';
     public const VAR = 'var:';
     public const JSON = 'json:';
+    public const FORMDATA = 'formdata:';
 
     protected IncomingHttpRequest $request;
     protected ?array $payload;
@@ -48,6 +49,11 @@ abstract class Request
 
             if (str_starts_with($key, $this::JSON)) {
                 $this->hydratePropertyFromJson($property, $key);
+                continue;
+            }
+
+            if (str_starts_with($key, $this::FORMDATA)) {
+                $this->hydratePropertyFromFormData($property, $key);
                 continue;
             }
 
@@ -213,6 +219,15 @@ abstract class Request
         $allowsNull = $reflectionType->allowsNull();
         $docComment = $reflectionProperty->getDocComment();
 
+        if (is_null($this->payload)) {
+            throw new PropertyException(
+                sprintf(
+                    'unable to parse property: %s because json body is empty',
+                    $property
+                )
+            );
+        }
+
         $data = Data::get($this->payload, $key);
 
         if (is_null($data) && $allowsNull) {
@@ -260,6 +275,47 @@ abstract class Request
                     strtolower($type)
                 )
             );
+        }
+
+        $this->{$property} = $data;
+    }
+
+    protected function hydratePropertyFromFormData(string $property, string $key): void
+    {
+        $key = $this->stripTypeFromKey($key, $this::FORMDATA);
+
+        $reflectionProperty = new ReflectionProperty($this, $property);
+
+        $reflectionType = $reflectionProperty->getType();
+        $type = ltrim($reflectionType, '?');
+        $allowsNull = $reflectionType->allowsNull();
+
+        $formData = $this->request->getFormData();
+
+        if (is_null($formData)) {
+            throw new PropertyException(
+                sprintf(
+                    'unable to parse property: %s because formdata body is empty',
+                    $property
+                )
+            );
+        }
+
+        $data = $formData[$key] ?? null;
+
+        if (in_array($type, ['mixed', ''])) {
+            $this->{$property} = $data;
+            return;
+        }
+
+        if (is_null($data)) {
+            if ($allowsNull) {
+                $this->{$property} = null;
+                return;
+            }
+
+            $this->{$property} = '';
+            return;
         }
 
         $this->{$property} = $data;
