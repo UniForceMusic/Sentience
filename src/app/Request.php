@@ -37,8 +37,8 @@ class Request
         array_walk(
             $rawHeaders,
             function (string $val, string $key) use (&$headers) {
-                $lowerCaseKey = strtolower($key);
-                $headers[$lowerCaseKey] = $val;
+                $lcKey = strtolower($key);
+                $headers[$lcKey] = $val;
             }
         );
         $vars = ($route) ? $route->getVars() : [];
@@ -97,11 +97,13 @@ class Request
 
     public function getHeader(string $key): ?string
     {
-        if (!key_exists($key, $this->headers)) {
+        $lcKey = strtolower($key);
+
+        if (!key_exists($lcKey, $this->headers)) {
             return null;
         }
 
-        return $this->headers[$key];
+        return $this->headers[$lcKey];
     }
 
     public function getParameters(): array

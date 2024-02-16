@@ -548,50 +548,39 @@ To create a new request, create a new file in src/requests. Use the template bel
 
 namespace src\requests;
 
-use src\app\Request as IncomingRequest;
-
-class ClassNameHere extends Request implements RequestInterface
+class ClassNameHere extends Request
 {
     public mixed $classProperty;
     
-    public function validateAndHydrate(IncomingRequest $request, mixed $parsedPayload): void
-    {
-        $payload = ($parsedPayload)
-            ? $parsedPayload
-            : $request->getJson();
-
-        $this->classProperty = $payload['class_property'];
-    }
+    protected array $properties = [
+        '<property name>' => '<key>'
+    ]
 }
+```
+
+The key can reference data from headers, parameters, vars and json by using the prefix:
+```
+'<property name>' => 'header:name                           // Allowed types: string, ?string, array, ?array
+'<property name>' => 'parameter:name'                       // Allowed types: string, ?string, array, ?array
+'<property name>' => 'var:name'                             // Allowed types: string, ?string
+'<property name>' => 'json:nested_key.using.dot.notation'   // Allowed types: null, bool, int, float, string, array, object, src\requests\Request
 ```
 
 The public class properties can later by accessed once the payload has been parsed and the values from the payload are assigned to the correct properties.
 
-The reason the parsed payload is included is the ability to nest request object.
-
 #### 3.6.1 Nesting
 
-If you want to parse an array of comments provided, you'd create a new property `public array $comments`.
+If you want to parse a nested array of objects, you'd create a new property `public array $nestedRequests`.
 
-Then you'd create a request class that maps all fields to class properties.
-
-In your main request class, in the validateAndHydrate method, you add the following code:
+In the codecomment of the property, include the type of request class the array should contain.
 ```
-$this->comments = [];
-
-foreach ($payload['comments'] as $comment) {
-    $this->comments = new CommentRequest($request, $comment);
-}
+/**
+ * @var RequestClass[]
+ */
+public array $nestedRequests;
 ```
 
-If you include the
-```
-$payload = ($parsedPayload)
-    ? $parsedPayload
-    : $request->getJson();
-```
-
-statement at the beginning of the method, you'll parse the comment object instead of the entire request body.
+The array will be hydrated with the request classes.
 
 #### 3.6.2 Using the request object in a route
 

@@ -188,6 +188,15 @@ class Url
             $params[$key][] = $value;
         }
 
-        return $params;
+        return array_map(
+            function (array $values) {
+                if (count($values) < 2) {
+                    return $values[0];
+                }
+
+                return $values;
+            },
+            $params
+        );
     }
 }
