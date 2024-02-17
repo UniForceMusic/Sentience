@@ -97,17 +97,6 @@ class HttpResponse
         return curl_getinfo($this->curlHandle, $curlOption);
     }
 
-    public function asAssoc(): array
-    {
-        return [
-            'url' => $this->url,
-            'code' => $this->code,
-            'http' => $this->http,
-            'headers' => $this->headers,
-            'body' => $this->body,
-        ];
-    }
-
     protected function parseCurlHandle(CurlHandle $curlHandle)
     {
         $this->url = curl_getinfo($curlHandle, CURLINFO_EFFECTIVE_URL);
