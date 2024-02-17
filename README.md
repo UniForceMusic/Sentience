@@ -379,7 +379,7 @@ class User extends Model
 
 `->hydrate()`
 
-`->hydrateByField('field', 'value)`
+`->hydrateByField('field', 'value')`
 
 `->hydrateByAssoc($pdoStatement, $assoc)`
 
