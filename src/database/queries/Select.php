@@ -54,7 +54,8 @@ trait Select
 
         $assoc = $statement->fetch(PDO::FETCH_ASSOC);
 
-        $model = new $this->model($this->database);
+        $class = $this->model;
+        $model = new $class($this->database);
         return $model->hydrateByAssoc($statement, $assoc);
     }
 
@@ -74,7 +75,8 @@ trait Select
 
         return array_map(
             function (array $assoc) use ($statement): CustomModel {
-                $model = new $this->model($this->database);
+                $class = $this->model;
+                $model = new $class($this->database);
                 return $model->hydrateByAssoc($statement, $assoc);
             },
             $assocs
