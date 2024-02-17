@@ -558,13 +558,24 @@ class ClassNameHere extends Request
 }
 ```
 
+Create public properties for all the data you want to access. Add these properties to the protected array `properties` as `<property name>` and the key where the class should look as `<key>`.
+
 The key can reference data from headers, parameters, vars and json by using the prefix:
 ```
-'<property name>' => 'header:name                           // Allowed types: mixed, string, ?string, array, ?array
-'<property name>' => 'parameter:name'                       // Allowed types: mixed, string, ?string, array, ?array
-'<property name>' => 'var:name'                             // Allowed types: mixed, string, ?string
-'<property name>' => 'json:nested_key.using.dot.notation'   // Allowed types: mixed, null, bool, int, float, string, array, object, src\requests\Request, src\requests\Request[]
-'<property name>' => 'formdata:name'                        // Allowed types: mixed, string, ?string
+// Allowed types: mixed, string, ?string, array, ?array
+'<property name>' => 'header:name
+
+// Allowed types: mixed, string, ?string, array, ?array
+'<property name>' => 'parameter:name'
+
+// Allowed types: mixed, string, ?string
+'<property name>' => 'var:name'
+
+// Allowed types: mixed, null, bool, int, float, string, array, object, src\requests\Request, src\requests\Request[]
+'<property name>' => 'json:nested_key.using.dot.notation'
+
+// Allowed types: mixed, string, ?string
+'<property name>' => 'formdata:name'
 ```
 
 The public class properties can later by accessed once the payload has been parsed and the values from the payload are assigned to the correct properties.
