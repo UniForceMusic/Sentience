@@ -7,6 +7,7 @@ use SimpleXMLElement;
 use src\requests\Request as CustomRequest;
 use src\router\Route;
 use src\util\FormData;
+use src\util\Json;
 use src\util\Url;
 
 class Request
@@ -137,17 +138,7 @@ class Request
 
     public function getJson(): ?array
     {
-        if (empty($this->body)) {
-            return null;
-        }
-
-        $assoc = json_decode($this->body, true);
-
-        if (is_null($assoc) && json_last_error_msg() != 'No error') {
-            throw new JsonException(json_last_error_msg());
-        }
-
-        return $assoc;
+        return Json::decode($this->body);
     }
 
     public function getFormData($unique = true): ?array

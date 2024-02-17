@@ -6,6 +6,7 @@ use CurlHandle;
 use JsonException;
 use SimpleXMLElement;
 use src\exceptions\CurlException;
+use src\util\Json;
 
 class HttpResponse
 {
@@ -74,17 +75,7 @@ class HttpResponse
 
     public function getJson(): ?array
     {
-        if (empty($this->body)) {
-            return null;
-        }
-
-        $assoc = json_decode($this->body, true);
-
-        if (is_null($assoc) && json_last_error_msg() != 'No error') {
-            throw new JsonException(json_last_error_msg());
-        }
-
-        return $assoc;
+        return Json::decode($this->body);
     }
 
     public function getXml(): ?SimpleXMLElement
@@ -95,6 +86,17 @@ class HttpResponse
     public function getCurlInfo(int $curlOption): mixed
     {
         return curl_getinfo($this->curlHandle, $curlOption);
+    }
+
+    public function asAssoc(): array
+    {
+        return [
+            'url' => $this->url,
+            'code' => $this->code,
+            'http' => $this->http,
+            'headers' => $this->headers,
+            'body' => $this->body,
+        ];
     }
 
     protected function parseCurlHandle(CurlHandle $curlHandle)
