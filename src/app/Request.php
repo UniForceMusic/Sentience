@@ -4,8 +4,9 @@ namespace src\app;
 
 use JsonException;
 use SimpleXMLElement;
-use src\requests\Request as RequestObject;
+use src\requests\Request as CustomRequest;
 use src\router\Route;
+use src\util\FormData;
 use src\util\Url;
 
 class Request
@@ -20,7 +21,7 @@ class Request
     protected array $parameters;
     protected array $cookies;
     protected array $vars;
-    protected ?RequestObject $request = null;
+    protected ?CustomRequest $request = null;
 
     public function __construct(?Route $route = null)
     {
@@ -149,13 +150,13 @@ class Request
         return $assoc;
     }
 
-    public function getFormData(): ?array
+    public function getFormData($unique = true): ?array
     {
-        if (!$_POST) {
+        if (empty($this->body)) {
             return null;
         }
 
-        return $_POST;
+        return FormData::decode($this->body, $unique);
     }
 
     public function getXml(): ?SimpleXMLElement
@@ -177,7 +178,7 @@ class Request
         return $this->vars[$key];
     }
 
-    public function getRequest(): ?RequestObject
+    public function getRequest(): ?CustomRequest
     {
         return $this->request;
     }

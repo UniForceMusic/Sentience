@@ -3,7 +3,7 @@
 namespace src\requests;
 
 use ReflectionProperty;
-use src\app\Request as IncomingHttpRequest;
+use src\app\Request as StaticRequest;
 use src\exceptions\PropertyException;
 use src\util\Data;
 
@@ -15,11 +15,11 @@ abstract class Request
     public const JSON = 'json:';
     public const FORMDATA = 'formdata:';
 
-    protected IncomingHttpRequest $request;
+    protected StaticRequest $request;
     protected ?array $payload;
     protected array $properties = [];
 
-    public function __construct(IncomingHttpRequest $request, ?array $payload = null)
+    public function __construct(StaticRequest $request, ?array $payload = null)
     {
         $this->request = $request;
         $this->payload = is_null($payload)

@@ -95,30 +95,7 @@ class Url
 
     public static function urlEncodeParametersFromAssoc(array $parameters): string
     {
-        $serializableParameters = [];
-
-        foreach ($parameters as $name => $value) {
-            if (is_array($value)) {
-                foreach ($value as $k => $v) {
-                    $serializableParameters[] = sprintf(
-                        '%s=%s',
-                        urlencode($k),
-                        urlencode($v)
-                    );
-                }
-                continue;
-            }
-
-            $serializableParameters[] = sprintf(
-                '%s=%s',
-                urlencode($name),
-                urlencode($value)
-            );
-        }
-
-        $queryString = implode('&', $serializableParameters);
-
-        return $queryString;
+        return FormData::encode($parameters, false);
     }
 
     public static function urlDecodeParametersToAssoc(?string $string): array
@@ -130,28 +107,7 @@ class Url
         $string = Strings::beforeSubstr($string, '#');
         $string = Strings::afterSubstr($string, '?');
 
-        $parts = explode('&', $string);
-        $params = [];
-
-        foreach ($parts as $part) {
-            if (empty($part)) {
-                continue;
-            }
-
-            if (!str_contains($part, '=')) {
-                $params[$part] = '';
-                continue;
-            }
-
-            $partSplit = explode('=', $part, 2);
-
-            $key = urldecode($partSplit[0]);
-            $value = urldecode($partSplit[1]);
-
-            $params[$key] = $value;
-        }
-
-        return $params;
+        return FormData::decode($string);
     }
 
     public static function urlDecodeParameters(?string $string): array
@@ -163,40 +119,6 @@ class Url
         $string = Strings::beforeSubstr($string, '#');
         $string = Strings::afterSubstr($string, '?');
 
-        $parts = explode('&', $string);
-        $params = [];
-
-        foreach ($parts as $part) {
-            if (empty($part)) {
-                continue;
-            }
-
-            if (!str_contains($part, '=')) {
-                $params[$part] = '';
-                continue;
-            }
-
-            $partSplit = explode('=', $part, 2);
-
-            $key = urldecode($partSplit[0]);
-            $value = urldecode($partSplit[1]);
-
-            if (!key_exists($key, $params)) {
-                $params[$key] = [];
-            }
-
-            $params[$key][] = $value;
-        }
-
-        return array_map(
-            function (array $values) {
-                if (count($values) < 2) {
-                    return $values[0];
-                }
-
-                return $values;
-            },
-            $params
-        );
+        return FormData::decode($string, false);
     }
 }

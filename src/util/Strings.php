@@ -45,6 +45,6 @@ class Strings
             return $string;
         }
 
-        return explode($separator, $string, 2)[1];
+        return explode($separator, $string, 2)[1] ?? '';
     }
 }
