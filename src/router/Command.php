@@ -7,7 +7,7 @@ use Closure;
 class Command
 {
     protected string $argument;
-    protected array|string|Closure $callable;
+    protected null|array|string|Closure $callable;
     protected array $middleware;
     protected array $args;
     protected array $flags;
@@ -22,6 +22,7 @@ class Command
     public function __construct()
     {
         $this->argument = '';
+        $this->callable = null;
         $this->middleware = [];
         $this->args = [];
         $this->flags = [];
@@ -51,7 +52,7 @@ class Command
         return $this->middleware;
     }
 
-    public function getCallable(): array|string|callable
+    public function getCallable(): null|array|string|callable
     {
         return $this->callable;
     }
