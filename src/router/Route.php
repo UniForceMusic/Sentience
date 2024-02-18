@@ -7,7 +7,7 @@ use Closure;
 class Route
 {
     protected string $path;
-    protected string|array|Closure $callable;
+    protected null|string|array|Closure $callable;
     protected array $methods;
     protected array $middleware;
     protected array $vars;
@@ -22,6 +22,7 @@ class Route
     public function __construct()
     {
         $this->path = '';
+        $this->callable = null;
         $this->methods = [];
         $this->middleware = [];
         $this->vars = [];
@@ -42,7 +43,7 @@ class Route
         return $this->path;
     }
 
-    public function getCallable(): array|string|callable
+    public function getCallable(): null|array|string|callable
     {
         return $this->callable;
     }
