@@ -6,22 +6,27 @@ use Closure;
 
 class Command
 {
-    protected string $command;
+    protected string $argument;
     protected array|string|Closure $callable;
     protected array $middleware;
     protected array $args;
-    protected bool $argsParsed;
     protected array $flags;
     protected array $words;
+    protected bool $argsParsed;
+
+    public static function create(): static
+    {
+        return new static();
+    }
 
     public function __construct()
     {
-        $this->command = '';
+        $this->argument = '';
         $this->middleware = [];
         $this->args = [];
-        $this->argsParsed = false;
         $this->flags = [];
         $this->words = [];
+        $this->argsParsed = false;
     }
 
     public function injectArgs(array $args): static
@@ -31,19 +36,14 @@ class Command
         return $this;
     }
 
-    public static function create(): static
+    public function isMatch(string $argument): bool
     {
-        return new static();
+        return ($argument == $this->argument);
     }
 
-    public function isMatch(string $command): bool
+    public function getArgument(): string
     {
-        return ($command == $this->command);
-    }
-
-    public function getCommand(): string
-    {
-        return $this->command;
+        return $this->argument;
     }
 
     public function getMiddleware(): array
@@ -70,9 +70,9 @@ class Command
         return $this->words;
     }
 
-    public function setCommand(string $command): static
+    public function setArgument(string $argument): static
     {
-        $this->command = $command;
+        $this->argument = $argument;
 
         return $this;
     }

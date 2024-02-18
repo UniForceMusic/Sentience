@@ -6,50 +6,50 @@ use src\router\Command;
 
 $commands = [
     Command::create()
-        ->setCommand('server/start')
+        ->setArgument('server/start')
         ->setCallable([ManagementController::class, 'startServer']),
 
     Command::create()
-        ->setCommand('example')
+        ->setArgument('example')
         ->setCallable([ExampleController::class, 'exampleCli']),
 
     Command::create()
-        ->setCommand('database/create')
+        ->setArgument('database/create')
         ->setCallable([ManagementController::class, 'createDatabase']),
 
     Command::create()
-        ->setCommand('database/init')
+        ->setArgument('database/init')
         ->setCallable([ManagementController::class, 'initDatabase']),
 
     Command::create()
-        ->setCommand('database/migrate')
+        ->setArgument('database/migrate')
         ->setCallable([ManagementController::class, 'runMigrations']),
 
     Command::create()
-        ->setCommand('models/init')
+        ->setArgument('models/init')
         ->setCallable([ManagementController::class, 'initModel']),
 
     Command::create()
-        ->setCommand('tests')
+        ->setArgument('tests')
         ->setCallable([ManagementController::class, 'runTests']),
 
     Command::create()
-        ->setCommand('docker/init')
+        ->setArgument('docker/init')
         ->setCallable([ManagementController::class, 'dockerInit']),
 
     Command::create()
-        ->setCommand('docker/up')
+        ->setArgument('docker/up')
         ->setCallable([ManagementController::class, 'dockerUp']),
 
     Command::create()
-        ->setCommand('docker/down')
+        ->setArgument('docker/down')
         ->setCallable([ManagementController::class, 'dockerDown']),
 
     Command::create()
-        ->setCommand('docker/rebuild')
+        ->setArgument('docker/rebuild')
         ->setCallable([ManagementController::class, 'dockerRebuild']),
 
     Command::create()
-        ->setCommand('dotenv/fix')
+        ->setArgument('dotenv/fix')
         ->setCallable([ManagementController::class, 'fixDotEnv']),
 ];

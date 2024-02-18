@@ -51,10 +51,6 @@ class HttpApp extends App implements AppInterface
                         ]);
                     }
                 );
-
-                if (!$callable) {
-                    return;
-                }
             }
 
             $callable(...$modifiedArgs);

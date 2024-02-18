@@ -53,12 +53,9 @@ class CliApp extends App implements AppInterface
                     $callable,
                     function (string $class, string $method): void {
                         Stdio::errorFLn('class %s does not have a public method named: %s', $class, $method);
+                        exit;
                     }
                 );
-
-                if (!$callable) {
-                    return;
-                }
             }
 
             $callable(...$args);

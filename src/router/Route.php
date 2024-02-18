@@ -14,6 +14,11 @@ class Route
     protected bool $hide;
     protected ?string $request;
 
+    public static function create(): static
+    {
+        return new static();
+    }
+
     public function __construct()
     {
         $this->path = '';
@@ -24,76 +29,12 @@ class Route
         $this->request = null;
     }
 
-    public static function create(): static
-    {
-        return new static();
-    }
-
     public function isMatch(string $requestUri, string $method): bool
     {
         $pathMatch = $this->isPathMatch($requestUri);
         $methodMatch = $this->isMethodMatch($method);
 
         return ($pathMatch && $methodMatch);
-    }
-
-    protected function isPathMatch(string $requestUri): bool
-    {
-        $routeParts = explode('/', trim($this->path, '/'));
-        $requestUriParts = explode('/', trim($requestUri, '/'));
-        $modifiedParts = [];
-
-        foreach ($routeParts as $index => $part) {
-            $matchesTemplateSyntax = preg_match('/{(.*)}/', $part, $matches);
-            if (!$matchesTemplateSyntax) {
-                $modifiedParts[] = $part;
-                continue;
-            }
-
-            $meetsKeyConditions = (count($matches) > 1);
-            if (!$meetsKeyConditions) {
-                continue;
-            }
-
-            if (key_exists($index, $requestUriParts)) {
-                $key = $matches[1];
-                $value = $requestUriParts[$index];
-                $this->vars[$key] = $value;
-            }
-
-            $modifiedParts[] = '(.[^/]*)';
-        }
-
-        $joinedParts = trim(
-            implode(
-                '/',
-                $modifiedParts
-            ),
-            '/'
-        );
-
-        $regex = sprintf(
-            '/^%s$/',
-            str_replace('/', '\/', $joinedParts)
-        );
-
-        return preg_match($regex, $requestUri);
-    }
-
-    protected function isMethodMatch(string $method): bool
-    {
-        if (count($this->methods) < 1) {
-            return true;
-        }
-
-        if (in_array('*', $this->methods)) {
-            return true;
-        }
-
-        return in_array(
-            strtoupper($method),
-            $this->methods
-        );
     }
 
     public function getPath(): string
@@ -194,6 +135,65 @@ class Route
         $this->request = $request;
 
         return $this;
+    }
+
+    protected function isPathMatch(string $requestUri): bool
+    {
+        $routeParts = explode('/', trim($this->path, '/'));
+        $requestUriParts = explode('/', trim($requestUri, '/'));
+        $modifiedParts = [];
+
+        foreach ($routeParts as $index => $part) {
+            $matchesTemplateSyntax = preg_match('/{(.*)}/', $part, $matches);
+            if (!$matchesTemplateSyntax) {
+                $modifiedParts[] = $part;
+                continue;
+            }
+
+            $meetsKeyConditions = (count($matches) > 1);
+            if (!$meetsKeyConditions) {
+                continue;
+            }
+
+            if (key_exists($index, $requestUriParts)) {
+                $key = $matches[1];
+                $value = $requestUriParts[$index];
+                $this->vars[$key] = $value;
+            }
+
+            $modifiedParts[] = '(.[^/]*)';
+        }
+
+        $joinedParts = trim(
+            implode(
+                '/',
+                $modifiedParts
+            ),
+            '/'
+        );
+
+        $regex = sprintf(
+            '/^%s$/',
+            str_replace('/', '\/', $joinedParts)
+        );
+
+        return preg_match($regex, $requestUri);
+    }
+
+    protected function isMethodMatch(string $method): bool
+    {
+        if (count($this->methods) < 1) {
+            return true;
+        }
+
+        if (in_array('*', $this->methods)) {
+            return true;
+        }
+
+        return in_array(
+            strtoupper($method),
+            $this->methods
+        );
     }
 
     protected function methodsToUppercase(array $methods): array
