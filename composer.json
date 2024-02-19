@@ -11,7 +11,8 @@
             "src\\": "src/"
         },
         "files": [
-            "src/util/Functions.php"
+            "src/util/Functions.php",
+            "src/util/CustomFunctions.php"
         ]
     },
     "require-dev": {
