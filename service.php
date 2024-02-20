@@ -17,23 +17,23 @@ class Service
 {
     public function appName(): string
     {
-        return $_ENV['APP_NAME'] ?? 'App name not set';
+        return env('APP_NAME', 'App name not set');
     }
 
     public function appVersion(): string
     {
-        return $_ENV['APP_VERSION'] ?? 'App version not set';
+        return env('APP_VERSION', 'App version not set');
     }
 
     public function database(): Database
     {
-        $username = $_ENV['DB_USERNAME'];
-        $password = $_ENV['DB_PASSWORD'];
-        $engine = $_ENV['DB_ENGINE'];
-        $host = $_ENV['DB_HOST'];
-        $port = $_ENV['DB_PORT'];
-        $name = $_ENV['DB_NAME'];
-        $debug = $_ENV['DB_DEBUG'];
+        $username = env('DB_USERNAME', '');
+        $password = env('DB_PASSWORD', '');
+        $engine = env('DB_ENGINE', '');
+        $host = env('DB_HOST', '');
+        $port = env('DB_PORT', '');
+        $name = env('DB_NAME', '');
+        $debug = env('DB_DEBUG', '');
 
         return new Database(
             $engine,

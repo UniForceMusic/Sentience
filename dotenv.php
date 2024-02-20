@@ -151,10 +151,10 @@ class DotEnv
             $envTemplateRegex,
             function (array $matches) {
                 $original = $matches[0];
-                $envVarName = $matches[1];
+                $key = $matches[1];
 
-                if (isset($_ENV[$envVarName])) {
-                    return $_ENV[$envVarName];
+                if (key_exists($key, $_ENV)) {
+                    return $_ENV[$key];
                 }
 
                 return $original;

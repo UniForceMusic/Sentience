@@ -27,7 +27,7 @@ class Request
     public function __construct(?Route $route = null)
     {
         $url = Url::getRequestUrl();
-        $uri = ($_ENV['SERVER_IS_NESTED']) ? Url::getRequestUri() : Url::getPath();
+        $uri = (env('SERVER_IS_NESTED', false)) ? Url::getRequestUri() : Url::getPath();
         $path = ($route) ? $route->getPath() : '';
         $queryString = Url::getQueryString();
         $method = strtoupper($_SERVER['REQUEST_METHOD']);

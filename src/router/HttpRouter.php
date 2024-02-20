@@ -12,7 +12,7 @@ class HttpRouter
 
     public function __construct(array $routes)
     {
-        $this->uri = ($_ENV['SERVER_IS_NESTED'])
+        $this->uri = (env('SERVER_IS_NESTED', false))
             ? Url::getRequestUri()
             : Url::getPath();
         $this->method = strtoupper($_SERVER['REQUEST_METHOD']);

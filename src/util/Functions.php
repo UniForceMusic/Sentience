@@ -76,6 +76,15 @@ function appendToBaseDir(string $baseDir, ?string ...$paths): ?string
     );
 }
 
+function env(string $key, mixed $default = null): mixed
+{
+    if (!key_exists($key, $_ENV)) {
+        return $default;
+    }
+
+    return $_ENV[$key];
+}
+
 function component(string $name, array $vars = []): void
 {
     $componentsDir = getComponentsDir();

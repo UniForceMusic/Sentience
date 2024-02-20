@@ -5,11 +5,11 @@ use src\importers\PageImporter;
 use src\middleware\CORSMiddleware;
 use src\router\Route;
 
-if ($_ENV['PAGES_ENABLED']) {
+if (env('PAGES_ENABLED', true)) {
     $pages = PageImporter::scanPages(
         BASEDIR,
         PAGESDIR,
-        $_ENV['PAGES_ALLOWED_FILE_EXTENSIONS']
+        env('PAGES_ALLOWED_FILE_EXTENSIONS', ['.php', '.html', '.htm'])
     );
 
     foreach ($pages as $filePath => $path) {
@@ -19,13 +19,13 @@ if ($_ENV['PAGES_ENABLED']) {
             ->setCallable([PagesController::class, 'loadPage'])
             ->setMethods(['*']);
 
-        if ($_ENV['PAGES_CORS']) {
+        if (env('PAGES_CORS', true)) {
             $route->setMiddleware([
                 [CORSMiddleware::class, 'execute']
             ]);
         }
 
-        if ($_ENV['PAGES_HIDE_ROUTE']) {
+        if (env('PAGES_HIDE_ROUTE', false)) {
             $route->setHide();
         }
 

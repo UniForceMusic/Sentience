@@ -15,6 +15,8 @@ class ExampleController extends Controller
 
     public function exampleCli(array $words, array $flags): void
     {
+        $words['test'];
+
         Stdio::printLn(json_encode([
             'words' => $words,
             'flags' => $flags

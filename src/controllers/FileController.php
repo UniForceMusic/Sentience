@@ -26,7 +26,7 @@ class FileController extends Controller
 
         Headers::serveFile();
         Headers::contentLength($fileContents);
-        Headers::cacheControl(Headers::CACHE_PUBLIC, $_ENV['FILE_CACHE']);
+        Headers::cacheControl(Headers::CACHE_PUBLIC, env('FILE_CACHE', 0));
         Response::ok(
             $fileContents,
             $mimeType

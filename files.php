@@ -5,7 +5,7 @@ use src\importers\FileImporter;
 use src\middleware\CORSMiddleware;
 use src\router\Route;
 
-if ($_ENV['FILES_ENABLED']) {
+if (env('FILES_ENABLED', true)) {
     $files = FileImporter::scanFiles(BASEDIR, PUBLICDIR);
 
     foreach ($files as $filePath => $file) {
@@ -15,13 +15,13 @@ if ($_ENV['FILES_ENABLED']) {
             ->setCallable([FileController::class, 'serveFile'])
             ->setMethods(['GET']);
 
-        if ($_ENV['FILES_CORS']) {
+        if (env('FILES_CORS', true)) {
             $route->setMiddleware([
                 [CORSMiddleware::class, 'execute']
             ]);
         }
 
-        if ($_ENV['FILES_HIDE_ROUTE']) {
+        if (env('FILES_HIDE_ROUTE', false)) {
             $route->setHide();
         }
 

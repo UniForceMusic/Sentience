@@ -74,7 +74,7 @@ class CliApp extends App implements AppInterface
 
         $subtractFromIndex = 0;
 
-        if (($_ENV['APP_STACK_TRACE'] ?? false)) {
+        if (env('APP_STACK_TRACE', false)) {
             Stdio::errorLn('- Trace :');
             foreach ($error->getTrace() as $index => $trace) {
                 if (!isset($trace['file'])) {

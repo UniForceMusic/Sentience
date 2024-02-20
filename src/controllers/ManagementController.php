@@ -20,8 +20,8 @@ class ManagementController extends Controller
         exec(
             sprintf(
                 'php -S %s:%s %s/index.php',
-                $_ENV['SERVER_HOST'],
-                $_ENV['SERVER_PORT'],
+                env('SERVER_HOST', '0.0.0.0'),
+                env('SERVER_PORT', 8000),
                 BASEDIR
             )
         );
@@ -29,13 +29,13 @@ class ManagementController extends Controller
 
     public function createDatabase(): void
     {
-        $username = $_ENV['DB_USERNAME'];
-        $password = $_ENV['DB_PASSWORD'];
-        $engine = $_ENV['DB_ENGINE'];
-        $host = $_ENV['DB_HOST'];
-        $port = $_ENV['DB_PORT'];
-        $name = $_ENV['DB_NAME'];
-        $debug = $_ENV['DB_DEBUG'];
+        $username = env('DB_USERNAME', '');
+        $password = env('DB_PASSWORD', '');
+        $engine = env('DB_ENGINE', '');
+        $host = env('DB_HOST', '');
+        $port = env('DB_PORT', '');
+        $name = env('DB_NAME', '');
+        $debug = env('DB_DEBUG', '');
 
         $database = Database::createInstanceWithoutDatabase(
             $engine,
@@ -201,7 +201,7 @@ class ManagementController extends Controller
     {
         Stdio::printFLn(
             'Removing old %s project and building new project. This might take a while',
-            $_ENV['DOCKER_PROJECT_NAME']
+            env('DOCKER_PROJECT_NAME', '')
         );
 
         $this->dockerDown();
@@ -213,7 +213,7 @@ class ManagementController extends Controller
         exec(
             sprintf(
                 'docker compose -p %s up -d',
-                $_ENV['DOCKER_PROJECT_NAME']
+                env('DOCKER_PROJECT_NAME', '')
             )
         );
     }
@@ -223,7 +223,7 @@ class ManagementController extends Controller
         exec(
             sprintf(
                 'docker compose -p %s down',
-                $_ENV['DOCKER_PROJECT_NAME']
+                env('DOCKER_PROJECT_NAME', '')
             )
         );
     }
@@ -233,7 +233,7 @@ class ManagementController extends Controller
         exec(
             sprintf(
                 'docker compose -p %s up -d --force-recreate',
-                $_ENV['DOCKER_PROJECT_NAME']
+                env('DOCKER_PROJECT_NAME', '')
             )
         );
     }

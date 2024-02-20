@@ -11,7 +11,7 @@ class CORSMiddleware extends Middleware
     {
         Headers::cors(
             $request,
-            $_ENV['ACCESS_CONTROL_RETURN_ORIGIN']
+            env('ACCESS_CONTROL_RETURN_ORIGIN', true)
         );
 
         return $args;
