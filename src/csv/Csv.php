@@ -3,7 +3,8 @@
 namespace src\csv;
 
 use DateTime;
-use src\exceptions\FileException;
+use src\exceptions\FilesystemException;
+use src\filesystem\File;
 use src\util\Strings;
 
 class Csv
@@ -15,30 +16,40 @@ class Csv
     protected array $keys = [];
     protected array $rows = [];
 
-    public static function parseFromFile(string $filePath, ?string $delimiter = CSV::DEFAULT_DELIMITER): static
+    public static function parseFromFile(string $filePath, ?string $delimiter = null): static
     {
         if (!file_exists($filePath)) {
-            throw new FileException('Csv file path is invalid');
+            throw new FilesystemException('Csv file path is invalid');
         }
 
-        $csvString = file_get_contents($filePath);
+        $csvString = File::read($filePath);
 
-        return new static($csvString, $delimiter);
+        return new static(
+            $csvString,
+            $delimiter ?? static::DEFAULT_DELIMITER
+        );
     }
 
-    public static function parseFromString(string $string, ?string $delimiter = CSV::DEFAULT_DELIMITER): static
+    public static function parseFromString(string $string, ?string $delimiter = null): static
     {
-        return new static($string, $delimiter);
+        return new static(
+            $string,
+            $delimiter ?? static::DEFAULT_DELIMITER
+        );
     }
 
-    public static function parseFromArrayOfObjects(array $arrayOfObjects): static
+    public static function parseFromArrayOfObjects(array $arrayOfObjects, ?string $delimiter = null): static
     {
         $csv = new static();
 
-        foreach ($arrayOfObjects as $index => $object) {
+        foreach ($arrayOfObjects as $object) {
             $csv->addRow(
                 get_object_vars($object)
             );
+        }
+
+        if ($delimiter) {
+            $csv->setDelimiter($delimiter);
         }
 
         return $csv;
@@ -49,7 +60,7 @@ class Csv
         return new static();
     }
 
-    public function __construct(string $string = '', string $delimiter = null)
+    public function __construct(string $string = '', ?string $delimiter = null)
     {
         if (empty($string)) {
             return;
