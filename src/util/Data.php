@@ -19,12 +19,11 @@ class Data
         $current = (array) $data;
 
         foreach ($pointers as $pointer) {
-            if (key_exists($pointer, $current)) {
-                $current = $current[$pointer];
-                continue;
+            if (!key_exists($pointer, $current)) {
+                return $default;
             }
 
-            return $default;
+            $current = $current[$pointer];
         }
 
         return $current;
@@ -50,12 +49,11 @@ class Data
                 return true;
             }
 
-            if (key_exists($pointer, $current)) {
-                $current = $current[$pointer];
-                continue;
+            if (!key_exists($pointer, $current)) {
+                return false;
             }
 
-            return false;
+            $current = $current[$pointer];
         }
 
         return true;
