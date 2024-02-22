@@ -2,39 +2,33 @@
 
 namespace src\clients;
 
-use src\httpclient\HttpRequest;
-use src\httpclient\HttpResponse;
+use src\httpclient\HttpClient;
 
 abstract class BasicAuthClient extends Client
 {
-    protected string $user;
-    protected string $pass;
+    protected string $username;
+    protected string $password;
 
-    public function __construct(string $baseUrl, string $user, string $pass)
+    public function __construct(string $username, string $password, ?string $baseUrl = null)
     {
-        $this->user = $user;
-        $this->pass = $pass;
+        $this->username = $username;
+        $this->password = $password;
 
         parent::__construct($baseUrl);
     }
 
-    protected function execute(HttpRequest $request): HttpResponse
+    protected function setHttpClientDefaults(HttpClient $httpClient): HttpClient
     {
-        return $request->header(
-            $this->authHeader,
-            $this::getBasicAuthHeader($this->user, $this->pass)
-        )->execute();
-    }
-
-    public static function getBasicAuthHeader(string $username, string $password): string
-    {
-        return sprintf(
-            'Basic %s',
-            base64_encode(
-                sprintf(
-                    '%s:%s',
-                    $username,
-                    $password
+        return $httpClient->header(
+            'authorization',
+            sprintf(
+                'Basic %s',
+                base64_encode(
+                    sprintf(
+                        '%s:%s',
+                        $this->username,
+                        $this->password
+                    )
                 )
             )
         );

@@ -2,30 +2,27 @@
 
 namespace src\clients;
 
+use src\httpclient\HttpClient;
 use src\httpclient\HttpRequest;
 use src\httpclient\HttpResponse;
 
 abstract class BearerAuthClient extends Client
 {
-    protected string $token;
+    protected ?string $authToken;
 
-    public function __construct(string $baseUrl)
+    public function __construct(?string $authToken = null, ?string $baseUrl = null)
     {
+        $this->authHeader = $authToken;
+
         parent::__construct($baseUrl);
-
-        $this->token = $this->getAuthToken();
     }
 
-    protected function getAuthToken(): string
+    protected function setHttpClientDefaults(HttpClient $httpClient): HttpClient
     {
-        return '';
-    }
+        if ($this->authToken) {
+            $httpClient->header('authorization', $this->authToken);
+        }
 
-    protected function execute(HttpRequest $request): HttpResponse
-    {
-        return $request->header(
-            $this->authHeader,
-            sprintf('Bearer %s', $this->token)
-        )->execute();
+        return $httpClient;
     }
 }

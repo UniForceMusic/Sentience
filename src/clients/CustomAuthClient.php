@@ -2,8 +2,7 @@
 
 namespace src\clients;
 
-use src\httpclient\HttpRequest;
-use src\httpclient\HttpResponse;
+use src\httpclient\HttpClient;
 
 class CustomAuthClient extends Client
 {

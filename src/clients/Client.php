@@ -3,36 +3,24 @@
 namespace src\clients;
 
 use src\httpclient\HttpClient;
-use src\httpclient\HttpRequest;
-use src\httpclient\HttpResponse;
 
 abstract class Client
 {
     protected HttpClient $httpClient;
-    protected string $authHeader = 'Authorization';
-    protected string $baseUrl;
 
-    public function __construct(string $baseUrl)
+    public function __construct(?string $baseUrl = null)
     {
-        $this->httpClient = new HttpClient();
-        $this->baseUrl = $baseUrl;
-    }
+        $httpClient = new HttpClient();
 
-    protected function execute(HttpRequest $request): HttpResponse
-    {
-        return $request->execute();
-    }
-
-    protected function appendToBaseUrl(?string $path, string $glue = '/'): ?string
-    {
-        if (!$path) {
-            return null;
+        if ($baseUrl) {
+            $httpClient->baseUrl($baseUrl);
         }
 
-        return appendToBaseUrl(
-            $this->baseUrl,
-            $path,
-            $glue
-        );
+        $this->$httpClient = $this->setHttpClientDefaults($httpClient);
+    }
+
+    protected function setHttpClientDefaults(HttpClient $httpClient): HttpClient
+    {
+        return $httpClient;
     }
 }
