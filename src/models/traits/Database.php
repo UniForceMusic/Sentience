@@ -4,11 +4,11 @@ namespace src\models\traits;
 
 use PDOStatement;
 use src\database\querybuilders\QueryBuilderInterface;
-use src\database\Database as DatabaseWrapper;
+use src\database\Database as DatabaseInterface;
 
 trait Database
 {
-    protected DatabaseWrapper $database;
+    protected DatabaseInterface $database;
     protected ?QueryBuilderInterface $queryBuilder = null;
 
     protected function getColumnType(PDOStatement $statement, array $data, string $key): ?string

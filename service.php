@@ -15,6 +15,11 @@ use src\database\Database;
 
 class Service
 {
+    public function service(): static
+    {
+        return $this;
+    }
+
     public function appName(): string
     {
         return env('APP_NAME', 'App name not set');
