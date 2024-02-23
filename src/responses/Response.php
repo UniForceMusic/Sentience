@@ -21,7 +21,7 @@ abstract class Response implements ResponseInterface
                 continue;
             }
 
-            $assoc[$relation] = $model->getRelation($relation)->exportAsRecord();
+            $assoc[$relation::getTable()] = $model->getRelation($relation)->exportAsRecord();
         }
 
         return $assoc;
