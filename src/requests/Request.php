@@ -113,7 +113,7 @@ abstract class Request
             return;
         }
 
-        $this->{$property} = $header;
+        $this->{$property} = $this->castToType($header, $type);
     }
 
     protected function hydratePropertyFromParameter(string $property, string $key): void
@@ -167,7 +167,7 @@ abstract class Request
             return;
         }
 
-        $this->{$property} = $parameter;
+        $this->{$property} = $this->castToType($parameter, $type);
     }
 
     protected function hydratePropertyFromVar(string $property, string $key): void
@@ -206,7 +206,7 @@ abstract class Request
             return;
         }
 
-        $this->{$property} = $var;
+        $this->{$property} = $this->castToType($var, $type);
     }
 
     protected function hydratePropertyFromJson(string $property, string $key): void
@@ -279,11 +279,6 @@ abstract class Request
             return;
         }
 
-        if (is_null($data) && $allowsNull) {
-            $this->{$property} = null;
-            return;
-        }
-
         if (!$this->isTypeMatch($type, gettype($data))) {
             throw new PropertyException(
                 sprintf(
@@ -336,7 +331,7 @@ abstract class Request
             return;
         }
 
-        $this->{$property} = $data;
+        $this->{$property} = $this->castToType($data, $type);
     }
 
     protected function getArrayType(string $property, string $docComment): string
@@ -375,5 +370,41 @@ abstract class Request
             $key,
             strlen($type)
         );
+    }
+
+    protected function castToType(string $value, string $type): mixed
+    {
+        if ($type == 'string') {
+            return $value;
+        }
+
+        if ($type == 'int') {
+            return (int) trim($value);
+        }
+
+        if ($type == 'float') {
+            return (float) trim($value);
+        }
+
+        if ($type == 'bool') {
+            $lcValue = trim(strtolower($value));
+            if ($lcValue == 'true') {
+                return true;
+            }
+
+            if ($lcValue == 'false') {
+                return false;
+            }
+
+            if ($lcValue == '1') {
+                return true;
+            }
+
+            if ($lcValue == '0') {
+                return false;
+            }
+        }
+
+        return (string) $value;
     }
 }

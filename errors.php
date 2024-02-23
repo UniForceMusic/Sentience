@@ -1,18 +1,11 @@
 <?php
 
-if (env('APP_LOG_LEVEL') == 'error') {
-    error_reporting(E_ALL | E_WARNING | E_NOTICE);
-}
-
-if (env('APP_LOG_LEVEL') == 'warning') {
-    error_reporting(E_WARNING | E_NOTICE);
-}
-
-if (env('APP_LOG_LEVEL') == 'notice') {
-    error_reporting(E_NOTICE);
-}
-
-if (env('APP_LOG_LEVEL') == 'none') {
-    error_reporting(0);
-}
-
+error_reporting(
+    [
+        'error' => E_ALL | E_WARNING | E_NOTICE,
+        'warning' => E_WARNING | E_NOTICE,
+        'notice' => E_NOTICE,
+        'none' => 0
+    ]
+    [env('APP_LOG_LEVEL', 'error')]
+);
