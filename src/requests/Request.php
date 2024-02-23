@@ -2,6 +2,7 @@
 
 namespace src\requests;
 
+use DateTime;
 use ReflectionProperty;
 use src\app\Request as StaticRequest;
 use src\exceptions\PropertyException;
@@ -251,13 +252,30 @@ abstract class Request
             return;
         }
 
-        if (str_contains($type, __NAMESPACE__)) {
-            $this->{$property} = new $type($this->request, $data);
+        if ($type == 'object') {
+            $this->{$property} = (object) $data;
             return;
         }
 
-        if ($type == 'object') {
-            $this->{$property} = (object) $data;
+        if ($type == 'DateTime') {
+            $format = $this->getDatetimeFormat($property, $docComment);
+            $dateTime = DateTime::createFromFormat($format, $data);
+            if (!$dateTime) {
+                throw new PropertyException(
+                    sprintf(
+                        'unable to parse property: %s because format "%s" does not match "%s"',
+                        $property,
+                        $format,
+                        $data
+                    )
+                );
+            }
+            $this->{$property} = $dateTime;
+            return;
+        }
+
+        if (str_contains($type, __NAMESPACE__)) {
+            $this->{$property} = new $type($this->request, $data);
             return;
         }
 
@@ -329,6 +347,16 @@ abstract class Request
         }
 
         return sprintf('%s\\%s', __NAMESPACE__, $matches[1]);
+    }
+
+    protected function getDatetimeFormat(string $property, string $docComment): string
+    {
+        $match = preg_match('/\@template (.*)\s/', $docComment, $matches);
+        if (!$match) {
+            throw new PropertyException(sprintf('unable to determine DateTime format for property: %s', $property));
+        }
+
+        return trim($matches[1]);
     }
 
     protected function isTypeMatch(string $reflectionType, string $getType): bool

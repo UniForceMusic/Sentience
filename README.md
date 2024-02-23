@@ -571,7 +571,7 @@ The key can reference data from headers, parameters, vars and json by using the 
 // Allowed types: mixed, string, ?string
 '<property name>' => 'var:name'
 
-// Allowed types: mixed, null, bool, int, float, string, array, object, src\requests\Request, src\requests\Request[]
+// Allowed types: mixed, null, bool, int, float, string, array, object, DateTime, src\requests\Request, src\requests\Request[]
 '<property name>' => 'json:nested_key.using.dot.notation'
 
 // Allowed types: mixed, string, ?string
@@ -594,7 +594,26 @@ public array $nestedRequests;
 
 The array will be hydrated with the request classes.
 
-#### 3.6.2 Using the request object in a route
+#### 3.6.2 Parsing datetime strings
+
+If you want to parse a datetime string, you'd create a new property `public DateTime $datetime`.
+
+In the codecomment of the property, include the datetime template that should be used to parse the string.
+```
+/**
+ * @template Y-m-d H:i:s
+ */
+public DateTime $DateTime;
+```
+
+Popular formats:
+```
+Mysql:      Y-m-d H:i:s
+Json:       Y-m-dTH:i:s
+Json ms:    Y-m-dTH:i:s.uP
+```
+
+#### 3.6.3 Using the request object in a route
 
 To include the request object in a route, go to the `routes.php` file and add the following method at the end of a route:
 ```
