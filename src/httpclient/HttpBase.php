@@ -19,6 +19,21 @@ abstract class HttpBase
     protected ?int $retryCount;
     protected ?array $customOptions;
 
+    public function __construct()
+    {
+        $this->baseUrl = null;
+        $this->path = null;
+        $this->url = null;
+        $this->method = null;
+        $this->parameters = [];
+        $this->headers = [];
+        $this->cookies = [];
+        $this->body = null;
+        $this->secure = null;
+        $this->retryCount = null;
+        $this->customOptions = null;
+    }
+
     public function baseUrl(string $baserUrl): static
     {
         if (!parse_url($baserUrl)) {
@@ -93,50 +108,59 @@ abstract class HttpBase
         return $this;
     }
 
+    public function parameter(string $key, string|array $value, bool $replace = true): static
+    {
+        $lcKey = strtolower($key);
+
+        if (!key_exists($key, $this->parameters)) {
+            $this->parameters[$lcKey] = [];
+        }
+
+        if ($replace) {
+            $this->parameters[$lcKey] = [];
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $this->parameter($key, $v);
+            }
+            return $this;
+        }
+
+        $this->parameters[$lcKey][] = (string) $value;
+
+        return $this;
+    }
+
     public function parameters(array $parameters, bool $replace = true): static
     {
         foreach ($parameters as $key => $value) {
-            $queryParameter = new QueryParameter(
-                $key,
-                $value
-            );
-
-            if ($replace) {
-                $this->headers = array_values(
-                    array_filter(
-                        $this->parameters,
-                        function (QueryParameter $parameter) use ($key): bool {
-                            return ($parameter->getKey() !=  $key);
-                        }
-                    )
-                );
-            }
-
-            $this->parameters[] = $queryParameter;
+            $this->parameter($key, $value, $replace);
         }
 
         return $this;
     }
 
-    public function parameter(string $key, string $value, bool $replace = true): static
+    public function header(string $key, string|array $value, bool $replace = true): static
     {
-        $queryParameter = new QueryParameter(
-            $key,
-            $value
-        );
+        $lcKey = strtolower($key);
 
-        if ($replace) {
-            $this->headers = array_values(
-                array_filter(
-                    $this->parameters,
-                    function (QueryParameter $parameter) use ($key): bool {
-                        return ($parameter->getKey() !=  $key);
-                    }
-                )
-            );
+        if (!key_exists($key, $this->headers)) {
+            $this->headers[$lcKey] = [];
         }
 
-        $this->parameters[] = $queryParameter;
+        if ($replace) {
+            $this->headers[$lcKey] = [];
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $this->header($key, $v);
+            }
+            return $this;
+        }
+
+        $this->headers[$lcKey][] = (string) $value;
 
         return $this;
     }
@@ -144,51 +168,17 @@ abstract class HttpBase
     public function headers(array $headers, bool $replace = true): static
     {
         foreach ($headers as $key => $value) {
-            $lcKey = strtolower($key);
-
-            $header = new Header(
-                $lcKey,
-                $value
-            );
-
-            if ($replace) {
-                $this->headers = array_values(
-                    array_filter(
-                        $this->headers,
-                        function (Header $header) use ($lcKey): bool {
-                            return ($header->getKey() !=  $lcKey);
-                        }
-                    )
-                );
-            }
-
-            $this->headers[] = $header;
+            $this->header($key, $value, $replace);
         }
 
         return $this;
     }
 
-    public function header(string $key, string $value, bool $replace = true): static
+    public function cookie(string $key, string $value): static
     {
         $lcKey = strtolower($key);
 
-        $header = new Header(
-            $key,
-            $value
-        );
-
-        if ($replace) {
-            $this->headers = array_values(
-                array_filter(
-                    $this->headers,
-                    function (Header $header) use ($lcKey): bool {
-                        return ($header->getKey() !=  $lcKey);
-                    }
-                )
-            );
-        }
-
-        $this->headers[] = $header;
+        $this->headers[$lcKey] = (string) $value;
 
         return $this;
     }
@@ -196,74 +186,15 @@ abstract class HttpBase
     public function cookies(array $cookies, bool $replace = true): static
     {
         foreach ($cookies as $key => $value) {
-            $cookie = new Cookie(
-                $key,
-                $value
-            );
-
-            if ($replace) {
-                $this->cookies = array_values(
-                    array_filter(
-                        $this->cookies,
-                        function (Cookie $cookie) use ($key): bool {
-                            return ($cookie->getKey() !=  $key);
-                        }
-                    )
-                );
-            }
-
-            $this->cookies[] = $cookie;
+            $this->cookie($key, (string) $value);
         }
-
-        return $this;
-    }
-
-    public function cookie(string $key, string $value, bool $replace = true): static
-    {
-        $cookie = new Cookie(
-            $key,
-            $value
-        );
-
-        if ($replace) {
-            $this->cookies = array_values(
-                array_filter(
-                    $this->cookies,
-                    function (Cookie $cookie) use ($key): bool {
-                        return ($cookie->getKey() !=  $key);
-                    }
-                )
-            );
-        }
-
-        $this->cookies[] = $cookie;
 
         return $this;
     }
 
     public function setCookieStrings(string $cookieString, bool $replace = true): static
     {
-        $key = 'cookie';
-
-        $header = new Header(
-            $key,
-            $cookieString
-        );
-
-        if ($replace) {
-            $this->headers = array_values(
-                array_filter(
-                    $this->headers,
-                    function (Header $header) use ($key): bool {
-                        return ($header->getKey() !=  $key);
-                    }
-                )
-            );
-        }
-
-        if (!$this->headerExists($key)) {
-            $this->headers[] = $header;
-        }
+        $this->header('cookie', $cookieString);
 
         return $this;
     }
@@ -361,12 +292,11 @@ abstract class HttpBase
             $key = urldecode($partSplit[0] ?? '');
             $value = urldecode($partSplit[1] ?? '');
 
-            $queryParameter = new QueryParameter(
-                $key,
-                $value
-            );
+            if (!key_exists($key, $parameters)) {
+                $parameters[$key] = [];
+            }
 
-            $parameters[] = $queryParameter;
+            $parameters[$key][] = $value;
         }
 
         return $parameters;

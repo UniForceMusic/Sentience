@@ -4,24 +4,10 @@ namespace src\httpclient;
 
 use CurlHandle;
 use src\util\Methods;
+use src\util\Strings;
 
 class HttpClient extends HttpBase
 {
-    public function __construct()
-    {
-        $this->baseUrl = null;
-        $this->path = null;
-        $this->url = null;
-        $this->method = null;
-        $this->parameters = null;
-        $this->headers = null;
-        $this->cookies = null;
-        $this->body = null;
-        $this->secure = null;
-        $this->retryCount = null;
-        $this->customOptions = null;
-    }
-
     public function createRequest(): HttpRequest
     {
         $httpRequest = new HttpRequest($this);
@@ -128,13 +114,34 @@ class HttpClient extends HttpBase
 
         $serializedParameters = [];
 
-        foreach ($parameters as $parameter) {
-            $serializedParameters[] = $parameter->getQueryString();
+        foreach ($parameters as $key => $value) {
+            $serializedParameters[] = $this->serializeParameter($key, $value);
         }
 
         $queryString = implode('&', $serializedParameters);
 
         return sprintf('%s?%s', $url, $queryString);
+    }
+
+    protected function serializeParameter(string $key, string|array $value): string
+    {
+        if (is_array($value)) {
+            return implode(
+                '&',
+                array_map(
+                    function (string $v) use ($key) {
+                        $this->serializeParameter($key, $v);
+                    },
+                    $value
+                )
+            );
+        }
+
+        return sprintf(
+            '%s=%s',
+            urlencode($key),
+            urlencode($value)
+        );
     }
 
     protected function serializeHeaders(array $headers, array $cookies): array
@@ -145,28 +152,43 @@ class HttpClient extends HttpBase
 
         $serializedHeaders = [];
 
-        foreach ($headers as $header) {
-            $serializedHeaders[] = $header->getHeaderString();
+        if (!empty($cookies)) {
+            $this->header('cookie', $this->serializeCookies($cookies));
         }
 
-        if (!empty($cookies) && !$this->headerExists('cookie', $cookies)) {
-            $serializedHeaders[] = sprintf(
-                'Cookie: %s',
-                $this->serializeCookies($cookies)
-            );
+        foreach ($headers as $key => $value) {
+            $serializedHeaders[] = $this->serializeHeader($key, $value);
         }
 
         return $serializedHeaders;
+    }
+
+    protected function serializeHeader(string $key, string|array $value): string
+    {
+        return sprintf(
+            '%s: %s',
+            replaceNonAsciiChars($key),
+            replaceNonAsciiChars(Strings::join(', ', $value))
+        );
     }
 
     protected function serializeCookies(array $cookies): string
     {
         $cookieStrings = [];
 
-        foreach ($cookies as $cookie) {
-            $cookieStrings[] = $cookie->getCookieString();
+        foreach ($cookies as $key => $value) {
+            $cookieStrings[] = $this->serializeCookie($key, $value);
         }
 
         return implode(';', $cookieStrings);
+    }
+
+    protected function serializeCookie(string $key, string $value): string
+    {
+        return sprintf(
+            '%s=%s',
+            replaceNonAsciiChars($key),
+            replaceNonAsciiChars($value)
+        );
     }
 }
