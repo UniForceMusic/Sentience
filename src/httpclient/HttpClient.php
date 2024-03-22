@@ -72,13 +72,13 @@ class HttpClient extends HttpBase
     ): HttpResponse {
         $curl = curl_init();
         $url = $this->serializeParameters($url, $parameters);
-        $headers = $this->serializeHeaders($headers, $cookies);
+        $serializedHeaders = $this->serializeHeaders($headers, $cookies);
 
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $serializedHeaders);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
@@ -108,7 +108,7 @@ class HttpClient extends HttpBase
 
     protected function serializeParameters(string $url, array $parameters): string
     {
-        if (empty($parameters)) {
+        if (empty ($parameters)) {
             return $url;
         }
 
@@ -146,14 +146,20 @@ class HttpClient extends HttpBase
 
     protected function serializeHeaders(array $headers, array $cookies): array
     {
-        if (empty($headers)) {
+        if (empty ($headers)) {
             return [];
         }
 
         $serializedHeaders = [];
 
-        if (!empty($cookies)) {
-            $this->header('cookie', $this->serializeCookies($cookies));
+        if (!empty ($cookies)) {
+            $headers['cookie'] = (!empty ($headers['cookie'] ?? null))
+                ? $headers['cookie'] = sprintf(
+                    '%s;%s',
+                    $headers['cookie'],
+                    $this->serializeCookies($cookies)
+                )
+                : $headers['cookie'] = $this->serializeCookies($cookies);
         }
 
         foreach ($headers as $key => $value) {

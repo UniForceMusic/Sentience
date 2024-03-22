@@ -110,14 +110,12 @@ abstract class HttpBase
 
     public function parameter(string $key, string|array $value, bool $replace = true): static
     {
-        $lcKey = strtolower($key);
-
         if (!key_exists($key, $this->parameters)) {
-            $this->parameters[$lcKey] = [];
+            $this->parameters[$key] = [];
         }
 
         if ($replace) {
-            $this->parameters[$lcKey] = [];
+            $this->parameters[$key] = [];
         }
 
         if (is_array($value)) {
@@ -127,7 +125,7 @@ abstract class HttpBase
             return $this;
         }
 
-        $this->parameters[$lcKey][] = (string) $value;
+        $this->parameters[$key][] = (string) $value;
 
         return $this;
     }
@@ -145,7 +143,7 @@ abstract class HttpBase
     {
         $lcKey = strtolower($key);
 
-        if (!key_exists($key, $this->headers)) {
+        if (!key_exists($lcKey, $this->headers)) {
             $this->headers[$lcKey] = [];
         }
 
@@ -155,7 +153,7 @@ abstract class HttpBase
 
         if (is_array($value)) {
             foreach ($value as $v) {
-                $this->header($key, $v);
+                $this->header($lcKey, $v);
             }
             return $this;
         }
@@ -176,9 +174,7 @@ abstract class HttpBase
 
     public function cookie(string $key, string $value): static
     {
-        $lcKey = strtolower($key);
-
-        $this->headers[$lcKey] = (string) $value;
+        $this->cookies[$key] = $value;
 
         return $this;
     }
@@ -192,9 +188,9 @@ abstract class HttpBase
         return $this;
     }
 
-    public function setCookieStrings(string $cookieString, bool $replace = true): static
+    public function setCookieStrings(string $cookieString): static
     {
-        $this->header('cookie', $cookieString);
+        $this->header('cookie', $cookieString, true);
 
         return $this;
     }
@@ -279,7 +275,7 @@ abstract class HttpBase
 
     protected function unSerializeParameters(string $queryString): ?array
     {
-        if (empty($queryString)) {
+        if (empty ($queryString)) {
             return null;
         }
 
@@ -300,50 +296,5 @@ abstract class HttpBase
         }
 
         return $parameters;
-    }
-
-    protected function parameterExists(string $key, ?array $parameters = null): bool|int
-    {
-        $parameters = ($parameters)
-            ? $parameters
-            : $this->parameters;
-
-        foreach ($parameters as $index => $parameter) {
-            if ($parameter->getKey() == $key) {
-                return $index;
-            }
-        }
-
-        return false;
-    }
-
-    protected function headerExists(string $key, ?array $headers = null): bool|int
-    {
-        $headers = ($headers)
-            ? $headers
-            : $this->headers;
-
-        foreach ($headers as $index => $header) {
-            if ($header->getKey() == $key) {
-                return $index;
-            }
-        }
-
-        return false;
-    }
-
-    protected function cookieExists(string $key, ?array $cookies = null): bool|int
-    {
-        $cookies = ($cookies)
-            ? $cookies
-            : $this->cookies;
-
-        foreach ($cookies as $index => $cookie) {
-            if ($cookie->getKey() == $key) {
-                return $index;
-            }
-        }
-
-        return false;
     }
 }
