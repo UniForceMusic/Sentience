@@ -108,7 +108,7 @@ class HttpClient extends HttpBase
 
     protected function serializeParameters(string $url, array $parameters): string
     {
-        if (empty ($parameters)) {
+        if (empty($parameters)) {
             return $url;
         }
 
@@ -130,7 +130,7 @@ class HttpClient extends HttpBase
                 '&',
                 array_map(
                     function (string $v) use ($key) {
-                        $this->serializeParameter($key, $v);
+                        return $this->serializeParameter($key, $v);
                     },
                     $value
                 )
@@ -146,14 +146,14 @@ class HttpClient extends HttpBase
 
     protected function serializeHeaders(array $headers, array $cookies): array
     {
-        if (empty ($headers)) {
+        if (empty($headers)) {
             return [];
         }
 
         $serializedHeaders = [];
 
-        if (!empty ($cookies)) {
-            $headers['cookie'] = (!empty ($headers['cookie'] ?? null))
+        if (!empty($cookies)) {
+            $headers['cookie'] = (!empty($headers['cookie'] ?? null))
                 ? $headers['cookie'] = sprintf(
                     '%s;%s',
                     $headers['cookie'],
