@@ -49,7 +49,7 @@ class Stdio
         static::errorLn('command not found. these are the available commands:');
 
         foreach ($commands as $command) {
-            static::errorFLn('- %s', $command->getCommand());
+            static::errorFLn('- %s', $command->getArgument());
         }
     }
 }
